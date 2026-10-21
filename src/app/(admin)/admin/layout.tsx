@@ -1,0 +1,50 @@
+import React from "react";
+import Link from "next/link";
+import { Shield, ExternalLink, LogOut, Layers, Box, FileText } from "lucide-react";
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="min-h-screen bg-bg text-fg">
+      {/* Top Header */}
+      <header className="sticky top-0 z-40 border-b border-border bg-bg-raised/95 backdrop-blur-md px-6 py-3 flex items-center justify-between">
+        <div className="flex items-center space-x-3">
+          <span className="h-2 w-2 rounded-full bg-fg" />
+          <Link href="/admin" className="font-display font-medium text-sm text-fg tracking-tight">
+            JEPTAHZREPO // STUDIO
+          </Link>
+          <span className="font-mono text-[10px] text-fg-subtle border border-border px-1.5 py-0.5 rounded-[2px] hidden sm:inline-block">
+            ADMIN LEVEL 1
+          </span>
+        </div>
+
+        <div className="flex items-center space-x-3 text-xs font-mono">
+          <Link
+            href="/home"
+            target="_blank"
+            className="flex items-center space-x-1 text-fg-subtle hover:text-fg transition-colors"
+          >
+            <span>Live Archive</span>
+            <ExternalLink className="w-3 h-3" />
+          </Link>
+          <span className="text-border">|</span>
+          <Link
+            href="/login"
+            className="flex items-center space-x-1 text-fg-subtle hover:text-fg transition-colors"
+          >
+            <LogOut className="w-3 h-3" />
+            <span>Exit</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* Main Admin Surface */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {children}
+      </main>
+    </div>
+  );
+}

@@ -1,0 +1,246 @@
+{
+  "site_settings": {
+    "site_title": "JeptahzRepo",
+    "site_tagline": "Computer Science & Engineering Knowledge Archive",
+    "intro_heading": "An Open Vault for Computing, Software Architecture & Ideas",
+    "intro_subtext": "Curated documents, production software showcases, course syllabi, and technical devlogs by a Computer Science student and software builder.",
+    "about_markdown": "### The Vision Behind JeptahzRepo\n\nWelcome to **JeptahzRepo** — a deliberate, monochromatic knowledge repository built to document the journey through computer science, software engineering, and systems architecture.\n\nHere you will find:\n- **Deep Technical Documentation:** Rigorous breakdowns of algorithms, distributed systems theory, and operating system internals.\n- **Production Software Showcase:** Real applications with downloadable builds, architecture notes, and GitHub source code.\n- **Curriculum Syllabi:** Curated course roadmaps, lecture summaries, and textbook references.\n- **Raw Engineering Ideas:** Unfiltered devlogs and conceptual drafts.",
+    "contact_email": "jeptah@example.com",
+    "social_links": {
+      "github": "https://github.com/jeptah",
+      "twitter": "https://twitter.com/jeptah",
+      "linkedin": "https://linkedin.com/in/jeptah",
+      "gdrive": "https://drive.google.com/drive"
+    }
+  },
+  "topics": [
+    {
+      "slug": "apps",
+      "name": "Application Showcase",
+      "description": "Featured software builds, desktop utilities, and web applications",
+      "icon": "Box",
+      "sort_order": 1,
+      "is_visible": true
+    },
+    {
+      "slug": "docs",
+      "name": "Documentation & Theory",
+      "description": "In-depth computer science theory, algorithm patterns, and cheatsheets",
+      "icon": "BookOpen",
+      "sort_order": 2,
+      "is_visible": true
+    },
+    {
+      "slug": "courses",
+      "name": "Courses & Curriculum",
+      "description": "University syllabi, self-study roadmaps, and lecture archives",
+      "icon": "GraduationCap",
+      "sort_order": 3,
+      "is_visible": true
+    },
+    {
+      "slug": "projects",
+      "name": "Code Repositories",
+      "description": "Source code repositories, assignments, and architectural prototypes",
+      "icon": "Code2",
+      "sort_order": 4,
+      "is_visible": true
+    },
+    {
+      "slug": "resources",
+      "name": "Curated Links & Tools",
+      "description": "Hand-picked developer tools, research papers, and technical references",
+      "icon": "Link2",
+      "sort_order": 5,
+      "is_visible": true
+    },
+    {
+      "slug": "ideas",
+      "name": "Raw Ideas & Devlogs",
+      "description": "Brainstorming logs, thesis concepts, and software blueprints",
+      "icon": "Lightbulb",
+      "sort_order": 6,
+      "is_visible": true
+    }
+  ],
+  "apps": [
+    {
+      "id": "app-1",
+      "title": "OmniForge Developer Studio",
+      "slug": "omniforge-studio",
+      "tagline": "A high-performance modular workspace, terminal multiplexer, and API workbench.",
+      "description": "### OmniForge Studio\n\nOmniForge is an experimental developer workspace engineered with Rust and React/Tauri. It combines an ultra-low latency terminal emulator with an embedded SQLite query profiler and dynamic HTTP/gRPC inspection surface.\n\n#### Key Features:\n- **GPU-Accelerated Rendering:** Powered by wgpu with zero frame drops during heavy terminal logs.\n- **Unified Session State:** Persists running background processes and split-pane configurations.\n- **Offline First:** Stores all session histories locally with encrypted SQLite vaults.\n\n#### System Requirements:\n- Windows 10/11 (x64) or macOS 12+ (Apple Silicon / Intel)\n- 500MB available disk storage\n- 4GB RAM minimum",
+      "version": "v1.2.4",
+      "badge": "Active",
+      "category": "Desktop App",
+      "carousel_images": [
+        {
+          "url": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
+          "caption": "OmniForge Main Workspace & Multi-Pane Terminal Interface"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Real-time Memory Profiler & Low-Level Process Inspector"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Dark Monochromatic Settings Palette and Keybindings Manager"
+        }
+      ],
+      "repo_url": "https://github.com/jeptah/omniforge-studio",
+      "gdrive_url": "https://drive.google.com/file/d/example-omniforge-installer/view",
+      "demo_url": "https://omniforge.dev",
+      "install_instructions": "### Installation Guide\n1. Download the `.msi` or `.dmg` installer using the **Install via GDrive** button above.\n2. Verify the SHA-256 checksum: `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`.\n3. Run the installer and accept permissions for desktop shortcut creation.\n4. Launch OmniForge and run `omniforge --init` in your terminal.",
+      "tech_stack": ["Rust", "Tauri", "React", "TypeScript", "Tailwind CSS", "SQLite"],
+      "sort_order": 1,
+      "is_featured": true,
+      "created_at": "2026-09-15T08:00:00Z"
+    },
+    {
+      "id": "app-2",
+      "title": "NeuralGraph Algorithmic Visualizer",
+      "slug": "neuralgraph-visualizer",
+      "tagline": "Interactive 3D graph-theoretic algorithm engine and neural topology inspector.",
+      "description": "### NeuralGraph\n\nNeuralGraph is an educational and analytical tool designed to render large-scale graph structures (Dijkstra, A*, Tarjan's SCC, Bellman-Ford) in real time with interactive node manipulation and step-by-step state playback.",
+      "version": "v0.9.8",
+      "badge": "Beta",
+      "category": "Web Utility",
+      "carousel_images": [
+        {
+          "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
+          "caption": "3D Force-Directed Graph Layout Simulation"
+        },
+        {
+          "url": "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Step-by-Step Shortest Path Traversal Log"
+        }
+      ],
+      "repo_url": "https://github.com/jeptah/neuralgraph",
+      "gdrive_url": "https://drive.google.com/file/d/example-neuralgraph/view",
+      "demo_url": "https://neuralgraph.dev",
+      "install_instructions": "### Web & Desktop Installation\n- Web version is hosted directly on Vercel.\n- Desktop package can be installed via Google Drive binary package.",
+      "tech_stack": ["Three.js", "Next.js", "WebAssembly", "TypeScript"],
+      "sort_order": 2,
+      "is_featured": true,
+      "created_at": "2026-10-01T10:30:00Z"
+    },
+    {
+      "id": "app-3",
+      "title": "Archivist Backup & Verification CLI",
+      "slug": "archivist-cli",
+      "tagline": "Zero-dependency streaming directory backup utility with cryptographic checksum verification.",
+      "description": "### Archivist CLI\n\nBuilt for computer science students and engineers managing large project directories. Archivist streams snapshots into deduplicated tarballs with automated Google Drive and S3 cloud mirroring.",
+      "version": "v2.0.1",
+      "badge": "Active",
+      "category": "CLI Tool",
+      "carousel_images": [
+        {
+          "url": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80",
+          "caption": "Archivist Terminal Output with Progress Bar and Integrity Hash"
+        }
+      ],
+      "repo_url": "https://github.com/jeptah/archivist-cli",
+      "gdrive_url": "https://drive.google.com/file/d/example-archivist/view",
+      "demo_url": null,
+      "install_instructions": "### Cargo Installation\n```bash\ncargo install archivist-cli\n```\nOr download pre-compiled binary via Google Drive button.",
+      "tech_stack": ["Rust", "Tokio", "SHA-256", "Google Drive API"],
+      "sort_order": 3,
+      "is_featured": false,
+      "created_at": "2026-10-12T14:15:00Z"
+    }
+  ],
+  "entries": [
+    {
+      "id": "entry-1",
+      "title": "Distributed Consensus: Comparative Analysis of Raft and Paxos",
+      "slug": "distributed-consensus-raft-vs-paxos",
+      "type": "doc",
+      "topic_slug": "docs",
+      "summary": "An architectural breakdown of state machine replication, leader election, log compaction, and network partition recovery.",
+      "content": "## Introduction to State Machine Replication\n\nIn modern distributed computing, maintaining consistent state across asynchronous, failure-prone nodes requires robust consensus protocols. While **Paxos** laid theoretical foundations, **Raft** was engineered explicitly for understandability and operational debuggability.\n\n### The Raft Invariant Triangle\n\n1. **Election Safety:** At most one leader can be elected in a given term.\n2. **Leader Append-Only:** A leader never overwrites or truncates its own entries; it only appends new log records.\n3. **Log Matching:** If two logs contain an entry with the same index and term, then the logs are identical in all entries through the given index.\n\n```python\nclass RaftNode:\n    def __init__(self, node_id, peers):\n        self.node_id = node_id\n        self.peers = peers\n        self.current_term = 0\n        self.voted_for = None\n        self.log = []\n        self.state = 'FOLLOWER'\n\n    def start_election(self):\n        self.state = 'CANDIDATE'\n        self.current_term += 1\n        self.voted_for = self.node_id\n        # Broadcast RequestVote RPCs\n```\n\n### Practical Tradeoffs in Network Partitions\n\nWhen split-brain scenarios occur, Raft guarantees safety by requiring a strict quorum ($\\lfloor n/2 \\rfloor + 1$). The minority partition continues accepting speculative writes but cannot commit them until the partition heals, ensuring zero dirty reads.",
+      "metadata": {
+        "read_time": "8 min read",
+        "difficulty": "Advanced",
+        "tags": ["Distributed Systems", "Algorithms", "Fault Tolerance"]
+      },
+      "tags": ["Distributed Systems", "Algorithms", "Fault Tolerance"],
+      "is_pinned": true,
+      "is_published": true,
+      "view_count": 342,
+      "created_at": "2026-09-20T12:00:00Z"
+    },
+    {
+      "id": "entry-2",
+      "title": "CS 350: Advanced Operating Systems & Kernel Architecture",
+      "slug": "cs350-operating-systems-curriculum",
+      "type": "course",
+      "topic_slug": "courses",
+      "summary": "Complete course curriculum notes, assembly lab assignments, virtual memory paging mechanics, and Linux kernel module development.",
+      "content": "## Course Overview\n\n- **Subject:** Computer Science 350 - Advanced Systems Architecture\n- **Prerequisites:** C Programming, Computer Organization, Assembly (x86-64 / RISC-V)\n- **Primary Textbook:** *Operating Systems: Three Easy Pieces* (Remzi & Andrea Arpaci-Dusseau)\n\n### Module Breakdown\n\n#### 1. Virtual Memory & Multi-Level Page Tables\n- Translation Lookaside Buffers (TLB) and hit/miss penalty latency.\n- Demand paging, page fault handler traps, and Clock (Second Chance) replacement algorithms.\n\n#### 2. Concurrency & Synchronization Primitives\n- Hardware atomics (`compare-and-swap`, `test-and-set`).\n- Spinlocks vs. Futex sleeping mutexes in modern Linux kernels.\n- Condition variables, semaphores, and solving the Dining Philosophers / Producer-Consumer dilemmas.\n\n#### 3. File System Internals\n- Inode structures, indirect blocks, and directory index b-trees (ext4 vs XFS).\n- Journaling file systems: metadata journaling vs full write-ahead logging.",
+      "metadata": {
+        "semester": "Fall 2026",
+        "credits": 4,
+        "code": "CS-350"
+      },
+      "tags": ["Operating Systems", "Linux", "Kernel", "C"],
+      "is_pinned": true,
+      "is_published": true,
+      "view_count": 512,
+      "created_at": "2026-09-01T09:00:00Z"
+    },
+    {
+      "id": "entry-3",
+      "title": "Dynamic Programming: The Finite State Machine Paradigm",
+      "slug": "dynamic-programming-finite-state-machine",
+      "type": "doc",
+      "topic_slug": "docs",
+      "summary": "A systematic approach to solving complex interval, knapsack, and multi-state LeetCode Hard problems with state transition tables.",
+      "content": "## Demystifying State Transitions in DP\n\nMany students struggle with dynamic programming because they try to visualize all recursive paths simultaneously. Instead, treating the problem as a **Finite State Automaton (FSM)** simplifies recurrence relation discovery.\n\n### The 4-Step Formulation\n1. **Define Subproblems:** What minimal information uniquely identifies the current snapshot?\n2. **State Transition:** How does state $S_{i}$ relate to $S_{i-1}$?\n3. **Base Cases:** What are the boundary conditions where the answer is trivial?\n4. **Order of Computation:** In what direction does topological dependency flow?",
+      "metadata": {
+        "read_time": "6 min read",
+        "difficulty": "Intermediate"
+      },
+      "tags": ["Data Structures", "Algorithms", "LeetCode"],
+      "is_pinned": false,
+      "is_published": true,
+      "view_count": 219,
+      "created_at": "2026-10-05T15:00:00Z"
+    },
+    {
+      "id": "entry-4",
+      "title": "Decentralized P2P Academic Syllabus & Exam Archive",
+      "slug": "p2p-academic-syllabus-vault-idea",
+      "type": "idea",
+      "topic_slug": "ideas",
+      "summary": "Conceptual architectural design for an immutable, peer-to-peer student repository using IPFS and verifiable content hashes.",
+      "content": "### The Thesis\n\nUniversity course materials, assignment starters, and past exams are frequently lost or trapped behind predatory commercial paywalls. We can engineer a distributed protocol where universities and student clubs maintain synchronized archival nodes.",
+      "metadata": {
+        "status": "Brainstorming",
+        "maturity": "Conceptual Draft"
+      },
+      "tags": ["P2P", "Decentralized", "IPFS", "Open Science"],
+      "is_pinned": false,
+      "is_published": true,
+      "view_count": 184,
+      "created_at": "2026-10-18T18:40:00Z"
+    },
+    {
+      "id": "entry-5",
+      "title": "Essential Systems & Architecture References",
+      "slug": "systems-architecture-bookmarks",
+      "type": "link",
+      "topic_slug": "resources",
+      "summary": "Curated bookmarks to high-value computing documentation, distributed systems papers, and open courses.",
+      "external_url": "https://github.com/jeptahz/curated-systems",
+      "content": "A live-updated compilation of foundational computer science papers, including Turing's original papers, Google's MapReduce/BigTable/Spanner whitepapers, and the Raft consensus specification.",
+      "metadata": {
+        "category": "External Curated Resource"
+      },
+      "tags": ["Bookmarks", "Papers", "Architecture"],
+      "is_pinned": false,
+      "is_published": true,
+      "view_count": 145,
+      "created_at": "2026-10-10T11:20:00Z"
+    }
+  ]
+}
