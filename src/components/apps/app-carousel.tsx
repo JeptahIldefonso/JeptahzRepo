@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2, ImageOff } from "lucide-react";
 import { Modal, ModalContent } from "@/components/ui/modal";
 
 interface CarouselImage {
@@ -18,11 +17,12 @@ interface AppCarouselProps {
 export function AppCarousel({ images, title }: AppCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [failedImages, setFailedImages] = useState<Record<number, boolean>>({});
 
   if (!images || images.length === 0) {
     return (
       <div className="flex h-64 w-full items-center justify-center border border-border bg-bg-raised text-xs font-mono text-fg-subtle">
-        No preview images available
+        No preview images available in registry
       </div>
     );
   }
@@ -35,40 +35,58 @@ export function AppCarousel({ images, title }: AppCarouselProps) {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
 
+  const handleImageError = (index: number) => {
+    setFailedImages((prev) => ({ ...prev, [index]: true }));
+  };
+
   const currentImg = images[currentIndex];
+  const isFailed = failedImages[currentIndex];
 
   return (
     <div className="relative w-full overflow-hidden border border-border bg-bg-raised rounded-[2px] group">
       {/* Main Image Viewport */}
       <div className="relative aspect-video w-full overflow-hidden bg-bg">
-        <img
-          src={currentImg.url}
-          alt={currentImg.caption || `${title} screenshot ${currentIndex + 1}`}
-          className="h-full w-full object-cover transition-opacity duration-300"
-        />
+        {isFailed ? (
+          <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center space-y-2 border border-border">
+            <ImageOff className="w-8 h-8 text-fg-subtle stroke-[1.25]" />
+            <div className="font-mono text-xs text-fg">Binary Screenshot Offline</div>
+            <div className="font-mono text-[10px] text-fg-subtle max-w-xs">
+              External image CDN returned an error. Local binary verification remains active.
+            </div>
+          </div>
+        ) : (
+          <img
+            src={currentImg.url}
+            alt={currentImg.caption || `${title} screenshot ${currentIndex + 1}`}
+            onError={() => handleImageError(currentIndex)}
+            className="h-full w-full object-cover transition-opacity duration-300"
+          />
+        )}
 
         {/* Zoom Lightbox Trigger */}
-        <button
-          onClick={() => setZoomOpen(true)}
-          className="absolute top-3 right-3 rounded-[2px] bg-bg-raised/90 p-1.5 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
-          title="Expand Screenshot"
-        >
-          <Maximize2 className="h-3.5 w-3.5 stroke-[1.5]" />
-        </button>
+        {!isFailed && (
+          <button
+            onClick={() => setZoomOpen(true)}
+            className="absolute top-3 right-3 rounded-[2px] bg-bg-raised/95 p-1.5 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
+            title="Expand Screenshot"
+          >
+            <Maximize2 className="h-3.5 w-3.5 stroke-[1.5]" />
+          </button>
+        )}
 
         {/* Carousel Navigation Arrows */}
         {images.length > 1 && (
           <>
             <button
               onClick={prevSlide}
-              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-[2px] bg-bg-raised/90 p-2 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
+              className="absolute left-3 top-1/2 -translate-y-1/2 rounded-[2px] bg-bg-raised/95 p-2 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
               aria-label="Previous slide"
             >
               <ChevronLeft className="h-4 w-4 stroke-[1.5]" />
             </button>
             <button
               onClick={nextSlide}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-[2px] bg-bg-raised/90 p-2 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-[2px] bg-bg-raised/95 p-2 text-fg shadow-sm border border-border opacity-0 group-hover:opacity-100 transition-opacity hover:bg-bg-raised cursor-pointer"
               aria-label="Next slide"
             >
               <ChevronRight className="h-4 w-4 stroke-[1.5]" />
@@ -78,9 +96,9 @@ export function AppCarousel({ images, title }: AppCarouselProps) {
 
         {/* Caption Bar */}
         {currentImg.caption && (
-          <div className="absolute inset-x-0 bottom-0 bg-fg/80 px-4 py-2 text-xs font-mono text-bg-raised backdrop-blur-xs flex items-center justify-between">
+          <div className="absolute inset-x-0 bottom-0 bg-fg/90 px-4 py-2 text-xs font-mono text-bg-raised backdrop-blur-xs flex items-center justify-between">
             <span className="truncate">{currentImg.caption}</span>
-            <span className="text-[10px] text-bg-raised/70 shrink-0 ml-4">
+            <span className="text-[10px] text-bg-raised/70 shrink-0 ml-4 font-mono">
               {currentIndex + 1} / {images.length}
             </span>
           </div>
@@ -103,6 +121,7 @@ export function AppCarousel({ images, title }: AppCarouselProps) {
               <img
                 src={img.url}
                 alt=""
+                onError={() => handleImageError(idx)}
                 className="h-full w-full object-cover"
               />
             </button>
@@ -112,7 +131,7 @@ export function AppCarousel({ images, title }: AppCarouselProps) {
 
       {/* Fullscreen Zoom Lightbox Modal */}
       <Modal open={zoomOpen} onOpenChange={setZoomOpen}>
-        <ModalContent className="max-w-4xl p-2" title={`${title} — Preview`}>
+        <ModalContent className="max-w-4xl p-2" title={`${title} — Screenshot Frame`}>
           <div className="relative aspect-video w-full overflow-hidden bg-black">
             <img
               src={currentImg.url}

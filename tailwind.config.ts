@@ -22,9 +22,9 @@ const config: Config = {
         "border-strong": "var(--border-strong)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "-apple-system", "sans-serif"],
-        display: ["var(--font-display)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
+        editorial: ["var(--font-editorial)", "Newsreader", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "Geist Sans", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["var(--font-mono)", "Geist Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       letterSpacing: {
         editorial: "0.18em",
@@ -32,8 +32,8 @@ const config: Config = {
       borderRadius: {
         DEFAULT: "2px",
         sm: "2px",
-        md: "4px",
-        lg: "6px",
+        md: "3px",
+        lg: "4px",
       },
     },
   },

@@ -3,21 +3,17 @@
 @tailwind utilities;
 
 :root {
-  --bg: #F5F5F3;
+  --bg: #F4F4F0;
   --bg-raised: #FFFFFF;
-  --bg-hover: #ECECE8;
-  --bg-subtle: #E6E6E1;
+  --bg-hover: #EAEAE4;
+  --bg-subtle: #DFDFD7;
   --fg: #0A0A0A;
-  --fg-muted: #55554F;
-  --fg-subtle: #6E6E68;
+  --fg-muted: #3E3E38;
+  --fg-subtle: #5A5A54;
   --accent: #0A0A0A;
-  --accent-dim: rgba(10, 10, 10, 0.06);
-  --border: rgba(10, 10, 10, 0.14);
-  --border-strong: rgba(10, 10, 10, 0.32);
-
-  --font-sans: "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --font-display: "Space Grotesk", "Geist Sans", sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --accent-dim: rgba(10, 10, 10, 0.05);
+  --border: rgba(10, 10, 10, 0.16);
+  --border-strong: #0A0A0A;
 }
 
 * {
@@ -27,7 +23,6 @@
 html {
   background-color: var(--bg);
   color: var(--fg);
-  font-family: var(--font-sans);
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
 }
@@ -47,29 +42,34 @@ body {
 
 /* Custom Minimalist Scrollbar */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(10, 10, 10, 0.2);
-  border-radius: 2px;
+  background: rgba(10, 10, 10, 0.25);
+  border-radius: 1px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(10, 10, 10, 0.4);
+  background: rgba(10, 10, 10, 0.5);
 }
 
 /* Editorial Monochromatic Typography Utility */
-.font-display {
-  font-family: var(--font-display);
-}
-
-.font-mono-code {
-  font-family: var(--font-mono);
+.font-editorial {
+  font-family: var(--font-editorial), Newsreader, Georgia, serif;
 }
 
 .hairline-border {
   border: 1px solid var(--border);
+}
+
+/* Broadsheet Column Dividers */
+.broadsheet-rule {
+  border-top: 2px solid var(--fg);
+}
+
+.broadsheet-rule-thin {
+  border-top: 1px solid var(--border);
 }
