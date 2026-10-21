@@ -28,7 +28,7 @@ export default async function HubLayout({
   ];
 
   return (
-    <HubLayoutClient apps={apps} searchItems={searchItems}>
+    <HubLayoutClient searchItems={searchItems}>
       {children}
     </HubLayoutClient>
   );

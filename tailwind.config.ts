@@ -22,13 +22,12 @@ const config: Config = {
         "border-strong": "var(--border-strong)",
       },
       fontFamily: {
-        cinzel: ["var(--font-cinzel)", "Cinzel Decorative", "Georgia", "serif"],
-        sans: ["var(--font-outfit)", "ui-sans-serif", "system-ui", "sans-serif"],
-        mono: ["var(--font-jetbrains-mono)", "ui-monospace", "SFMono-Regular", "monospace"],
-        editorial: ["var(--font-cinzel)", "Cinzel Decorative", "Georgia", "serif"],
+        editorial: ["var(--font-editorial)", "Newsreader", "Georgia", "serif"],
+        sans: ["var(--font-sans)", "Geist Sans", "system-ui", "-apple-system", "sans-serif"],
+        mono: ["var(--font-mono)", "Geist Mono", "ui-monospace", "SFMono-Regular", "monospace"],
       },
       letterSpacing: {
-        editorial: "0.2em",
+        editorial: "0.18em",
       },
       borderRadius: {
         DEFAULT: "2px",
