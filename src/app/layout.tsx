@@ -1,30 +1,30 @@
 import type { Metadata } from "next";
-import { Newsreader, Geist, Geist_Mono } from "next/font/google";
+import { Cinzel_Decorative, Outfit, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const newsreader = Newsreader({
+const cinzel = Cinzel_Decorative({
   subsets: ["latin"],
-  variable: "--font-editorial",
-  style: ["normal", "italic"],
+  weight: "900",
   display: "swap",
+  variable: "--font-cinzel",
 });
 
-const geistSans = Geist({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-sans",
   display: "swap",
+  variable: "--font-outfit",
 });
 
-const geistMono = Geist_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
-  variable: "--font-mono",
   display: "swap",
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
-  title: "JeptahzRepo — Computer Science & Engineering Archive",
+  title: "JEPTAH.Z — Full-Stack Developer & Computer Science Archive",
   description:
-    "An open, editorial knowledge archive of computer science theory, production software showcases, university syllabi, and engineering ideas.",
+    "Personal portfolio and open repository of computer science theory, production applications, and software engineering builds by Jeptah Ashley Ildefonso.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -38,9 +38,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${geistSans.variable} ${geistMono.variable}`}
+      className={`${cinzel.variable} ${outfit.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="antialiased min-h-screen bg-bg text-fg selection:bg-fg selection:text-bg-raised font-sans">
+      <body className="antialiased min-h-screen bg-bg text-fg selection:bg-fg selection:text-bg-raised font-sans relative">
         {children}
       </body>
     </html>
