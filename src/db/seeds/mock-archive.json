@@ -219,6 +219,20 @@
   ],
   "entries": [
     {
+      "id": "entry-course-1",
+      "title": "CS 162: Operating Systems & System Programming",
+      "slug": "cs-162-operating-systems",
+      "type": "course",
+      "topic_slug": "courses",
+      "summary": "Foundational systems programming covering virtual memory, scheduling, concurrency primitives, file systems, and distributed consensus.",
+      "content": "### Course Overview & Core Curricula\nThis curriculum covers the core principles behind modern operating systems design and low-level system programming.\n\n#### Core Modules:\n1. **Concurrency & Synchronization:** Semaphores, mutexes, condition variables, monitor locks, and deadlock avoidance (Banker's Algorithm).\n2. **Virtual Memory Architecture:** Address translation, TLBs, multi-level page tables, demand paging, and page replacement policies (LRU, Clock).\n3. **File Systems & Storage:** Inode architecture, journaling, log-structured file systems (LFS), and crash consistency.\n4. **Networking & Distributed Systems:** Socket programming, RPC abstractions, two-phase commit, and Raft consensus.\n\n#### Recommended Textbooks:\n- *Operating Systems: Three Easy Pieces (OSTEP)* — Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau\n- *Computer Systems: A Programmer's Perspective (CS:APP)* — Randal E. Bryant and David R. O'Hallaron",
+      "tags": ["CS162", "OperatingSystems", "Concurrency", "Kernel"],
+      "external_url": "https://cs162.org",
+      "is_pinned": true,
+      "is_published": true,
+      "created_at": "2026-10-23T01:30:00Z"
+    },
+    {
       "id": "entry-6",
       "title": "VibeAlarm Desktop & Offline Architecture Walkthrough",
       "slug": "vibealarm-desktop-offline-architecture",

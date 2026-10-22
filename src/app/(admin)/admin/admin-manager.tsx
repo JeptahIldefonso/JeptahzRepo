@@ -131,6 +131,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Partial<EntryType> | null>(null);
+  const [courseSettingsMenuOpen, setCourseSettingsMenuOpen] = useState(false);
+  const [showCourseVideoInput, setShowCourseVideoInput] = useState(false);
+  const [showCourseTagInput, setShowCourseTagInput] = useState(false);
+  const [isCourseDragging, setIsCourseDragging] = useState(false);
+  const coursePhotoFileInputRef = useRef<HTMLInputElement>(null);
+  const courseDocFileInputRef = useRef<HTMLInputElement>(null);
 
   const photoFileInputRef = useRef<HTMLInputElement>(null);
   const docFileInputRef = useRef<HTMLInputElement>(null);
@@ -191,40 +197,57 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               : `${Math.round(file.size / 1024)} KB`;
 
           if (file.type.startsWith("image/")) {
-            setEditingDoc((prev) => ({
-              ...prev,
-              media_items: [
-                ...(prev?.media_items || []),
-                {
-                  id: `m-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-                  type: "image",
-                  url: data.url,
-                  caption: file.name.replace(/\.[^/.]+$/, ""),
-                },
-              ],
-            }));
+            const newMediaItem: EntryMediaItem = {
+              id: `m-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+              type: "image",
+              url: data.url,
+              caption: file.name.replace(/\.[^/.]+$/, ""),
+            };
+            if (courseModalOpen) {
+              setEditingCourse((prev) => ({
+                ...prev,
+                media_items: [...(prev?.media_items || []), newMediaItem],
+              }));
+            } else {
+              setEditingDoc((prev) => ({
+                ...prev,
+                media_items: [...(prev?.media_items || []), newMediaItem],
+              }));
+            }
           } else if (file.type.startsWith("video/")) {
-            setEditingDoc((prev) => ({
-              ...prev,
-              video_url: data.url,
-            }));
+            if (courseModalOpen) {
+              setEditingCourse((prev) => ({
+                ...prev,
+                video_url: data.url,
+              }));
+            } else {
+              setEditingDoc((prev) => ({
+                ...prev,
+                video_url: data.url,
+              }));
+            }
           } else {
             // PDF, Word, or other doc
             const docType: EntryAttachedFile["type"] =
               ext === "pdf" ? "pdf" : ext === "doc" || ext === "docx" ? "word" : "file";
-            setEditingDoc((prev) => ({
-              ...prev,
-              attached_files: [
-                ...(prev?.attached_files || []),
-                {
-                  id: `f-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-                  name: file.name,
-                  url: data.url,
-                  size: sizeStr,
-                  type: docType,
-                },
-              ],
-            }));
+            const newFileItem: EntryAttachedFile = {
+              id: `f-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+              name: file.name,
+              url: data.url,
+              size: sizeStr,
+              type: docType,
+            };
+            if (courseModalOpen) {
+              setEditingCourse((prev) => ({
+                ...prev,
+                attached_files: [...(prev?.attached_files || []), newFileItem],
+              }));
+            } else {
+              setEditingDoc((prev) => ({
+                ...prev,
+                attached_files: [...(prev?.attached_files || []), newFileItem],
+              }));
+            }
           }
         }
       }
@@ -256,6 +279,29 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      await processFiles(files);
+    }
+  };
+
+  // Drag and Drop handlers for Course Creator
+  const handleCourseDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseDragging(true);
+  };
+
+  const handleCourseDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseDragging(false);
+  };
+
+  const handleCourseDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsCourseDragging(false);
     const files = Array.from(e.dataTransfer.files);
     if (files.length > 0) {
       await processFiles(files);
@@ -565,7 +611,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
   };
 
   // -------------------------
-  // 5. COURSES CRUD
+  // 5. COURSES CRUD (Academic Syllabus & Curriculum)
   // -------------------------
   const handleOpenNewCourse = () => {
     setEditingCourse({
@@ -578,12 +624,27 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       external_url: "",
       tags: ["CS"],
       is_published: true,
+      is_pinned: false,
+      media_items: [],
+      attached_files: [],
+      video_url: "",
     });
+    setCourseSettingsMenuOpen(false);
+    setShowCourseVideoInput(false);
+    setShowCourseTagInput(false);
     setCourseModalOpen(true);
   };
 
   const handleOpenEditCourse = (course: EntryType) => {
-    setEditingCourse({ ...course });
+    setEditingCourse({
+      ...course,
+      media_items: course.media_items || [],
+      attached_files: course.attached_files || [],
+      tags: course.tags || [],
+    });
+    setCourseSettingsMenuOpen(false);
+    setShowCourseVideoInput(!!course.external_url || !!course.video_url);
+    setShowCourseTagInput(!!(course.tags && course.tags.length > 0));
     setCourseModalOpen(true);
   };
 
@@ -596,9 +657,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       slug: editingCourse.slug ? slugify(editingCourse.slug) : slugify(editingCourse.title),
       type: "course",
       topic_slug: "courses",
-      summary: editingCourse.summary || (editingCourse.content ? editingCourse.content.slice(0, 150) + "..." : ""),
+      external_url: editingCourse.external_url || null,
+      video_url: editingCourse.video_url || null,
+      summary: editingCourse.summary || (editingCourse.content ? editingCourse.content.slice(0, 160) + "..." : ""),
       is_published: editingCourse.is_published !== false,
+      is_pinned: Boolean(editingCourse.is_pinned),
       tags: editingCourse.tags || [],
+      media_items: editingCourse.media_items || [],
+      attached_files: editingCourse.attached_files || [],
     };
 
     if (editingCourse.id) {
@@ -1292,6 +1358,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     <span className="font-medium text-sm text-fg tracking-tight">
                       {course.title}
                     </span>
+                    {course.is_pinned && (
+                      <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-[4px]">
+                        <Pin className="w-2.5 h-2.5 fill-sky-700" />
+                        <span>Pinned</span>
+                      </span>
+                    )}
                     <span className="text-[10px] font-mono text-fg-subtle">
                       {formatDate(course.created_at)}
                     </span>
@@ -1307,6 +1379,24 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                         #{t}
                       </span>
                     ))}
+                    {course.attached_files && course.attached_files.length > 0 && (
+                      <span className="inline-flex items-center space-x-1 text-[10px] text-blue-700 bg-blue-50 border border-blue-200 px-1.5 py-0.5 rounded-[4px]">
+                        <Paperclip className="w-2.5 h-2.5" />
+                        <span>{course.attached_files.length} doc{course.attached_files.length > 1 ? "s" : ""}</span>
+                      </span>
+                    )}
+                    {course.media_items && course.media_items.length > 0 && (
+                      <span className="inline-flex items-center space-x-1 text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-[4px]">
+                        <ImageIcon className="w-2.5 h-2.5" />
+                        <span>{course.media_items.length} slide{course.media_items.length > 1 ? "s" : ""}</span>
+                      </span>
+                    )}
+                    {course.external_url && (
+                      <span className="inline-flex items-center space-x-1 text-[10px] text-neutral-600 bg-neutral-100 border border-neutral-200 px-1.5 py-0.5 rounded-[4px]">
+                        <ExternalLink className="w-2.5 h-2.5" />
+                        <span>Portal</span>
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -2127,86 +2217,384 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       </Modal>
 
       {/* ══════════════════════════════════════════════════════════════ */}
-      {/* 5. DEDICATED MODAL: COURSES */}
+      {/* 5. DEDICATED MODAL: COURSES (Academic Syllabus & Curriculum) */}
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={courseModalOpen} onOpenChange={setCourseModalOpen}>
         <ModalContent
-          className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
-          title={editingCourse?.id ? "Edit Course Guide" : "Add Course Guide"}
+          className="max-w-xl p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
+          title={editingCourse?.id ? "Edit Course Guide" : "Create Course Guide"}
+          headerActions={
+            <div className="relative flex items-center space-x-1">
+              <button
+                type="button"
+                onClick={() => setCourseSettingsMenuOpen(!courseSettingsMenuOpen)}
+                className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors cursor-pointer"
+                title="Course Settings (Pin, Publish, Slug)"
+              >
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+
+              {/* Course Settings Popover */}
+              {courseSettingsMenuOpen && editingCourse && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setCourseSettingsMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-8 z-50 w-64 bg-white border border-neutral-200 rounded-[10px] shadow-xl p-3 space-y-3 animate-in fade-in zoom-in-95">
+                    <div className="font-mono text-[10px] uppercase font-bold text-neutral-400 tracking-wider">
+                      Course Guide Settings
+                    </div>
+
+                    {/* Pin to top */}
+                    <label className="flex items-center justify-between text-xs cursor-pointer hover:bg-neutral-50 p-1.5 rounded-[6px]">
+                      <span className="flex items-center space-x-2 font-medium text-neutral-800">
+                        <Pin className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Pin to top of Curricula</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={Boolean(editingCourse.is_pinned)}
+                        onChange={(e) =>
+                          setEditingCourse({ ...editingCourse, is_pinned: e.target.checked })
+                        }
+                        className="rounded border-neutral-300 text-black focus:ring-black"
+                      />
+                    </label>
+
+                    {/* Published status */}
+                    <label className="flex items-center justify-between text-xs cursor-pointer hover:bg-neutral-50 p-1.5 rounded-[6px]">
+                      <span className="flex items-center space-x-2 font-medium text-neutral-800">
+                        <Globe className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Published Publicly</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={editingCourse.is_published !== false}
+                        onChange={(e) =>
+                          setEditingCourse({ ...editingCourse, is_published: e.target.checked })
+                        }
+                        className="rounded border-neutral-300 text-black focus:ring-black"
+                      />
+                    </label>
+
+                    {/* Custom slug */}
+                    <div className="pt-2 border-t border-neutral-100 space-y-1">
+                      <label className="font-mono text-[10px] text-neutral-500 uppercase">
+                        Custom URL Slug
+                      </label>
+                      <input
+                        type="text"
+                        value={editingCourse.slug || ""}
+                        onChange={(e) =>
+                          setEditingCourse({ ...editingCourse, slug: e.target.value })
+                        }
+                        placeholder="e.g. cs162-operating-systems"
+                        className="w-full bg-neutral-50 border border-neutral-200 px-2 py-1 text-xs font-mono rounded-[4px] focus:outline-none focus:bg-white"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          }
         >
           {editingCourse && (
-            <form onSubmit={handleSaveCourse} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Course Title *
-                </label>
+            <form
+              onSubmit={handleSaveCourse}
+              onDragOver={handleCourseDragOver}
+              onDragLeave={handleCourseDragLeave}
+              onDrop={handleCourseDrop}
+              className="flex flex-col max-h-[82vh] relative"
+            >
+              {/* Drag & Drop Visual Overlay */}
+              {isCourseDragging && (
+                <div className="absolute inset-0 z-30 bg-sky-500/10 border-2 border-dashed border-sky-500 backdrop-blur-2xs rounded-[12px] flex flex-col items-center justify-center pointer-events-none animate-in fade-in duration-150">
+                  <Upload className="w-10 h-10 text-sky-600 animate-bounce mb-2" />
+                  <span className="font-semibold text-sm text-sky-800">
+                    Drop course slides, syllabus PDFs, or materials here
+                  </span>
+                  <span className="text-xs text-sky-600 mt-1">
+                    Auto-attaches directly to this curriculum guide
+                  </span>
+                </div>
+              )}
+
+              {/* Scrollable Course Content Body */}
+              <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
+                {/* Academic Instructor Banner */}
+                <div className="flex items-center space-x-3 pt-1">
+                  <div className="w-10 h-10 rounded-full bg-neutral-900 text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
+                    JI
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-neutral-900 leading-tight">
+                      Jeptah Ildefonso
+                    </div>
+                    <div className="flex items-center space-x-1.5 mt-0.5">
+                      <span className="inline-flex items-center space-x-1 text-[11px] font-mono text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded-[4px]">
+                        <BookOpen className="w-3 h-3 text-neutral-600" />
+                        <span>CS Curriculum</span>
+                      </span>
+                      {editingCourse.is_pinned && (
+                        <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-[4px]">
+                          <Pin className="w-2.5 h-2.5 fill-sky-700" />
+                          <span>Pinned</span>
+                        </span>
+                      )}
+                      {!editingCourse.is_published && (
+                        <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-neutral-600 bg-neutral-200 px-1.5 py-0.5 rounded-[4px]">
+                          <EyeOff className="w-2.5 h-2.5" />
+                          <span>Draft</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Course Code & Title Headline Input */}
                 <input
                   type="text"
                   required
                   value={editingCourse.title || ""}
                   onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
-                  placeholder="e.g. CS 162: Operating Systems"
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px]"
+                  placeholder="Course Code & Title (e.g. CS 162: Operating Systems & System Programming)..."
+                  className="w-full text-base font-semibold text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
                 />
-              </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Syllabus / Curriculum Notes
-                </label>
+                {/* Syllabus / Curriculum Roadmaps Body */}
                 <textarea
-                  rows={5}
+                  rows={4}
                   value={editingCourse.content || ""}
                   onChange={(e) => setEditingCourse({ ...editingCourse, content: e.target.value })}
-                  placeholder="Course outline, key lecture topics, and study tips..."
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px] font-sans"
+                  placeholder="Syllabus overview, core lecture roadmaps, recommended textbooks, prerequisite concepts, and study notes (Markdown supported)..."
+                  className="w-full text-sm text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
                 />
+
+                {/* Attached Diagrams / Lecture Slides Preview Mosaic (Uncropped) */}
+                {editingCourse.media_items && editingCourse.media_items.length > 0 && (
+                  <div className="pt-2">
+                    <div
+                      className={`grid gap-2.5 ${
+                        editingCourse.media_items.length === 1
+                          ? "grid-cols-1"
+                          : editingCourse.media_items.length === 2
+                          ? "grid-cols-2"
+                          : "grid-cols-3"
+                      }`}
+                    >
+                      {editingCourse.media_items.map((item, idx) => (
+                        <div
+                          key={item.id || idx}
+                          className="relative group rounded-[10px] overflow-hidden border border-neutral-200 bg-neutral-100/60 flex items-center justify-center p-1"
+                        >
+                          <img
+                            src={item.url}
+                            alt={item.caption || "Course diagram/slide"}
+                            className="w-full h-auto max-h-[460px] object-contain rounded-[6px] block"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingCourse((prev) => ({
+                                ...prev,
+                                media_items: (prev?.media_items || []).filter((_, i) => i !== idx),
+                              }));
+                            }}
+                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-red-600 text-white shadow-md transition-all cursor-pointer"
+                            title="Remove slide"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Attached Course Documents Preview (PDF, Word, Zip) */}
+                {editingCourse.attached_files && editingCourse.attached_files.length > 0 && (
+                  <div className="space-y-1.5 pt-1">
+                    {editingCourse.attached_files.map((file, idx) => (
+                      <div
+                        key={file.id || idx}
+                        className="flex items-center justify-between p-2.5 bg-neutral-50 border border-neutral-200 rounded-[8px] text-xs font-mono"
+                      >
+                        <div className="flex items-center space-x-2.5 truncate">
+                          <span
+                            className={`uppercase font-bold px-1.5 py-0.5 rounded text-[10px] ${
+                              file.type === "pdf"
+                                ? "bg-red-100 text-red-700"
+                                : file.type === "word"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-neutral-200 text-neutral-700"
+                            }`}
+                          >
+                            {file.type}
+                          </span>
+                          <span className="truncate font-sans font-medium text-neutral-900">
+                            {file.name}
+                          </span>
+                          {file.size && <span className="text-neutral-500">({file.size})</span>}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingCourse((prev) => ({
+                              ...prev,
+                              attached_files: (prev?.attached_files || []).filter((_, i) => i !== idx),
+                            }));
+                          }}
+                          className="p-1 text-neutral-400 hover:text-red-600 transition-colors cursor-pointer"
+                          title="Remove file"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Optional External Course Portal / Video Link Input */}
+                {showCourseVideoInput && (
+                  <div className="flex items-center gap-2 p-2 bg-neutral-100 rounded-[8px] animate-in fade-in">
+                    <ExternalLink className="w-4 h-4 text-blue-600 shrink-0" />
+                    <input
+                      type="url"
+                      value={editingCourse.external_url || ""}
+                      onChange={(e) => setEditingCourse({ ...editingCourse, external_url: e.target.value })}
+                      placeholder="External course portal or syllabus URL (e.g. https://cs162.org)..."
+                      className="flex-1 bg-transparent text-xs font-mono focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCourseVideoInput(false)}
+                      className="text-neutral-400 hover:text-black cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Optional Course Tags / Topic Codes Input */}
+                {showCourseTagInput && (
+                  <div className="flex items-center gap-2 p-2 bg-neutral-100 rounded-[8px] animate-in fade-in">
+                    <Hash className="w-4 h-4 text-amber-600 shrink-0" />
+                    <input
+                      type="text"
+                      value={editingCourse.tags?.join(", ") || ""}
+                      onChange={(e) =>
+                        setEditingCourse({
+                          ...editingCourse,
+                          tags: e.target.value
+                            .split(",")
+                            .map((s) => s.trim().replace(/^#/, ""))
+                            .filter(Boolean),
+                        })
+                      }
+                      placeholder="Course tags & topics (e.g. CS162, OperatingSystems, Concurrency, C)..."
+                      className="flex-1 bg-transparent text-xs font-mono focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCourseTagInput(false)}
+                      className="text-neutral-400 hover:text-black cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
               </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  External Course Link (Optional)
-                </label>
-                <input
-                  type="url"
-                  value={editingCourse.external_url || ""}
-                  onChange={(e) => setEditingCourse({ ...editingCourse, external_url: e.target.value })}
-                  placeholder="https://..."
-                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                />
+              {/* ── Toolbar: "Add course materials" ── */}
+              <div className="px-5 py-2.5 border-t border-neutral-200 bg-neutral-50/70 flex items-center justify-between">
+                <span className="text-xs font-semibold text-neutral-700">Add course materials</span>
+
+                <div className="flex items-center space-x-1">
+                  {/* Diagram / Slide trigger */}
+                  <button
+                    type="button"
+                    onClick={() => coursePhotoFileInputRef.current?.click()}
+                    title="Upload Lecture Slides / Diagrams"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </button>
+                  <input
+                    ref={coursePhotoFileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      processFiles(files);
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Document / Syllabus attachment trigger */}
+                  <button
+                    type="button"
+                    onClick={() => courseDocFileInputRef.current?.click()}
+                    title="Attach Syllabus / Documents (PDF, Word, etc.)"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </button>
+                  <input
+                    ref={courseDocFileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.zip,.txt"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      processFiles(files);
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Course Portal Link trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setShowCourseVideoInput(!showCourseVideoInput)}
+                    title="Add Course Portal Link"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-indigo-600 hover:text-indigo-700 transition-colors cursor-pointer"
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                  </button>
+
+                  {/* Course Codes & Topic Tags trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setShowCourseTagInput(!showCourseTagInput)}
+                    title="Add Course Codes & Topics"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-amber-600 hover:text-amber-700 transition-colors cursor-pointer"
+                  >
+                    <Hash className="w-5 h-5" />
+                  </button>
+                </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={editingCourse.tags?.join(", ") || ""}
-                  onChange={(e) =>
-                    setEditingCourse({
-                      ...editingCourse,
-                      tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-                    })
-                  }
-                  placeholder="e.g. OS, Systems, C"
-                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                />
-              </div>
-
-              <div className="border-t border-border pt-4 flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCourseModalOpen(false)}
-                  className="rounded-[6px] cursor-pointer"
+              {/* Bottom Post Button */}
+              <div className="p-4 bg-white border-t border-neutral-100">
+                <button
+                  type="submit"
+                  disabled={uploading || (!editingCourse.title && !editingCourse.content)}
+                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                 >
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer">
-                  {editingCourse.id ? "Save Changes" : "Add Course"}
-                </Button>
+                  {uploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Uploading materials...</span>
+                    </>
+                  ) : (
+                    <span>{editingCourse.id ? "Save Changes" : "Add Course Guide"}</span>
+                  )}
+                </button>
               </div>
             </form>
           )}
