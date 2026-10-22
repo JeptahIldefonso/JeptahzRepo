@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -17,6 +17,8 @@ import {
   X,
   Search,
   Lock,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import { NAVIGATION_ITEMS, CATEGORY_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -40,26 +42,57 @@ interface SidebarProps {
 export function Sidebar({ onSearchOpen }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
+  // Load collapse state from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("floating_sidebar_collapsed");
+      if (stored === "true") {
+        setIsCollapsed(true);
+      }
+    } catch {}
+  }, []);
+
+  function toggleCollapse(collapsed: boolean) {
+    setIsCollapsed(collapsed);
+    try {
+      localStorage.setItem("floating_sidebar_collapsed", String(collapsed));
+    } catch {}
+  }
 
   const categories = ["browse", "explore", "more", "info"] as const;
 
-  const renderNav = () => (
-    <div className="flex h-full flex-col justify-between p-4 sm:p-5">
+  const renderNav = (isFloatingDesktop = false) => (
+    <div className="flex h-full flex-col justify-between p-4 sm:p-5 select-none">
       {/* Brand & Masthead */}
       <div>
         <div className="border-b border-border pb-3 mb-4">
-          <Link
-            href="/home"
-            className="group block"
-            onClick={() => setMobileOpen(false)}
-          >
-            <div className="font-mono text-[10px] tracking-widest text-fg-subtle uppercase">
-              JeptahzRepo
-            </div>
-            <h2 className="font-editorial text-2xl font-normal tracking-tight text-fg group-hover:text-fg/80 transition-colors">
-              Community Archive
-            </h2>
-          </Link>
+          <div className="flex items-start justify-between">
+            <Link
+              href="/home"
+              className="group block"
+              onClick={() => setMobileOpen(false)}
+            >
+              <div className="font-mono text-[10px] tracking-widest text-fg-subtle uppercase">
+                JeptahzRepo
+              </div>
+              <h2 className="font-editorial text-2xl font-normal tracking-tight text-fg group-hover:text-fg/80 transition-colors">
+                Community Archive
+              </h2>
+            </Link>
+
+            {/* Desktop Collapse Button */}
+            {isFloatingDesktop && (
+              <button
+                onClick={() => toggleCollapse(true)}
+                className="p-1 rounded-[3px] text-fg-subtle hover:text-fg hover:bg-bg-hover transition-colors cursor-pointer"
+                title="Collapse sidebar to floating tab"
+              >
+                <PanelLeftClose className="w-4 h-4" />
+              </button>
+            )}
+          </div>
 
           {/* Quick Search Trigger */}
           {onSearchOpen && (
@@ -167,14 +200,33 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-fg/40 backdrop-blur-xs">
           <div className="fixed inset-y-0 left-0 w-64 bg-bg-raised border-r border-border shadow-xl">
-            {renderNav()}
+            {renderNav(false)}
           </div>
         </div>
       )}
 
-      {/* Desktop Persistent Fixed Sidebar */}
-      <aside className="hidden lg:fixed lg:inset-y-0 lg:left-0 lg:flex lg:w-64 lg:flex-col border-r border-border bg-bg-raised/70 backdrop-blur-md z-30">
-        {renderNav()}
+      {/* ── Floating Desktop Side Panel Tab Trigger (Visible when collapsed) ── */}
+      {isCollapsed && (
+        <button
+          onClick={() => toggleCollapse(false)}
+          className="hidden lg:flex fixed left-5 top-5 z-40 items-center space-x-2 px-3 py-2 rounded-[5px] border border-black/15 bg-white/92 backdrop-blur-md text-xs font-mono text-black shadow-md hover:bg-neutral-900 hover:text-white transition-all cursor-pointer group animate-in fade-in duration-200"
+          title="Open Side Panel Menu"
+        >
+          <PanelLeftOpen className="w-4 h-4 stroke-[1.75]" />
+          <span className="tracking-wider">Menu</span>
+        </button>
+      )}
+
+      {/* ── Floating Desktop Side Panel (Floats without breaking centered post layout) ── */}
+      <aside
+        className={cn(
+          "hidden lg:flex fixed left-5 top-5 bottom-5 w-60 flex-col rounded-[8px] border border-black/15 bg-white/94 backdrop-blur-md shadow-xl shadow-black/[0.04] z-40 transition-all duration-300",
+          isCollapsed
+            ? "-translate-x-72 opacity-0 pointer-events-none"
+            : "translate-x-0 opacity-100"
+        )}
+      >
+        {renderNav(true)}
       </aside>
     </>
   );

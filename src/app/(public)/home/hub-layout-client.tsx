@@ -19,8 +19,8 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
   const [searchOpen, setSearchOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-bg">
-      {/* Sidebar with Search Callback */}
+    <div className="min-h-screen bg-bg relative">
+      {/* Floating Desktop & Mobile Sidebar */}
       <Sidebar onSearchOpen={() => setSearchOpen(true)} />
 
       {/* Global Command Palette */}
@@ -30,9 +30,9 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
         items={searchItems}
       />
 
-      {/* Main Content Area */}
-      <main className="lg:pl-64 flex flex-col min-h-screen">
-        <div className="flex-1 px-4 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 max-w-7xl w-full mx-auto">
+      {/* Main Content Area: Centered across 100% of the screen width */}
+      <main className="flex flex-col min-h-screen w-full">
+        <div className="flex-1 px-4 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 w-full mx-auto flex flex-col items-center">
           {children}
         </div>
 
