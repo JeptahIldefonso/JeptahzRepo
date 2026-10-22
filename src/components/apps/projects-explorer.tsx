@@ -163,7 +163,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 setSelectedCategory("all");
                 setSelectedTech("all");
               }}
-              className={`px-2 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
+              className={`px-2.5 py-0.5 rounded-[5px] transition-all duration-150 cursor-pointer ${
                 selectedCategory === "all" && selectedTech === "all"
                   ? "bg-neutral-800 text-white font-medium border border-neutral-800"
                   : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
@@ -178,7 +178,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 onClick={() => {
                   setSelectedCategory(selectedCategory === cat ? "all" : cat);
                 }}
-                className={`px-2 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
+                className={`px-2.5 py-0.5 rounded-[5px] transition-all duration-150 cursor-pointer ${
                   selectedCategory === cat
                     ? "bg-neutral-800 text-white font-medium border border-neutral-800"
                     : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
@@ -200,7 +200,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 onClick={() => {
                   setSelectedTech(selectedTech === tech ? "all" : tech);
                 }}
-                className={`px-1.5 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
+                className={`px-1.5 py-0.5 rounded-[4px] transition-all duration-150 cursor-pointer ${
                   selectedTech === tech
                     ? "bg-neutral-800 text-white font-medium border border-neutral-800"
                     : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
@@ -248,7 +248,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
             return (
               <article
                 key={app.id}
-                className="group border border-black/15 bg-white/70 backdrop-blur-xs rounded-[2px] overflow-hidden flex flex-col justify-between hover:border-black/50 transition-all duration-200 shadow-2xs"
+                className="group border border-black/15 bg-white/70 backdrop-blur-xs rounded-[6px] overflow-hidden flex flex-col justify-between hover:border-black/50 transition-all duration-200 shadow-2xs"
               >
                 {/* Media Viewport */}
                 <Link
@@ -303,7 +303,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                         href={demoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="bg-black text-white hover:bg-black/80 px-3.5 py-1.5 text-[11px] uppercase tracking-wider font-medium rounded-[2px] transition-colors"
+                        className="bg-black text-white hover:bg-black/80 px-3.5 py-1.5 text-[11px] uppercase tracking-wider font-medium rounded-[4px] transition-colors"
                       >
                         DEMO
                       </a>
@@ -314,7 +314,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                         href={repoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[2px]"
+                        className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[4px]"
                       >
                         GITHUB
                       </a>
@@ -322,7 +322,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
                     <Link
                       href={`/home/apps/${app.slug}`}
-                      className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[2px] ml-auto"
+                      className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[4px] ml-auto"
                     >
                       INFO
                     </Link>

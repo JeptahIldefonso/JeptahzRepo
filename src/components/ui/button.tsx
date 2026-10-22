@@ -24,10 +24,10 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     const sizeStyles = {
-      sm: "h-8 px-3 text-[11px] rounded-[2px]",
-      md: "h-10 px-5 text-xs rounded-[2px]",
-      lg: "h-12 px-7 text-xs rounded-[2px]",
-      icon: "h-9 w-9 p-0 rounded-[2px]",
+      sm: "h-8 px-3 text-[11px] rounded-[6px]",
+      md: "h-10 px-5 text-xs rounded-[6px]",
+      lg: "h-12 px-7 text-xs rounded-[6px]",
+      icon: "h-9 w-9 p-0 rounded-[6px]",
     };
 
     return (

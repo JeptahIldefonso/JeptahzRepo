@@ -91,12 +91,12 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
             <button
               onClick={(e) => downloadImage(images[0].url, 0, e)}
               title="Download HD Photo (Full Resolution)"
-              className="p-1.5 bg-neutral-900/85 hover:bg-black text-white rounded-[2px] backdrop-blur-xs text-xs font-mono flex items-center space-x-1 shadow-sm transition-transform active:scale-95 cursor-pointer"
+              className="p-1.5 bg-neutral-900/85 hover:bg-black text-white rounded-[6px] backdrop-blur-xs text-xs font-mono flex items-center space-x-1 shadow-sm transition-transform active:scale-95 cursor-pointer"
             >
               <Download className="w-3.5 h-3.5 stroke-[1.75]" />
               <span className="text-[10px]">HD</span>
             </button>
-            <div className="p-1.5 bg-neutral-900/85 text-white rounded-[2px] backdrop-blur-xs">
+            <div className="p-1.5 bg-neutral-900/85 text-white rounded-[6px] backdrop-blur-xs">
               <ZoomIn className="w-3.5 h-3.5 stroke-[1.75]" />
             </div>
           </div>
@@ -130,7 +130,7 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
                 <button
                   onClick={(e) => downloadImage(img.url, idx, e)}
                   title="Download HD Photo"
-                  className="p-1.5 bg-neutral-900/85 hover:bg-black text-white rounded-[2px] backdrop-blur-xs text-[10px] font-mono flex items-center space-x-1 cursor-pointer"
+                  className="p-1.5 bg-neutral-900/85 hover:bg-black text-white rounded-[6px] backdrop-blur-xs text-[10px] font-mono flex items-center space-x-1 cursor-pointer"
                 >
                   <Download className="w-3 h-3" />
                   <span>HD</span>
@@ -231,7 +231,7 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
                     <button
                       onClick={(e) => downloadImage(img.url, idx, e)}
                       title="Download HD Photo"
-                      className="p-1 bg-neutral-900/85 hover:bg-black text-white rounded-[2px] backdrop-blur-xs text-[10px] font-mono flex items-center cursor-pointer"
+                      className="p-1.5 bg-neutral-900/85 hover:bg-black text-white rounded-[6px] backdrop-blur-xs text-[10px] font-mono flex items-center cursor-pointer"
                     >
                       <Download className="w-3 h-3" />
                     </button>
@@ -269,7 +269,7 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
             <div className="flex items-center space-x-2">
               <button
                 onClick={(e) => downloadImage(activeImage.url, activeIdx, e)}
-                className="px-2.5 py-1 bg-white/10 hover:bg-white text-white hover:text-black rounded-[2px] font-mono text-xs flex items-center space-x-1.5 transition-colors cursor-pointer"
+                className="px-3 py-1.5 bg-white/10 hover:bg-white text-white hover:text-black rounded-[6px] font-mono text-xs flex items-center space-x-1.5 transition-colors cursor-pointer"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>Download HD Original</span>
@@ -277,7 +277,7 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
 
               <button
                 onClick={() => setActiveIdx(null)}
-                className="p-1 text-white/60 hover:text-white rounded-[2px] hover:bg-white/10 transition-colors cursor-pointer"
+                className="p-1 text-white/60 hover:text-white rounded-[6px] hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Close Lightbox"
               >
                 <X className="w-5 h-5" />

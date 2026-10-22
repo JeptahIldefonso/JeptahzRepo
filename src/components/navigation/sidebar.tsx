@@ -86,7 +86,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
             {isFloatingDesktop && (
               <button
                 onClick={() => toggleCollapse(true)}
-                className="p-1 rounded-[3px] text-fg-subtle hover:text-fg hover:bg-bg-hover transition-colors cursor-pointer"
+                className="p-1.5 rounded-[6px] text-fg-subtle hover:text-fg hover:bg-bg-hover transition-colors cursor-pointer"
                 title="Collapse sidebar to floating tab"
               >
                 <PanelLeftClose className="w-4 h-4" />
@@ -98,13 +98,13 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
           {onSearchOpen && (
             <button
               onClick={onSearchOpen}
-              className="mt-2.5 flex w-full items-center justify-between border border-border bg-bg px-2.5 py-1.5 text-xs text-fg-subtle hover:border-fg hover:text-fg transition-colors rounded-[2px] cursor-pointer"
+              className="mt-2.5 flex w-full items-center justify-between border border-border bg-bg px-2.5 py-1.5 text-xs text-fg-subtle hover:border-fg hover:text-fg transition-colors rounded-[6px] cursor-pointer"
             >
               <div className="flex items-center space-x-2">
                 <Search className="h-3.5 w-3.5 stroke-[1.5]" />
                 <span className="font-sans text-xs">Search...</span>
               </div>
-              <kbd className="font-mono text-[9px] bg-bg-raised border border-border px-1.5 py-0.5 rounded-[1px]">
+              <kbd className="font-mono text-[9px] bg-bg-raised border border-border px-1.5 py-0.5 rounded-[3px]">
                 ⌘K
               </kbd>
             </button>
@@ -132,7 +132,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                          "group flex items-center justify-between px-2.5 py-1.5 text-xs font-sans transition-all rounded-[2px]",
+                          "group flex items-center justify-between px-2.5 py-1.5 text-xs font-sans transition-all rounded-[6px]",
                           isActive
                             ? "bg-fg text-bg-raised font-medium shadow-xs"
                             : "text-fg-muted hover:bg-bg-hover hover:text-fg"
@@ -168,7 +168,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
           </div>
           <Link
             href="/login"
-            className="flex items-center space-x-1 text-[10px] text-fg-subtle hover:text-fg hover:underline transition-colors tracking-wider"
+            className="flex items-center space-x-1 text-[10px] text-fg-subtle hover:text-fg hover:underline transition-colors tracking-wider px-1.5 py-0.5 rounded-[4px]"
             title="Admin Login"
             onClick={() => setMobileOpen(false)}
           >
@@ -189,7 +189,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="rounded-[2px] p-1.5 border border-border text-fg hover:bg-bg-hover cursor-pointer"
+          className="rounded-[6px] p-1.5 border border-border text-fg hover:bg-bg-hover cursor-pointer"
           aria-label="Toggle Navigation"
         >
           {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -199,7 +199,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
       {/* Mobile Off-Canvas Drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-fg/40 backdrop-blur-xs">
-          <div className="fixed inset-y-0 left-0 w-64 bg-bg-raised border-r border-border shadow-xl">
+          <div className="fixed inset-y-0 left-0 w-68 bg-bg-raised border-r border-border shadow-xl">
             {renderNav(false)}
           </div>
         </div>
@@ -209,7 +209,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
       {isCollapsed && (
         <button
           onClick={() => toggleCollapse(false)}
-          className="hidden lg:flex fixed left-5 top-5 z-40 items-center space-x-2 px-3 py-2 rounded-[5px] border border-black/15 bg-white/92 backdrop-blur-md text-xs font-mono text-black shadow-md hover:bg-neutral-900 hover:text-white transition-all cursor-pointer group animate-in fade-in duration-200"
+          className="hidden lg:flex fixed left-5 top-5 z-40 items-center space-x-2 px-3 py-2 rounded-[8px] border border-black/15 bg-white/92 backdrop-blur-md text-xs font-mono text-black shadow-md hover:bg-neutral-900 hover:text-white transition-all cursor-pointer group animate-in fade-in duration-200"
           title="Open Side Panel Menu"
         >
           <PanelLeftOpen className="w-4 h-4 stroke-[1.75]" />
@@ -217,12 +217,12 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
         </button>
       )}
 
-      {/* ── Floating Desktop Side Panel (Floats without breaking centered post layout) ── */}
+      {/* ── Floating Desktop Side Panel (Slightly bigger, floats without breaking centered post layout) ── */}
       <aside
         className={cn(
-          "hidden lg:flex fixed left-5 top-5 bottom-5 w-60 flex-col rounded-[8px] border border-black/15 bg-white/94 backdrop-blur-md shadow-xl shadow-black/[0.04] z-40 transition-all duration-300",
+          "hidden lg:flex fixed left-5 top-5 bottom-5 w-[272px] flex-col rounded-[12px] border border-black/15 bg-white/94 backdrop-blur-md shadow-xl shadow-black/[0.04] z-40 transition-all duration-300",
           isCollapsed
-            ? "-translate-x-72 opacity-0 pointer-events-none"
+            ? "-translate-x-80 opacity-0 pointer-events-none"
             : "translate-x-0 opacity-100"
         )}
       >

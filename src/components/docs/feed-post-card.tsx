@@ -186,11 +186,11 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                     download={file.name}
                     target="_blank"
                     rel="noreferrer"
-                    className="group flex items-center justify-between p-2.5 rounded-[3px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-black/40 hover:shadow-2xs transition-all cursor-pointer"
+                    className="group flex items-center justify-between p-2.5 rounded-[6px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-black/40 hover:shadow-2xs transition-all cursor-pointer"
                   >
                     <div className="flex items-center space-x-2.5 min-w-0 pr-2">
                       <div
-                        className={`w-8 h-8 rounded-[2px] flex items-center justify-center shrink-0 font-mono text-[10px] font-bold ${
+                        className={`w-8 h-8 rounded-[4px] flex items-center justify-center shrink-0 font-mono text-[10px] font-bold ${
                           isPdf
                             ? "bg-rose-100 text-rose-700 border border-rose-200"
                             : isWord
@@ -217,7 +217,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-1 font-mono text-[11px] text-black/60 group-hover:text-black shrink-0 px-2 py-1 rounded bg-black/5 group-hover:bg-black group-hover:text-white transition-colors">
+                    <div className="flex items-center space-x-1 font-mono text-[11px] text-black/60 group-hover:text-black shrink-0 px-2.5 py-1 rounded-[6px] bg-black/5 group-hover:bg-black group-hover:text-white transition-colors">
                       <Download className="w-3 h-3" />
                       <span className="hidden sm:inline">Download</span>
                     </div>
@@ -257,7 +257,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
             {/* Mark as Read Button (Replaced Heart React) */}
             <button
               onClick={toggleRead}
-              className={`flex items-center space-x-1.5 py-1 px-2.5 rounded-[2px] border transition-all cursor-pointer font-mono text-xs ${
+              className={`flex items-center space-x-1.5 py-1 px-3 rounded-[6px] border transition-all cursor-pointer font-mono text-xs ${
                 isRead
                   ? "bg-emerald-50 text-emerald-700 border-emerald-300 font-medium"
                   : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-black/30"
@@ -275,7 +275,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
             {/* Share / Copy Link */}
             <button
               onClick={handleCopyLink}
-              className="flex items-center space-x-1.5 py-1 px-2 rounded-[2px] hover:text-black hover:bg-black/5 transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 py-1 px-2.5 rounded-[6px] hover:text-black hover:bg-black/5 transition-colors cursor-pointer"
               title="Copy direct link to post"
             >
               {copied ? (
