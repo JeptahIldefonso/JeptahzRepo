@@ -99,6 +99,76 @@ function parseResourceSingleBox(text: string) {
   };
 }
 
+function parseAppSingleBox(text: string) {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return { title: "", category: "Desktop App", description: "" };
+  }
+
+  const lines = trimmed.split("\n");
+  let title = "";
+  let category = "Desktop App";
+  let description = "";
+
+  // Check if labeled format is used (Title:, Category:, Description:/Purpose:/Details:)
+  const hasLabels = lines.some((l) =>
+    /^(?:title|name|project\s*name|category|description|purpose|details)\s*:/i.test(l.trim())
+  );
+
+  if (hasLabels) {
+    let currentSection: "title" | "category" | "description" | null = null;
+    const descLines: string[] = [];
+
+    for (const rawLine of lines) {
+      const line = rawLine.trim();
+      const titleMatch = line.match(/^(?:title|name|project\s*name)\s*:\s*(.*)$/i);
+      const catMatch = line.match(/^category\s*:\s*(.*)$/i);
+      const descMatch = line.match(/^(?:description|purpose|details|detailed\s*breakdown\s*\/?\s*purpose)\s*:\s*(.*)$/i);
+
+      if (titleMatch) {
+        currentSection = "title";
+        title = titleMatch[1].trim();
+      } else if (catMatch) {
+        currentSection = "category";
+        const parsedCat = catMatch[1].trim();
+        if (parsedCat) category = parsedCat;
+      } else if (descMatch) {
+        currentSection = "description";
+        if (descMatch[1].trim()) {
+          descLines.push(descMatch[1].trim());
+        }
+      } else {
+        if (currentSection === "description") {
+          descLines.push(rawLine);
+        } else if (currentSection === "title" && !title) {
+          title = line;
+        } else if (currentSection === "category" && !category) {
+          category = line;
+        }
+      }
+    }
+    description = descLines.join("\n").trim();
+  } else {
+    // Unlabeled positional fallback
+    title = lines[0]?.trim() || "";
+    if (lines.length > 1) {
+      const line2 = lines[1]?.trim();
+      if (line2 && line2.length < 40) {
+        category = line2;
+      }
+    }
+    if (lines.length > 2) {
+      description = lines.slice(2).join("\n").trim();
+    }
+  }
+
+  return {
+    title,
+    category: category || "Desktop App",
+    description,
+  };
+}
+
 export function AdminManager({ initialApps, initialEntries }: AdminManagerProps) {
   const [apps, setApps] = useState<AppType[]>(initialApps);
   const [entries, setEntries] = useState<EntryType[]>(initialEntries);
@@ -121,6 +191,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
   const [appModalOpen, setAppModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<Partial<AppType> | null>(null);
+  const [appCombinedText, setAppCombinedText] = useState("");
 
   const [ideaModalOpen, setIdeaModalOpen] = useState(false);
   const [editingIdea, setEditingIdea] = useState<Partial<EntryType> | null>(null);
@@ -411,27 +482,40 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       tech_stack: ["React", "TypeScript"],
       is_featured: false,
     });
+    setAppCombinedText("");
     setAppModalOpen(true);
   };
 
   const handleOpenEditApp = (app: AppType) => {
     setEditingApp({ ...app });
+    const titleLine = app.title ? `Title: ${app.title}` : "";
+    const catLine = `Category: ${app.category || "Desktop App"}`;
+    const descSection = app.description ? `Description:\n${app.description}` : "Description:\n";
+    const combined = [titleLine, catLine, descSection].filter(Boolean).join("\n");
+    setAppCombinedText(combined);
     setAppModalOpen(true);
   };
 
   const handleSaveApp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingApp?.title) return;
+    const parsed = parseAppSingleBox(appCombinedText);
+    const finalTitle = parsed.title || editingApp?.title || "";
+    if (!finalTitle) {
+      showNotification("Please provide a project name or title.");
+      return;
+    }
 
     const payload = {
       ...editingApp,
-      slug: editingApp.slug ? slugify(editingApp.slug) : slugify(editingApp.title),
-      category: editingApp.category || "Desktop App",
-      tech_stack: editingApp.tech_stack || [],
-      carousel_images: editingApp.carousel_images || [],
+      title: finalTitle,
+      category: parsed.category || editingApp?.category || "Desktop App",
+      description: parsed.description || editingApp?.description || "",
+      slug: editingApp?.slug ? slugify(editingApp.slug) : slugify(finalTitle),
+      tech_stack: editingApp?.tech_stack || [],
+      carousel_images: editingApp?.carousel_images || [],
     };
 
-    if (editingApp.id) {
+    if (editingApp?.id) {
       const res = await fetch(`/api/apps/${editingApp.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -456,6 +540,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     }
     setAppModalOpen(false);
     setEditingApp(null);
+    setAppCombinedText("");
   };
 
   // -------------------------
@@ -1864,36 +1949,87 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
           title={editingApp?.id ? "Edit Project Showcase" : "Add Project Showcase"}
         >
           {editingApp && (
-            <form onSubmit={handleSaveApp} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+            <form onSubmit={handleSaveApp} className="space-y-4 p-5 max-h-[85vh] overflow-y-auto">
+              {/* 1 Single Box: Title, Category, and Description with Guidelines */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
                   <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                    Project Name *
+                    Project Details (Single Box) *
                   </label>
-                  <input
-                    type="text"
-                    required
-                    value={editingApp.title || ""}
-                    onChange={(e) => setEditingApp({ ...editingApp, title: e.target.value })}
-                    placeholder="e.g. VibeAlarm"
-                    className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px]"
-                  />
+                  <span className="text-[10px] font-mono text-fg-subtle">
+                    Title • Category • Description
+                  </span>
                 </div>
-                <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                    Category
-                  </label>
-                  <input
-                    type="text"
-                    value={editingApp.category || "Desktop App"}
-                    onChange={(e) => setEditingApp({ ...editingApp, category: e.target.value })}
-                    placeholder="Desktop App, Web App, Mobile App"
-                    className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px]"
-                  />
+                <textarea
+                  rows={7}
+                  required
+                  value={appCombinedText}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setAppCombinedText(val);
+                    const parsed = parseAppSingleBox(val);
+                    setEditingApp((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            title: parsed.title,
+                            category: parsed.category,
+                            description: parsed.description,
+                          }
+                        : null
+                    );
+                  }}
+                  placeholder={"Title: VibeAlarm\nCategory: Desktop App\nDescription:\nA lightweight desktop productivity application that launches on computer startup to keep you on schedule with custom alarms, calendar planning, and task reminders."}
+                  className="w-full bg-bg border border-border px-3 py-2.5 text-xs text-fg rounded-[6px] focus:outline-none focus:border-black/50 font-sans leading-relaxed resize-y min-h-[140px]"
+                />
+                <div className="text-[11px] text-fg-subtle font-sans leading-tight space-y-0.5">
+                  <p>
+                    <span className="font-semibold text-fg">Guideline Format:</span> Use prefixes like{" "}
+                    <code className="font-mono text-[10px] bg-neutral-100 px-1 py-0.5 rounded">Title:</code>,{" "}
+                    <code className="font-mono text-[10px] bg-neutral-100 px-1 py-0.5 rounded">Category:</code>, and{" "}
+                    <code className="font-mono text-[10px] bg-neutral-100 px-1 py-0.5 rounded">Description:</code> (or enter Title on Line 1, Category on Line 2, and Purpose on Line 3+).
+                  </p>
                 </div>
               </div>
 
-              {/* Links (GitHub & GDrive) */}
+              {/* Real-time Project Breakdown Live Pill */}
+              {appCombinedText.trim() && (
+                <div className="rounded-[8px] border border-border bg-neutral-50/80 p-3 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] uppercase text-fg font-medium tracking-wider flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                      Detected Project Breakdown
+                    </span>
+                    <span className="text-[10px] font-mono text-fg-subtle">live preview</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
+                    <div className="bg-white border border-border px-2 py-0.5 rounded-[4px]">
+                      <span className="text-fg-subtle text-[10px]">Title: </span>
+                      <span className="font-semibold text-fg">
+                        {parseAppSingleBox(appCombinedText).title || "(Enter title...)"}
+                      </span>
+                    </div>
+                    <div className="bg-white border border-border px-2 py-0.5 rounded-[4px]">
+                      <span className="text-fg-subtle text-[10px]">Category: </span>
+                      <span className="font-semibold text-fg">
+                        {parseAppSingleBox(appCombinedText).category}
+                      </span>
+                    </div>
+                  </div>
+                  {parseAppSingleBox(appCombinedText).description && (
+                    <div className="pt-2 border-t border-neutral-200/60">
+                      <span className="font-mono text-[10px] text-fg-subtle block mb-0.5">
+                        Purpose &amp; Details:
+                      </span>
+                      <p className="text-fg-muted text-[11px] leading-relaxed line-clamp-3">
+                        {parseAppSingleBox(appCombinedText).description}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Links (GitHub & GDrive) placed below the single box */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-mono text-[11px] uppercase text-fg font-medium">GitHub Repository URL</label>
@@ -1902,7 +2038,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     value={editingApp.repo_url || ""}
                     onChange={(e) => setEditingApp({ ...editingApp, repo_url: e.target.value })}
                     placeholder="https://github.com/..."
-                    className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
+                    className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px]"
                   />
                 </div>
                 <div className="space-y-1">
@@ -1912,12 +2048,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     value={editingApp.gdrive_url || ""}
                     onChange={(e) => setEditingApp({ ...editingApp, gdrive_url: e.target.value })}
                     placeholder="https://drive.google.com/..."
-                    className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
+                    className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px]"
                   />
                 </div>
               </div>
 
-              {/* Minimized Tech Stack */}
+              {/* Tech Stack (optional) placed below repo and gdrive */}
               <div className="space-y-1">
                 <label className="font-mono text-[11px] uppercase text-fg font-medium">
                   Tech Stack (comma separated, optional)
@@ -1931,50 +2067,61 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                       tech_stack: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
                     })
                   }
-                  placeholder="e.g. React, Rust, SQLite"
-                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
+                  placeholder="e.g. React, Rust, SQLite, TypeScript"
+                  className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px]"
                 />
               </div>
 
-              {/* Screenshot Carousel */}
-              <div className="space-y-2 p-3 bg-neutral-50 border border-border rounded-[8px]">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase text-fg font-medium flex items-center space-x-1.5">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Carousel Screenshots ({editingApp.carousel_images?.length || 0})</span>
-                  </span>
-                  <label className="inline-flex items-center space-x-1.5 px-2.5 py-1 text-xs font-mono bg-white border border-border hover:border-black/40 rounded-[6px] cursor-pointer transition-colors shadow-2xs">
+              {/* Slight Thicker Screenshot Upload Zone */}
+              <div className="space-y-3 p-5 bg-neutral-50/80 border-2 border-dashed border-neutral-300 hover:border-black/40 rounded-[10px] transition-all">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div className="space-y-0.5">
+                    <div className="flex items-center space-x-2">
+                      <ImageIcon className="w-4 h-4 text-neutral-800" />
+                      <span className="font-mono text-xs uppercase text-fg font-semibold tracking-wider">
+                        Carousel Screenshots ({editingApp.carousel_images?.length || 0})
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-neutral-500 font-sans">
+                      High-resolution interface captures for the interactive showcase carousel.
+                    </p>
+                  </div>
+
+                  <label className="inline-flex items-center justify-center space-x-2 px-4 py-2 text-xs font-mono font-medium bg-black text-white hover:bg-neutral-800 rounded-[6px] cursor-pointer transition-colors shadow-2xs shrink-0">
                     {uploading ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                      <Upload className="w-3 h-3" />
+                      <Upload className="w-3.5 h-3.5" />
                     )}
-                    <span>{uploading ? "Uploading..." : "Upload Screenshot"}</span>
+                    <span>{uploading ? "Uploading..." : "Upload Screenshots"}</span>
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       className="hidden"
                       disabled={uploading}
                       onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
+                        const files = Array.from(e.target.files || []);
+                        if (files.length > 0) {
                           setUploading(true);
                           try {
-                            const formData = new FormData();
-                            formData.append("file", file);
-                            const res = await fetch("/api/upload", { method: "POST", body: formData });
-                            const data = await res.json();
-                            if (data.success && data.url) {
-                              setEditingApp((prev) => ({
-                                ...prev,
-                                carousel_images: [
-                                  ...(prev?.carousel_images || []),
-                                  {
-                                    url: data.url,
-                                    caption: file.name.replace(/\.[^/.]+$/, ""),
-                                  },
-                                ],
-                              }));
+                            for (const file of files) {
+                              const formData = new FormData();
+                              formData.append("file", file);
+                              const res = await fetch("/api/upload", { method: "POST", body: formData });
+                              const data = await res.json();
+                              if (data.success && data.url) {
+                                setEditingApp((prev) => ({
+                                  ...prev,
+                                  carousel_images: [
+                                    ...(prev?.carousel_images || []),
+                                    {
+                                      url: data.url,
+                                      caption: file.name.replace(/\.[^/.]+$/, ""),
+                                    },
+                                  ],
+                                }));
+                              }
                             }
                           } finally {
                             setUploading(false);
@@ -1986,10 +2133,17 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 </div>
 
                 {editingApp.carousel_images && editingApp.carousel_images.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-2 border-t border-neutral-200">
                     {editingApp.carousel_images.map((img, idx) => (
-                      <div key={idx} className="relative group border border-border rounded-[6px] overflow-hidden bg-white">
-                        <img src={img.url} alt={img.caption || `Frame ${idx + 1}`} className="w-full h-20 object-cover" />
+                      <div
+                        key={idx}
+                        className="relative group border border-neutral-200 rounded-[8px] overflow-hidden bg-white shadow-2xs p-1"
+                      >
+                        <img
+                          src={img.url}
+                          alt={img.caption || `Frame ${idx + 1}`}
+                          className="w-full h-24 object-contain rounded-[4px] bg-neutral-50"
+                        />
                         <button
                           type="button"
                           onClick={() => {
@@ -1998,28 +2152,18 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                               carousel_images: (prev?.carousel_images || []).filter((_, i) => i !== idx),
                             }));
                           }}
-                          className="absolute top-1 right-1 p-1 bg-black/70 text-white rounded-[4px] hover:bg-red-600 transition-colors cursor-pointer"
+                          className="absolute top-2 right-2 p-1 bg-black/75 text-white rounded-[4px] hover:bg-red-600 transition-colors cursor-pointer"
+                          title="Remove screenshot"
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3.5 h-3.5" />
                         </button>
+                        <span className="block text-[10px] font-mono text-neutral-500 truncate px-1 pt-1">
+                          {img.caption || `Frame ${idx + 1}`}
+                        </span>
                       </div>
                     ))}
                   </div>
                 )}
-              </div>
-
-              {/* Description */}
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Detailed Breakdown / Purpose
-                </label>
-                <textarea
-                  rows={5}
-                  value={editingApp.description || ""}
-                  onChange={(e) => setEditingApp({ ...editingApp, description: e.target.value })}
-                  placeholder="Detailed breakdown of features, use-cases, and purpose..."
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px] font-sans"
-                />
               </div>
 
               <div className="border-t border-border pt-4 flex justify-end space-x-2">
