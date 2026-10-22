@@ -37,28 +37,43 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 
 interface SidebarProps {
   onSearchOpen?: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: (collapsed: boolean) => void;
 }
 
-export function Sidebar({ onSearchOpen }: SidebarProps) {
+export function Sidebar({
+  onSearchOpen,
+  isCollapsed: propIsCollapsed,
+  onToggleCollapse,
+}: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [localCollapsed, setLocalCollapsed] = useState(false);
 
-  // Load collapse state from localStorage
+  const isCollapsed =
+    propIsCollapsed !== undefined ? propIsCollapsed : localCollapsed;
+
+  // Load collapse state from localStorage if uncontrolled
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem("floating_sidebar_collapsed");
-      if (stored === "true") {
-        setIsCollapsed(true);
-      }
-    } catch {}
-  }, []);
+    if (propIsCollapsed === undefined) {
+      try {
+        const stored = localStorage.getItem("floating_sidebar_collapsed");
+        if (stored === "true") {
+          setLocalCollapsed(true);
+        }
+      } catch {}
+    }
+  }, [propIsCollapsed]);
 
   function toggleCollapse(collapsed: boolean) {
-    setIsCollapsed(collapsed);
-    try {
-      localStorage.setItem("floating_sidebar_collapsed", String(collapsed));
-    } catch {}
+    if (onToggleCollapse) {
+      onToggleCollapse(collapsed);
+    } else {
+      setLocalCollapsed(collapsed);
+      try {
+        localStorage.setItem("floating_sidebar_collapsed", String(collapsed));
+      } catch {}
+    }
   }
 
   const categories = ["browse", "explore", "more", "info"] as const;
@@ -209,7 +224,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
       {isCollapsed && (
         <button
           onClick={() => toggleCollapse(false)}
-          className="hidden lg:flex fixed left-5 top-5 z-40 items-center space-x-2 px-3 py-2 rounded-[8px] border border-black/15 bg-white/92 backdrop-blur-md text-xs font-mono text-black shadow-md hover:bg-neutral-900 hover:text-white transition-all cursor-pointer group animate-in fade-in duration-200"
+          className="hidden lg:flex fixed left-4 top-4 z-40 items-center space-x-2 px-3 py-2 rounded-[8px] border border-black/15 bg-white/92 backdrop-blur-md text-xs font-mono text-black shadow-md hover:bg-neutral-900 hover:text-white transition-all cursor-pointer group animate-in fade-in duration-200"
           title="Open Side Panel Menu"
         >
           <PanelLeftOpen className="w-4 h-4 stroke-[1.75]" />
@@ -217,12 +232,12 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
         </button>
       )}
 
-      {/* ── Floating Desktop Side Panel (Slightly bigger, floats without breaking centered post layout) ── */}
+      {/* ── Floating Desktop Side Panel (Floats cleanly without overlapping centered content) ── */}
       <aside
         className={cn(
-          "hidden lg:flex fixed left-5 top-5 bottom-5 w-[272px] flex-col rounded-[12px] border border-black/15 bg-white/94 backdrop-blur-md shadow-xl shadow-black/[0.04] z-40 transition-all duration-300",
+          "hidden lg:flex fixed left-4 top-4 bottom-4 w-64 flex-col rounded-[12px] border border-black/15 bg-white/94 backdrop-blur-md shadow-xl shadow-black/[0.04] z-40 transition-all duration-300",
           isCollapsed
-            ? "-translate-x-80 opacity-0 pointer-events-none"
+            ? "-translate-x-76 opacity-0 pointer-events-none"
             : "translate-x-0 opacity-100"
         )}
       >
