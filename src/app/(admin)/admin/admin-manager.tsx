@@ -56,6 +56,49 @@ function slugify(text: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
+function parseResourceSingleBox(text: string) {
+  const trimmed = text.trim();
+  if (!trimmed) {
+    return { title: "", tags: [] as string[], summary: "" };
+  }
+
+  let titleLine = "";
+  let descLine = "";
+
+  if (trimmed.includes("\n")) {
+    const lines = trimmed.split("\n");
+    titleLine = lines[0].trim();
+    descLine = lines.slice(1).join("\n").trim();
+  } else if (trimmed.includes(":") && !trimmed.startsWith("http")) {
+    const colonIdx = trimmed.indexOf(":");
+    titleLine = trimmed.slice(0, colonIdx).trim();
+    descLine = trimmed.slice(colonIdx + 1).trim();
+  } else if (trimmed.includes(" - ")) {
+    const dashIdx = trimmed.indexOf(" - ");
+    titleLine = trimmed.slice(0, dashIdx).trim();
+    descLine = trimmed.slice(dashIdx + 3).trim();
+  } else if (trimmed.includes(" // ")) {
+    const slashIdx = trimmed.indexOf(" // ");
+    titleLine = trimmed.slice(0, slashIdx).trim();
+    descLine = trimmed.slice(slashIdx + 4).trim();
+  } else {
+    titleLine = trimmed;
+    descLine = "";
+  }
+
+  // Extract comma-separated tokens from titleLine for tags & search indexing
+  const tokens = titleLine
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  return {
+    title: titleLine,
+    tags: tokens.length > 0 ? tokens : [titleLine].filter(Boolean),
+    summary: descLine,
+  };
+}
+
 export function AdminManager({ initialApps, initialEntries }: AdminManagerProps) {
   const [apps, setApps] = useState<AppType[]>(initialApps);
   const [entries, setEntries] = useState<EntryType[]>(initialEntries);
@@ -84,6 +127,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
   const [resourceModalOpen, setResourceModalOpen] = useState(false);
   const [editingResource, setEditingResource] = useState<Partial<EntryType> | null>(null);
+  const [resourceCombinedText, setResourceCombinedText] = useState("");
 
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Partial<EntryType> | null>(null);
@@ -443,33 +487,56 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       external_url: "",
       summary: "",
       content: "",
-      tags: ["Tools"],
+      tags: [],
       is_published: true,
     });
+    setResourceCombinedText("");
     setResourceModalOpen(true);
   };
 
   const handleOpenEditResource = (resItem: EntryType) => {
     setEditingResource({ ...resItem });
+    const existingTitle = resItem.title || "";
+    // If there are tags not already present in the title, append them to keep everything visible & editable in 1 box
+    const extraTags = (resItem.tags || []).filter(
+      (t) => !existingTitle.toLowerCase().includes(t.toLowerCase())
+    );
+    const titleLine = extraTags.length > 0 ? `${existingTitle}, ${extraTags.join(", ")}` : existingTitle;
+    const descLine = resItem.summary || resItem.content || "";
+    const combined = descLine ? `${titleLine}\n${descLine}` : titleLine;
+    setResourceCombinedText(combined);
     setResourceModalOpen(true);
   };
 
   const handleSaveResource = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingResource?.title) return;
+    const parsed = parseResourceSingleBox(resourceCombinedText);
+    const finalTitle = parsed.title || editingResource?.title || "";
+    if (!finalTitle) {
+      showNotification("Please enter at least a title or search keyword.");
+      return;
+    }
+    if (!editingResource?.external_url) {
+      showNotification("Please provide a destination URL.");
+      return;
+    }
 
     const payload = {
       ...editingResource,
-      slug: editingResource.slug ? slugify(editingResource.slug) : slugify(editingResource.title),
+      title: finalTitle,
+      slug: editingResource?.slug
+        ? slugify(editingResource.slug)
+        : slugify(finalTitle.split(",")[0].trim() || finalTitle),
       type: "link",
       topic_slug: "resources",
-      external_url: editingResource.external_url || null,
-      summary: editingResource.summary || editingResource.content || "",
-      is_published: editingResource.is_published !== false,
-      tags: editingResource.tags || [],
+      external_url: editingResource?.external_url || null,
+      summary: parsed.summary || editingResource?.summary || "",
+      content: parsed.summary || editingResource?.content || "",
+      is_published: editingResource?.is_published !== false,
+      tags: parsed.tags.length > 0 ? parsed.tags : editingResource?.tags || [],
     };
 
-    if (editingResource.id) {
+    if (editingResource?.id) {
       const res = await fetch(`/api/entries/${editingResource.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -494,6 +561,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     }
     setResourceModalOpen(false);
     setEditingResource(null);
+    setResourceCombinedText("");
   };
 
   // -------------------------
@@ -607,12 +675,25 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const filteredResources = resourcesEntries.filter(
-    (e) =>
-      !searchQuery ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredResources = resourcesEntries.filter((e) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase().trim();
+    if (e.title.toLowerCase().includes(q)) return true;
+    if (e.summary && e.summary.toLowerCase().includes(q)) return true;
+    if (e.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+
+    // Multi-keyword comma search (e.g. user types "react, web")
+    const searchTerms = q.split(",").map((s) => s.trim()).filter(Boolean);
+    if (searchTerms.length > 1) {
+      return searchTerms.some(
+        (term) =>
+          e.title.toLowerCase().includes(term) ||
+          (e.summary && e.summary.toLowerCase().includes(term)) ||
+          e.tags?.some((t) => t.toLowerCase().includes(term))
+      );
+    }
+    return false;
+  });
 
   const filteredCourses = coursesEntries.filter(
     (e) =>
@@ -1932,24 +2013,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
           title={editingResource?.id ? "Edit Useful Link" : "Add Useful Link / Bookmark"}
         >
           {editingResource && (
-            <form onSubmit={handleSaveResource} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
+            <form onSubmit={handleSaveResource} className="space-y-4 p-5 max-h-[85vh] overflow-y-auto">
               <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Bookmark Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editingResource.title || ""}
-                  onChange={(e) => setEditingResource({ ...editingResource, title: e.target.value })}
-                  placeholder="e.g. Curated Systems & Architecture Papers"
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px]"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Destination URL *
+                <label className="font-mono text-[11px] uppercase text-fg font-medium flex items-center justify-between">
+                  <span>Destination URL *</span>
+                  <span className="text-[10px] text-fg-subtle lowercase">https://...</span>
                 </label>
                 <input
                   type="url"
@@ -1959,46 +2027,85 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     setEditingResource({ ...editingResource, external_url: e.target.value })
                   }
                   placeholder="https://github.com/..."
-                  className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px]"
+                  className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px] focus:outline-none focus:border-black/50"
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Short Description
-                </label>
+              {/* 1 Single Box: Title (comma-separated keywords) and Description */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="font-mono text-[11px] uppercase text-fg font-medium">
+                    Title &amp; Description (Single Box) *
+                  </label>
+                  <span className="text-[10px] font-mono text-fg-subtle">
+                    1 Box • Comma-separated title
+                  </span>
+                </div>
                 <textarea
-                  rows={3}
-                  value={editingResource.summary || editingResource.content || ""}
-                  onChange={(e) =>
-                    setEditingResource({
-                      ...editingResource,
-                      summary: e.target.value,
-                      content: e.target.value,
-                    })
-                  }
-                  placeholder="Why is this resource worth bookmarking?"
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px] font-sans"
+                  rows={5}
+                  required
+                  value={resourceCombinedText}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setResourceCombinedText(val);
+                    const parsed = parseResourceSingleBox(val);
+                    setEditingResource((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            title: parsed.title,
+                            tags: parsed.tags,
+                            summary: parsed.summary,
+                            content: parsed.summary,
+                          }
+                        : null
+                    );
+                  }}
+                  placeholder={"React 19, Documentation, Web Development, UI Library\nOfficial documentation and interactive guides for building modern web applications."}
+                  className="w-full bg-bg border border-border px-3 py-2.5 text-xs text-fg rounded-[6px] focus:outline-none focus:border-black/50 font-sans leading-relaxed resize-y min-h-[120px]"
                 />
+                <p className="text-[11px] text-fg-subtle font-sans leading-tight">
+                  <span className="font-semibold text-fg">First line:</span> Title terms separated by commas (e.g. <code className="font-mono text-[10px] bg-neutral-100 px-1 py-0.5 rounded">React, Web Dev, UI</code>) so every keyword is searchable. <br />
+                  <span className="font-semibold text-fg">Next lines:</span> Description or summary notes for the bookmark.
+                </p>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Tags (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={editingResource.tags?.join(", ") || ""}
-                  onChange={(e) =>
-                    setEditingResource({
-                      ...editingResource,
-                      tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-                    })
-                  }
-                  placeholder="e.g. Tools, Papers, Reference"
-                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                />
-              </div>
+              {/* Live Search Index & Preview Pill */}
+              {resourceCombinedText.trim() && (
+                <div className="rounded-[8px] border border-border bg-neutral-50/80 p-3 space-y-2 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-[10px] uppercase text-fg font-medium tracking-wider flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                      Searchable Keywords ({parseResourceSingleBox(resourceCombinedText).tags.length})
+                    </span>
+                    <span className="text-[10px] font-mono text-fg-subtle">live index</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {parseResourceSingleBox(resourceCombinedText).tags.map((tag, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[10px] font-mono bg-white border border-border text-fg shadow-2xs"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  {parseResourceSingleBox(resourceCombinedText).summary ? (
+                    <div className="pt-2 border-t border-neutral-200/60">
+                      <span className="font-mono text-[10px] text-fg-subtle block mb-0.5">
+                        Description Preview:
+                      </span>
+                      <p className="text-fg-muted text-[11px] leading-relaxed line-clamp-3">
+                        {parseResourceSingleBox(resourceCombinedText).summary}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="pt-1 text-[10px] text-fg-subtle italic">
+                      Tip: Press Enter or type &quot;:&quot; to add a description on the next line.
+                    </div>
+                  )}
+                </div>
+              )}
 
               <div className="border-t border-border pt-4 flex justify-end space-x-2">
                 <Button
