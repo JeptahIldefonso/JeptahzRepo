@@ -11,11 +11,11 @@ export default async function AdminPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-border pb-4">
-        <h1 className="font-display text-2xl font-medium tracking-tight text-fg">
-          Control Center & Management Studio
+        <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-fg">
+          Content Manager
         </h1>
-        <p className="text-xs text-fg-muted">
-          Add, modify, and delete repository entries, application showcases, and system configurations.
+        <p className="text-xs sm:text-sm text-fg-muted mt-1">
+          Create, edit, and manage your notes, projects, ideas, links, and courses.
         </p>
       </div>
 

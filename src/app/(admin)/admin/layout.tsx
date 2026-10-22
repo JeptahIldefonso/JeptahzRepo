@@ -10,34 +10,39 @@ export default function AdminLayout({
   return (
     <div className="min-h-screen bg-bg text-fg">
       {/* Top Header */}
-      <header className="sticky top-0 z-40 border-b border-border bg-bg-raised/95 backdrop-blur-md px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <span className="h-2 w-2 rounded-full bg-fg" />
-          <Link href="/admin" className="font-display font-medium text-sm text-fg tracking-tight">
-            JEPTAHZREPO // STUDIO
-          </Link>
-          <span className="font-mono text-[10px] text-fg-subtle border border-border px-1.5 py-0.5 rounded-[2px] hidden sm:inline-block">
-            ADMIN LEVEL 1
-          </span>
-        </div>
+      <header className="sticky top-0 z-40 border-b border-border bg-bg-raised/95 backdrop-blur-md">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <span className="h-2 w-2 rounded-full bg-fg" />
+            <Link
+              href="/admin"
+              className="font-sans font-bold text-base sm:text-lg text-fg tracking-tight hover:opacity-80 transition-opacity"
+            >
+              JeptahzRepo
+            </Link>
+            <span className="font-mono text-[10px] text-fg-subtle border border-border px-2 py-0.5 rounded-[4px] bg-bg hidden sm:inline-block">
+              Editing
+            </span>
+          </div>
 
-        <div className="flex items-center space-x-3 text-xs font-mono">
-          <Link
-            href="/home"
-            target="_blank"
-            className="flex items-center space-x-1 text-fg-subtle hover:text-fg transition-colors"
-          >
-            <span>Live Archive</span>
-            <ExternalLink className="w-3 h-3" />
-          </Link>
-          <span className="text-border">|</span>
-          <Link
-            href="/login"
-            className="flex items-center space-x-1 text-fg-subtle hover:text-fg transition-colors"
-          >
-            <LogOut className="w-3 h-3" />
-            <span>Exit</span>
-          </Link>
+          <div className="flex items-center space-x-3 text-xs sm:text-sm font-mono">
+            <Link
+              href="/home"
+              target="_blank"
+              className="flex items-center space-x-1.5 text-fg-subtle hover:text-fg transition-colors"
+            >
+              <span>Live Archive</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+            <span className="text-border">|</span>
+            <Link
+              href="/login"
+              className="flex items-center space-x-1.5 text-fg-subtle hover:text-fg transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Exit</span>
+            </Link>
+          </div>
         </div>
       </header>
 
