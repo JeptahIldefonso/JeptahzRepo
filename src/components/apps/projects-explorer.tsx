@@ -73,7 +73,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
       const cleanTitle = app.title.toLowerCase().replace(/[^a-z0-9]/g, "");
       const cleanSlug = app.slug.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-      const searchable = `${app.title} ${app.slug} ${app.tagline} ${app.description || ""} ${app.category} ${(app.tech_stack || []).join(" ")}`.toLowerCase();
+      const searchable = `${app.title} ${app.slug} ${app.tagline || ""} ${app.description || ""} ${app.category} ${(app.tech_stack || []).join(" ")}`.toLowerCase();
       const tokens = q.split(/\s+/).filter(Boolean);
       const tokensMatch = tokens.length > 0 && tokens.every((tok) => searchable.includes(tok));
 
@@ -270,42 +270,44 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 </Link>
 
                 {/* Card Content Body */}
-                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-4">
-                  <div className="space-y-2">
+                <div className="p-5 sm:p-6 flex-1 flex flex-col justify-between space-y-3">
+                  <div className="space-y-1.5">
                     <Link href={`/home/apps/${app.slug}`}>
                       <h2 className="font-sans text-xl font-bold text-black hover:opacity-75 transition-opacity">
                         {app.title}
                       </h2>
                     </Link>
-                    <p className="text-xs sm:text-sm text-black/70 leading-relaxed font-normal line-clamp-3">
-                      {app.tagline}
-                    </p>
+                    {app.description && (
+                      <p className="text-xs text-black/60 leading-relaxed font-normal line-clamp-2">
+                        {app.description.replace(/[#*`_]/g, "").slice(0, 110)}...
+                      </p>
+                    )}
                   </div>
 
-                  {/* Tech Stack Chips */}
+                  {/* Minimized Subtle Tech Stack */}
                   {app.tech_stack && app.tech_stack.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 pt-1 font-mono text-[10px]">
-                      {app.tech_stack.map((t) => (
-                        <span
-                          key={t}
-                          className="border border-black/15 bg-black/[0.03] px-2 py-0.5 text-black/80 rounded-[2px]"
-                        >
-                          {t}
+                    <div className="flex flex-wrap items-center gap-1 text-[10px] font-mono text-black/50">
+                      {app.tech_stack.slice(0, 3).map((t, idx) => (
+                        <span key={t} className="inline-flex items-center">
+                          <span>{t}</span>
+                          {idx < Math.min(app.tech_stack.length, 3) - 1 && (
+                            <span className="mx-1 text-black/25">•</span>
+                          )}
                         </span>
                       ))}
                     </div>
                   )}
 
-                  {/* Action Buttons Row matching screenshot (DEMO, GITHUB, INFO) */}
-                  <div className="border-t border-black/10 pt-4 flex flex-wrap items-center gap-2 font-mono text-xs">
-                    {demoUrl && (
+                  {/* Action Buttons Row (GITHUB, GDRIVE, INFO) */}
+                  <div className="border-t border-black/10 pt-3.5 flex flex-wrap items-center gap-2 font-mono text-xs">
+                    {app.gdrive_url && (
                       <a
-                        href={demoUrl}
+                        href={app.gdrive_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="bg-black text-white hover:bg-black/80 px-3.5 py-1.5 text-[11px] uppercase tracking-wider font-medium rounded-[4px] transition-colors"
+                        className="bg-black text-white hover:bg-black/80 px-3 py-1.5 text-[10px] uppercase tracking-wider font-medium rounded-[4px] transition-colors"
                       >
-                        DEMO
+                        DOWNLOAD
                       </a>
                     )}
 
@@ -314,7 +316,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                         href={repoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[4px]"
+                        className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px]"
                       >
                         GITHUB
                       </a>
@@ -322,7 +324,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
                     <Link
                       href={`/home/apps/${app.slug}`}
-                      className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[11px] uppercase tracking-wider text-black transition-colors rounded-[4px] ml-auto"
+                      className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px] ml-auto"
                     >
                       INFO
                     </Link>

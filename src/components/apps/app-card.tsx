@@ -29,8 +29,7 @@ export function AppCard({ app }: AppCardProps) {
           </div>
         )}
         <div className="absolute top-2 left-2 flex gap-1 font-mono">
-          <Badge variant="default" className="text-[10px]">{app.version}</Badge>
-          <Badge variant="subtle" className="text-[10px]">{app.category}</Badge>
+          <Badge variant="subtle" className="text-[10px] rounded-[4px]">{app.category}</Badge>
         </div>
       </div>
 
@@ -42,17 +41,19 @@ export function AppCard({ app }: AppCardProps) {
               {app.title}
             </h3>
           </Link>
-          <p className="text-xs text-fg-muted line-clamp-2 leading-relaxed">
-            {app.tagline}
-          </p>
+          {app.description && (
+            <p className="text-xs text-fg-muted line-clamp-2 leading-relaxed">
+              {app.description.replace(/[#*`_]/g, "").slice(0, 110)}...
+            </p>
+          )}
         </div>
 
-        {/* Tech Stack Pills */}
+        {/* Minimized Tech Stack Pills */}
         <div className="flex flex-wrap gap-1 pt-1">
-          {app.tech_stack.map((tech) => (
+          {app.tech_stack.slice(0, 3).map((tech) => (
             <span
               key={tech}
-              className="font-mono text-[9px] bg-bg border border-border px-1.5 py-0.5 text-fg rounded-[1px]"
+              className="font-mono text-[9px] bg-bg border border-border px-1.5 py-0.5 text-fg rounded-[2px]"
             >
               {tech}
             </span>

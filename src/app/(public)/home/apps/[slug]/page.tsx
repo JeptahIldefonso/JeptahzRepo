@@ -44,24 +44,14 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
       {/* ── Centered Project Header ── */}
       <div className="text-center space-y-3 pt-1 pb-4 max-w-2xl mx-auto">
         <div className="flex items-center justify-center gap-2">
-          <span className="font-mono text-xs px-2.5 py-0.5 rounded-[2px] bg-black text-white font-medium">
+          <span className="font-mono text-xs px-2.5 py-0.5 rounded-[4px] bg-black text-white font-medium">
             {app.category}
-          </span>
-          <span className="font-mono text-xs px-2 py-0.5 rounded-[2px] border border-black/15 bg-white/70 text-black/70">
-            {app.version}
-          </span>
-          <span className="font-mono text-xs px-2 py-0.5 rounded-[2px] border border-black/15 bg-white/70 text-black/70">
-            {app.badge}
           </span>
         </div>
 
         <h1 className="font-sans text-4xl sm:text-5xl font-bold tracking-tight text-black">
           {app.title}
         </h1>
-
-        <p className="text-sm sm:text-base text-black/70 leading-relaxed max-w-xl mx-auto">
-          {app.tagline}
-        </p>
       </div>
 
       {/* ── Framed Carousel Showcase ── */}
@@ -72,30 +62,22 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
       {/* ── Action Buttons Row ── */}
       <div className="flex flex-wrap items-center justify-center gap-3 pt-2 pb-6 border-b border-black/10">
         {/* Direct GDrive Install Modal */}
-        <InstallModal
-          appTitle={app.title}
-          version={app.version}
-          gdriveUrl={app.gdrive_url}
-          installInstructions={app.install_instructions}
-        />
+        {app.gdrive_url && (
+          <InstallModal
+            appTitle={app.title}
+            version={app.version}
+            gdriveUrl={app.gdrive_url}
+            installInstructions={app.install_instructions}
+          />
+        )}
 
         {/* GitHub Repo Button */}
         {app.repo_url && (
           <a href={app.repo_url} target="_blank" rel="noreferrer">
-            <Button variant="outline" size="sm" className="font-mono text-xs">
+            <Button variant="outline" size="sm" className="font-mono text-xs rounded-[4px]">
               <Code2 className="mr-1.5 h-3.5 w-3.5 stroke-[1.5]" />
               <span>GitHub Repository</span>
               <ExternalLink className="ml-1.5 h-3 w-3 opacity-60" />
-            </Button>
-          </a>
-        )}
-
-        {/* Live Preview / Direct Download */}
-        {app.demo_url && (
-          <a href={app.demo_url} target="_blank" rel="noreferrer">
-            <Button variant="subtle" size="sm" className="font-mono text-xs">
-              <ExternalLink className="mr-1.5 h-3.5 w-3.5 stroke-[1.5]" />
-              <span>Open Drive Folder</span>
             </Button>
           </a>
         )}

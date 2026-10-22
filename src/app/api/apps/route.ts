@@ -9,20 +9,20 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    if (!body.title || !body.tagline) {
+    if (!body.title) {
       return NextResponse.json(
-        { success: false, error: "Title and tagline are required." },
+        { success: false, error: "Project title is required." },
         { status: 400 }
       );
     }
 
     const newApp = await createApp({
       title: body.title,
-      slug: body.slug || body.title.toLowerCase().replace(/\s+/g, "-"),
-      tagline: body.tagline,
+      slug: body.slug || body.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+      tagline: body.tagline || "",
       description: body.description || "",
-      version: body.version || "v1.0.0",
-      badge: body.badge || "Active",
+      version: body.version || "",
+      badge: body.badge || "",
       category: body.category || "Desktop App",
       carousel_images: body.carousel_images || [],
       repo_url: body.repo_url || null,

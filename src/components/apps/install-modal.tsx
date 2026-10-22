@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 interface InstallModalProps {
   appTitle: string;
-  version: string;
+  version?: string | null;
   gdriveUrl?: string | null;
   installInstructions?: string | null;
 }
@@ -37,7 +37,7 @@ export function InstallModal({
       </ModalTrigger>
       <ModalContent
         className="max-w-lg"
-        title={`Deploy // ${appTitle} [${version}]`}
+        title={version ? `Deploy // ${appTitle} [${version}]` : `Deploy // ${appTitle}`}
         description="Download release packages and view installation steps verified for Windows, macOS, and Linux."
       >
         <div className="space-y-4 py-2">

@@ -313,15 +313,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     setEditingApp({
       title: "",
       slug: "",
-      tagline: "",
       description: "",
-      version: "v1.0.0",
-      badge: "Active",
       category: "Desktop App",
       carousel_images: [],
       repo_url: "",
       gdrive_url: "",
-      demo_url: "",
       tech_stack: ["React", "TypeScript"],
       is_featured: false,
     });
@@ -335,14 +331,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
   const handleSaveApp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingApp?.title || !editingApp?.tagline) return;
+    if (!editingApp?.title) return;
 
     const payload = {
       ...editingApp,
       slug: editingApp.slug ? slugify(editingApp.slug) : slugify(editingApp.title),
       category: editingApp.category || "Desktop App",
-      version: editingApp.version || "v1.0.0",
-      badge: editingApp.badge || "Active",
       tech_stack: editingApp.tech_stack || [],
       carousel_images: editingApp.carousel_images || [],
     };
@@ -601,7 +595,8 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     (a) =>
       !searchQuery ||
       a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      a.tagline.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (a.category && a.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (a.description && a.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
       a.tech_stack?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
@@ -996,21 +991,21 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     <Badge variant="subtle" className="text-[10px] rounded-[4px]">
                       {app.category}
                     </Badge>
-                    <span className="text-[10px] font-mono text-fg-subtle">{app.version}</span>
-                    <span className="text-[10px] font-mono text-emerald-600 font-medium">
-                      [{app.badge}]
-                    </span>
                   </div>
 
-                  <p className="text-xs text-fg-muted line-clamp-1">{app.tagline}</p>
+                  {app.description && (
+                    <p className="text-xs text-fg-muted line-clamp-1">
+                      {app.description.replace(/[#*`_]/g, "").slice(0, 120)}
+                    </p>
+                  )}
 
                   <div className="flex items-center flex-wrap gap-1.5 text-[10px] font-mono text-fg-subtle pt-0.5">
-                    {app.carousel_images && (
+                    {app.carousel_images && app.carousel_images.length > 0 && (
                       <span className="px-1.5 py-0.5 rounded-[4px] bg-bg border border-border">
-                        {app.carousel_images.length} frames
+                        {app.carousel_images.length} frame{app.carousel_images.length > 1 ? "s" : ""}
                       </span>
                     )}
-                    {app.tech_stack?.map((tech) => (
+                    {app.tech_stack?.slice(0, 3).map((tech) => (
                       <span key={tech} className="px-1.5 py-0.5 rounded-[4px] bg-bg border border-border">
                         {tech}
                       </span>
@@ -1707,56 +1702,10 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Tagline / Catchphrase *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editingApp.tagline || ""}
-                  onChange={(e) => setEditingApp({ ...editingApp, tagline: e.target.value })}
-                  placeholder="One sentence explaining the app..."
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg rounded-[6px]"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+              {/* Links (GitHub & GDrive) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">Version</label>
-                  <input
-                    type="text"
-                    value={editingApp.version || "v1.0.0"}
-                    onChange={(e) => setEditingApp({ ...editingApp, version: e.target.value })}
-                    className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">Status Badge</label>
-                  <input
-                    type="text"
-                    value={editingApp.badge || "Active"}
-                    onChange={(e) => setEditingApp({ ...editingApp, badge: e.target.value })}
-                    placeholder="Active, Beta, etc."
-                    className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                  />
-                </div>
-              </div>
-
-              {/* Links */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">Demo URL</label>
-                  <input
-                    type="url"
-                    value={editingApp.demo_url || ""}
-                    onChange={(e) => setEditingApp({ ...editingApp, demo_url: e.target.value })}
-                    placeholder="https://..."
-                    className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">GitHub URL</label>
+                  <label className="font-mono text-[11px] uppercase text-fg font-medium">GitHub Repository URL</label>
                   <input
                     type="url"
                     value={editingApp.repo_url || ""}
@@ -1766,7 +1715,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="font-mono text-[11px] uppercase text-fg font-medium">GDrive URL</label>
+                  <label className="font-mono text-[11px] uppercase text-fg font-medium">Google Drive Download URL</label>
                   <input
                     type="url"
                     value={editingApp.gdrive_url || ""}
@@ -1777,10 +1726,10 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 </div>
               </div>
 
-              {/* Tech Stack */}
+              {/* Minimized Tech Stack */}
               <div className="space-y-1">
                 <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Tech Stack (comma separated)
+                  Tech Stack (comma separated, optional)
                 </label>
                 <input
                   type="text"
@@ -1791,8 +1740,8 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                       tech_stack: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
                     })
                   }
-                  placeholder="e.g. React Native, Rust, TypeScript, SQLite"
-                  className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg rounded-[6px]"
+                  placeholder="e.g. React, Rust, SQLite"
+                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
                 />
               </div>
 
