@@ -66,87 +66,139 @@
   "apps": [
     {
       "id": "app-1",
-      "title": "OmniForge Developer Studio",
-      "slug": "omniforge-studio",
-      "tagline": "A workspace app for coding with a built-in terminal and API tester.",
-      "description": "### OmniForge Studio\n\nOmniForge is a developer workspace built with Rust and React/Tauri. It combines a fast terminal with a built-in SQLite viewer and HTTP request tester.\n\n#### Features:\n- **Fast rendering** with smooth scrolling even during heavy terminal output.\n- **Session saving:** Keeps your split-pane layout and running processes between restarts.\n- **Works offline:** Stores all history locally.\n\n#### Requirements:\n- Windows 10/11 or macOS 12+\n- 500MB disk space\n- 4GB RAM",
-      "version": "v1.2.4",
+      "title": "VibeAlarm",
+      "slug": "vibe-alarm",
+      "tagline": "Computer software application open on start up very light and easy to use and straight forward and also works offline",
+      "description": "### VibeAlarm\n\nComputer software application open on start up very light and easy to use and straight forward and also works offline.\n\n#### Features:\n- **Instant startup:** Very lightweight and low memory usage.\n- **Full offline support:** Runs independently without any cloud dependency.\n- **Clean minimalist interface:** Easy to configure alarms and schedules.",
+      "version": "v1.0.0",
       "badge": "Active",
       "category": "Desktop App",
       "carousel_images": [
         {
-          "url": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Main workspace with multi-pane terminal"
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/70440f87ad09e76e8ca3156341e2209a65a8349e6e7884934e74afebce03bc97.png",
+          "caption": "VibeAlarm Main Application Calendar View"
         },
         {
-          "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Memory usage and process viewer"
-        },
-        {
-          "url": "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Settings and keyboard shortcuts"
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/a966616016f1a752b7e20cfe0445543383a48ffb587d2dc977ddb06fb546960b.png",
+          "caption": "Alarm Configuration Panel"
         }
       ],
-      "repo_url": "https://github.com/jeptah/omniforge-studio",
-      "gdrive_url": "https://drive.google.com/file/d/example-omniforge-installer/view",
-      "demo_url": "https://omniforge.dev",
-      "install_instructions": "### How to Install\n1. Download the installer using the **Install via GDrive** button above.\n2. Run the installer and follow the prompts.\n3. Launch OmniForge from your desktop.",
-      "tech_stack": ["Rust", "Tauri", "React", "TypeScript", "Tailwind CSS", "SQLite"],
+      "repo_url": "https://github.com/JeptahIldefonso/VibeAlarm.git",
+      "gdrive_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
+      "demo_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
+      "install_instructions": "### Installation\n1. Download installer via the Google Drive link.\n2. Run the executable on your desktop.",
+      "tech_stack": ["Desktop", "Python", "Offline"],
       "sort_order": 1,
       "is_featured": true,
-      "created_at": "2026-09-15T08:00:00Z"
+      "created_at": "2026-10-01T08:00:00Z"
     },
     {
       "id": "app-2",
-      "title": "Algorithm Visualizer",
-      "slug": "neuralgraph-visualizer",
-      "tagline": "An interactive tool that shows how graph algorithms work step by step.",
-      "description": "### Algorithm Visualizer\n\nA web app that lets you see algorithms like Dijkstra, A*, and BFS/DFS run in real time on interactive graphs. Great for understanding how they actually work.",
-      "version": "v0.9.8",
-      "badge": "Beta",
-      "category": "Web App",
+      "title": "Music Jpth",
+      "slug": "music-jpth",
+      "tagline": "Mobile Music Player CompletelyFree",
+      "description": "### Music Jpth\n\nA modern, completely free mobile music player built with Flutter, Python, and Dart. Designed for clean local and stream playback.",
+      "version": "v1.0.0",
+      "badge": "Active",
+      "category": "Mobile App",
       "carousel_images": [
         {
-          "url": "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Interactive graph layout"
-        },
-        {
-          "url": "https://images.unsplash.com/photo-1504639725590-34d0984388bd?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Step-by-step shortest path walkthrough"
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/0b3e58569b4737d7ecb23898986e25f8845c874aaf12db3180325679dbf43e9d.png",
+          "caption": "Music Jpth Home Player Screen"
         }
       ],
-      "repo_url": "https://github.com/jeptah/neuralgraph",
-      "gdrive_url": "https://drive.google.com/file/d/example-neuralgraph/view",
-      "demo_url": "https://neuralgraph.dev",
-      "install_instructions": "### How to Use\n- **Web version:** Just visit the demo link above.\n- **Desktop version:** Download from Google Drive.",
-      "tech_stack": ["Three.js", "Next.js", "WebAssembly", "TypeScript"],
+      "repo_url": "https://github.com/JeptahIldefonso/MusicJpth",
+      "gdrive_url": "https://drive.google.com/file/d/1cMFcLk5YK5C7VbhUEVVmp6nPbxiM-2Qw/view?usp=drive_link",
+      "demo_url": "https://drive.google.com/file/d/1cMFcLk5YK5C7VbhUEVVmp6nPbxiM-2Qw/view?usp=drive_link",
+      "install_instructions": "### Mobile Install\nDownload the APK package via Google Drive and install on your Android device.",
+      "tech_stack": ["Flutter", "Python", "Dart"],
       "sort_order": 2,
       "is_featured": true,
-      "created_at": "2026-10-01T10:30:00Z"
+      "created_at": "2026-10-05T10:30:00Z"
     },
     {
       "id": "app-3",
-      "title": "Backup CLI",
-      "slug": "archivist-cli",
-      "tagline": "A simple command-line tool that backs up your project folders and checks for corrupted files.",
-      "description": "### Backup CLI\n\nBuilt for developers who want to quickly back up large project directories. It creates compressed snapshots and can sync them to Google Drive or S3.",
-      "version": "v2.0.1",
+      "title": "WidgetJpth",
+      "slug": "widget-jpth",
+      "tagline": "widget notes for android both text and images",
+      "description": "### WidgetJpth\n\nAndroid widget notes application supporting rich formatted text and embedded image sticky notes right on your home screen.",
+      "version": "v1.0.0",
       "badge": "Active",
-      "category": "CLI Tool",
+      "category": "Mobile App",
       "carousel_images": [
         {
-          "url": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80",
-          "caption": "Terminal output with progress bar"
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/e3e9fe9ee4620945129e4b44622561928ea5fa47a29e3b291808cb40bb0a8e58.png",
+          "caption": "Floating Text Widget Screen"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/15ab60c0579576340cc5971a81593073d81e84937ef6c38cd7296aeb84c12624.jpg",
+          "caption": "Widget Notes Detail Screen"
         }
       ],
-      "repo_url": "https://github.com/jeptah/archivist-cli",
-      "gdrive_url": "https://drive.google.com/file/d/example-archivist/view",
-      "demo_url": null,
-      "install_instructions": "### How to Install\n```bash\ncargo install archivist-cli\n```\nOr download from the Google Drive link above.",
-      "tech_stack": ["Rust", "Tokio", "Google Drive API"],
+      "repo_url": "https://github.com/JeptahIldefonso/Widget-Notes-Mobile-App-.git",
+      "gdrive_url": "https://drive.google.com/drive/folders/1bg166vjv8NKecpKoeFH4Ab35dyNEvRe_?usp=drive_link",
+      "demo_url": "https://drive.google.com/drive/folders/1bg166vjv8NKecpKoeFH4Ab35dyNEvRe_?usp=drive_link",
+      "install_instructions": "### Install via Google Drive\nDownload the APK file from Google Drive and enable install from unknown sources.",
+      "tech_stack": ["Kotlin", "React Native"],
       "sort_order": 3,
+      "is_featured": true,
+      "created_at": "2026-10-10T14:15:00Z"
+    },
+    {
+      "id": "app-4",
+      "title": "ExpenseTrack",
+      "slug": "expense-track",
+      "tagline": "Daily expense tracking with charts, categorizing where your money goes with monthly summaries.",
+      "description": "### ExpenseTrack\n\nBy inserting your expenses daily it can track, calculate, and give summary charts of categories where your money spends most with monthly and yearly feedback.",
+      "version": "v1.0.0",
+      "badge": "Active",
+      "category": "Mobile App",
+      "carousel_images": [
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/50f87473c83b383b36991d5458b328067ef90947719c6bd5f757e99a90405336.png",
+          "caption": "ExpenseTrack Dashboard and Visual Analytics"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/5bec42b28349a1a7b59c018e90a6f29d48a1e89b23411b46f70a212b67a00df4.jpg",
+          "caption": "Category Expense Breakdown"
+        }
+      ],
+      "repo_url": "https://github.com/JeptahIldefonso/Expenses-Tracker",
+      "gdrive_url": null,
+      "demo_url": "https://github.com/JeptahIldefonso/Expenses-Tracker",
+      "install_instructions": "Clone and run with npm start in React Native environment.",
+      "tech_stack": ["React Native", "Local Storage", "Node.js"],
+      "sort_order": 4,
       "is_featured": false,
-      "created_at": "2026-10-12T14:15:00Z"
+      "created_at": "2026-10-12T09:00:00Z"
+    },
+    {
+      "id": "app-5",
+      "title": "Schedule, Alarm Mobile app",
+      "slug": "schedule-alarm-app",
+      "tagline": "Mobile application productivity app works offline",
+      "description": "### Schedule, Alarm Mobile app\n\nA clean mobile productivity app for setting custom routines, offline alarms, and priority task alerts.",
+      "version": "v1.0.0",
+      "badge": "Active",
+      "category": "Mobile App",
+      "carousel_images": [
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/d40c7d647182db81af3bd3675c9ab779c53308786ba72fe838a59cf3ccbe5094.png",
+          "caption": "Schedule and Alarm Mobile Interface"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/2ee69808d6afa3e8656724da63fd8c84f63986d7f9af6738c6235c330b45f719.jpg",
+          "caption": "Routine Scheduler View"
+        }
+      ],
+      "repo_url": "https://github.com/JeptahIldefonso/Personal_Mobile_app",
+      "gdrive_url": null,
+      "demo_url": "https://github.com/JeptahIldefonso/Personal_Mobile_app",
+      "install_instructions": "Check GitHub repository for build and setup instructions.",
+      "tech_stack": ["React Native", "JavaScript", "Local Storage"],
+      "sort_order": 5,
+      "is_featured": false,
+      "created_at": "2026-10-15T16:20:00Z"
     }
   ],
   "entries": [

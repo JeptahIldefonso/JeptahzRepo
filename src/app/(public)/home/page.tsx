@@ -68,6 +68,17 @@ export default async function HubOverviewPage() {
               </p>
             </div>
 
+            {/* Featured App Preview Image */}
+            {featuredApp.carousel_images[0]?.url && (
+              <div className="relative aspect-video sm:aspect-21/9 max-h-[320px] w-full bg-black/[0.02] border border-border overflow-hidden rounded-[2px] p-3 flex items-center justify-center">
+                <img
+                  src={featuredApp.carousel_images[0].url}
+                  alt={featuredApp.title}
+                  className="max-h-full max-w-full object-contain"
+                />
+              </div>
+            )}
+
             <div className="flex flex-wrap gap-1.5 pt-1">
               {featuredApp.tech_stack.map((tech) => (
                 <span
