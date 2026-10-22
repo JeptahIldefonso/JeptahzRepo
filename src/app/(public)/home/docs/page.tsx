@@ -13,21 +13,20 @@ export default async function DocsTheoryPage() {
       <div className="border-b border-border pb-6">
         <div className="flex items-center space-x-2 text-fg-subtle mb-2">
           <span className="font-mono text-[10px] tracking-[0.2em] uppercase">
-            Academic Repository // Theory & Docs
+            Browse // Notes & Docs
           </span>
         </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-medium tracking-tight text-fg">
-              Documentation & Theory
+              Notes & Docs
             </h1>
             <p className="mt-1 text-sm text-fg-muted max-w-xl">
-              Rigorous breakdowns of distributed consensus, operating system paging,
-              dynamic programming state formulations, and systems theory.
+              Technical breakdowns, architecture notes, and guides with high-definition diagrams and code.
             </p>
           </div>
           <div className="font-mono text-xs text-fg-subtle border border-border bg-bg-raised px-3 py-1.5 rounded-[2px] self-start sm:self-auto">
-            {entries.length} DOCUMENTS
+            {entries.length} POSTS
           </div>
         </div>
       </div>

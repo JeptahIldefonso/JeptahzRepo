@@ -2,96 +2,88 @@ export interface NavItem {
   slug: string;
   href: string;
   label: string;
-  category: "command" | "academic" | "vault" | "info";
+  category: "browse" | "explore" | "more" | "info";
   icon: string;
   description: string;
 }
 
 export const NAVIGATION_ITEMS: NavItem[] = [
-  // Command Center
+  // Browse
   {
     slug: "overview",
     href: "/home",
-    label: "Hub Overview",
-    category: "command",
+    label: "Home",
+    category: "browse",
     icon: "LayoutDashboard",
-    description: "Central repository feed and recent updates",
+    description: "Main feed and recent updates",
   },
   {
     slug: "apps",
     href: "/home/apps",
-    label: "Apps Showcase",
-    category: "command",
+    label: "Projects",
+    category: "browse",
     icon: "Box",
-    description: "Production software with carousels and direct downloads",
+    description: "Software builds, tools, and side projects",
   },
-
-  // Academic Repository
   {
     slug: "docs",
     href: "/home/docs",
-    label: "Docs & Theory",
-    category: "academic",
+    label: "Notes & Docs",
+    category: "browse",
     icon: "BookOpen",
-    description: "Algorithms, distributed systems, and technical breakdowns",
+    description: "Technical write-ups, architecture notes, and guides",
   },
+
+  // Explore
   {
     slug: "courses",
     href: "/home/courses",
-    label: "Courses & Curricula",
-    category: "academic",
+    label: "Courses",
+    category: "explore",
     icon: "GraduationCap",
-    description: "Curated study roadmaps and university syllabi",
-  },
-  {
-    slug: "projects",
-    href: "/home/projects",
-    label: "Code Repositories",
-    category: "academic",
-    icon: "Code2",
-    description: "Open-source projects, lab code, and downloadable packages",
+    description: "Course notes and learning roadmaps",
   },
 
-  // Intellectual Vault
-  {
-    slug: "resources",
-    href: "/home/resources",
-    label: "Curated Resources",
-    category: "vault",
-    icon: "Link2",
-    description: "Verified developer tools, whitepapers, and bookmarks",
-  },
+  // More
   {
     slug: "ideas",
     href: "/home/ideas",
-    label: "Raw Ideas & Devlogs",
-    category: "vault",
+    label: "Ideas & Logs",
+    category: "more",
     icon: "Lightbulb",
-    description: "Unfiltered engineering thoughts and architecture drafts",
+    description: "Thoughts, experiments, and dev logs",
+  },
+  {
+    slug: "resources",
+    href: "/home/resources",
+    label: "Useful Links",
+    category: "more",
+    icon: "Link2",
+    description: "Tools, references, and bookmarks worth sharing",
   },
 
-  // Archival Info
+  // Info
   {
     slug: "about",
     href: "/home/about",
-    label: "About Me",
+    label: "About",
     category: "info",
     icon: "User",
-    description: "Computer science student background and philosophy",
+    description: "Who I am and what this is about",
   },
   {
     slug: "contact",
     href: "/home/contact",
-    label: "Contact & Network",
+    label: "Contact",
     category: "info",
     icon: "Send",
-    description: "Direct contact channels and social profiles",
+    description: "Get in touch",
   },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = {
-  command: "Command Center",
-  academic: "Academic Repository",
-  vault: "Intellectual Vault",
-  info: "Archival Info",
+  browse: "Browse",
+  explore: "Explore",
+  more: "More",
+  info: "Info",
 };

@@ -12,6 +12,9 @@ import {
   Check,
   X,
   Search,
+  Image as ImageIcon,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import { AppType, EntryType } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
@@ -36,6 +39,50 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
   const [appModalOpen, setAppModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<Partial<AppType> | null>(null);
+
+  // HD Image Upload States for Entries
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [insertImageUrl, setInsertImageUrl] = useState("");
+  const [insertImageAlt, setInsertImageAlt] = useState("");
+
+  const handleFileUpload = async (file: File) => {
+    setUploadingImage(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setInsertImageUrl(data.url);
+        if (!insertImageAlt) {
+          setInsertImageAlt(file.name.replace(/\.[^/.]+$/, ""));
+        }
+        showNotification("HD Image uploaded successfully!");
+      } else {
+        alert(data.error || "Failed to upload image");
+      }
+    } catch (err: any) {
+      alert(err.message || "Upload failed");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const insertImageIntoMarkdown = () => {
+    if (!insertImageUrl) return;
+    const caption = insertImageAlt || "High-Definition Visual";
+    const snippet = `\n\n![${caption}](${insertImageUrl})\n\n`;
+    setEditingEntry((prev) => ({
+      ...prev,
+      content: (prev?.content || "") + snippet,
+    }));
+    setInsertImageUrl("");
+    setInsertImageAlt("");
+    showNotification("HD Image inserted into document!");
+  };
 
   const showNotification = (msg: string) => {
     setMessage(msg);
@@ -460,13 +507,105 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 />
               </div>
 
+              {/* Cover Image Field */}
+              <div className="space-y-1.5 p-3 border border-border bg-bg/50 rounded-[2px]">
+                <label className="font-mono text-[10px] uppercase text-fg-subtle flex items-center justify-between">
+                  <span>Cover Banner Image URL (Optional)</span>
+                  <span className="text-[9px] text-fg-subtle">Displays full-bleed at top of doc</span>
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="url"
+                    value={editingEntry.cover_image_url || ""}
+                    onChange={(e) => setEditingEntry({ ...editingEntry, cover_image_url: e.target.value })}
+                    placeholder="https://images.unsplash.com/... or uploaded URL"
+                    className="flex-1 bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px]"
+                  />
+                  {editingEntry.cover_image_url && (
+                    <img
+                      src={editingEntry.cover_image_url}
+                      alt="Cover Preview"
+                      className="h-8 w-12 object-cover border border-border rounded-[2px]"
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* HD Image Insertion Assistant for Markdown */}
+              <div className="space-y-2 p-3 border border-border/80 bg-bg-raised rounded-[2px]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-1.5 font-mono text-[10px] uppercase text-fg font-medium">
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Insert HD Image into Content</span>
+                  </div>
+                  <span className="font-mono text-[9px] text-fg-subtle">
+                    Auto-enables full HD zoom lightbox
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
+                  {/* File Upload Button */}
+                  <div className="sm:col-span-4">
+                    <label className="flex items-center justify-center space-x-1.5 border border-dashed border-border hover:border-fg bg-bg px-2.5 py-1.5 text-xs font-mono text-fg-subtle hover:text-fg cursor-pointer transition-colors rounded-[2px]">
+                      {uploadingImage ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          <span className="text-[10px]">Uploading...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-3 h-3" />
+                          <span className="text-[10px]">Upload HD File</span>
+                        </>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingImage}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleFileUpload(file);
+                        }}
+                      />
+                    </label>
+                  </div>
+
+                  {/* Image URL Input */}
+                  <div className="sm:col-span-8 flex gap-1.5">
+                    <input
+                      type="url"
+                      value={insertImageUrl}
+                      onChange={(e) => setInsertImageUrl(e.target.value)}
+                      placeholder="Paste Image URL or uploaded..."
+                      className="flex-1 bg-bg border border-border px-2 py-1 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px]"
+                    />
+                    <input
+                      type="text"
+                      value={insertImageAlt}
+                      onChange={(e) => setInsertImageAlt(e.target.value)}
+                      placeholder="Caption..."
+                      className="w-24 bg-bg border border-border px-2 py-1 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px]"
+                    />
+                    <button
+                      type="button"
+                      onClick={insertImageIntoMarkdown}
+                      disabled={!insertImageUrl}
+                      className="px-2.5 py-1 bg-fg text-bg-raised font-mono text-[10px] uppercase font-medium hover:opacity-90 disabled:opacity-40 transition-opacity rounded-[2px] cursor-pointer shrink-0"
+                    >
+                      Insert
+                    </button>
+                  </div>
+                </div>
+              </div>
+
               <div className="space-y-1">
                 <label className="font-mono text-[10px] uppercase text-fg-subtle">Markdown Content</label>
                 <textarea
-                  rows={6}
+                  rows={7}
                   value={editingEntry.content || ""}
                   onChange={(e) => setEditingEntry({ ...editingEntry, content: e.target.value })}
-                  placeholder="## Heading\n\nContent in markdown with code snippets..."
+                  placeholder="## Heading\n\nContent in markdown with code snippets and ![HD Image](url)..."
                   className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px]"
                 />
               </div>

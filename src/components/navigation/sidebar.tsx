@@ -41,7 +41,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const categories = ["command", "academic", "vault", "info"] as const;
+  const categories = ["browse", "explore", "more", "info"] as const;
 
   const renderNav = () => (
     <div className="flex h-full flex-col justify-between p-4 sm:p-5">
@@ -54,10 +54,10 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
             onClick={() => setMobileOpen(false)}
           >
             <div className="font-mono text-[10px] tracking-widest text-fg-subtle uppercase">
-              Archive &bull; Vol. I
+              JeptahzRepo
             </div>
             <h2 className="font-editorial text-2xl font-normal tracking-tight text-fg group-hover:text-fg/80 transition-colors">
-              JeptahzRepo
+              Community Archive
             </h2>
           </Link>
 
@@ -69,7 +69,7 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
             >
               <div className="flex items-center space-x-2">
                 <Search className="h-3.5 w-3.5 stroke-[1.5]" />
-                <span className="font-sans text-xs">Search repository...</span>
+                <span className="font-sans text-xs">Search...</span>
               </div>
               <kbd className="font-mono text-[9px] bg-bg-raised border border-border px-1.5 py-0.5 rounded-[1px]">
                 ⌘K
@@ -134,13 +134,13 @@ export function Sidebar({ onSearchOpen }: SidebarProps) {
             <span className="tracking-wider uppercase text-[9px]">Online</span>
           </div>
           <Link
-            href="/admin"
+            href="/login"
             className="flex items-center space-x-1 text-[10px] text-fg-subtle hover:text-fg hover:underline transition-colors tracking-wider"
-            title="Administrator Control Studio"
+            title="Admin Login"
             onClick={() => setMobileOpen(false)}
           >
             <Lock className="w-2.5 h-2.5 stroke-[1.5]" />
-            <span>sys_admin</span>
+            <span>Admin</span>
           </Link>
         </div>
       </div>

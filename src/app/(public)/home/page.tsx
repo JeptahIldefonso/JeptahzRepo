@@ -18,32 +18,29 @@ export default async function HubOverviewPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-16 py-4 sm:py-8">
-      {/* Spacious, Minimalist Header */}
+      {/* Clean Welcome Header */}
       <header className="space-y-4 border-b border-border pb-8">
-        <div className="font-mono text-xs uppercase tracking-wider text-fg-subtle">
-          Archive Overview
-        </div>
         <h1 className="font-editorial text-4xl sm:text-5xl font-normal tracking-tight text-fg leading-tight">
-          Repository Hub
+          Welcome
         </h1>
         <p className="text-sm sm:text-base text-fg-muted max-w-xl font-normal leading-relaxed">
           {settings.intro_subtext ||
-            "An open collection of software applications, computer science theory, and university study guides."}
+            "Notes, projects, courses, and ideas — all in one place."}
         </p>
       </header>
 
-      {/* Featured Application Spotlight */}
+      {/* Featured Project */}
       {featuredApp && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <span className="font-mono text-xs uppercase tracking-wider text-fg-subtle">
-              Featured Application
+              Featured Project
             </span>
             <Link
               href="/home/apps"
               className="font-sans text-xs text-fg-subtle hover:text-fg transition-colors flex items-center space-x-1"
             >
-              <span>All Apps ({apps.length})</span>
+              <span>All Projects ({apps.length})</span>
               <ArrowRight className="w-3 h-3" />
             </Link>
           </div>
@@ -58,9 +55,6 @@ export default async function HubOverviewPage() {
                   {featuredApp.category}
                 </Badge>
               </div>
-              <span className="font-mono text-[10px] text-fg-subtle">
-                Status: {featuredApp.badge}
-              </span>
             </div>
 
             <div className="space-y-2">
@@ -88,7 +82,7 @@ export default async function HubOverviewPage() {
             <div className="border-t border-border pt-4 flex flex-wrap items-center gap-3">
               <Link href={`/home/apps/${featuredApp.slug}`}>
                 <Button size="sm">
-                  <span>View Application Details</span>
+                  <span>View Project</span>
                   <ArrowRight className="ml-1.5 w-3.5 h-3.5" />
                 </Button>
               </Link>
@@ -99,7 +93,7 @@ export default async function HubOverviewPage() {
                   rel="noreferrer"
                 >
                   <Button variant="outline" size="sm">
-                    <span>GitHub Repo</span>
+                    <span>GitHub</span>
                     <ExternalLink className="ml-1.5 w-3 h-3 opacity-60" />
                   </Button>
                 </a>
@@ -109,17 +103,17 @@ export default async function HubOverviewPage() {
         </section>
       )}
 
-      {/* Clean 3-Item Recent Records Feed */}
+      {/* Recent Posts */}
       <section className="space-y-6">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <span className="font-mono text-xs uppercase tracking-wider text-fg-subtle">
-            Recent Archival Records
+            Recent Posts
           </span>
           <Link
             href="/home/docs"
             className="font-sans text-xs text-fg-subtle hover:text-fg transition-colors flex items-center space-x-1"
           >
-            <span>All Documents</span>
+            <span>All Posts</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
         </div>
@@ -154,13 +148,13 @@ export default async function HubOverviewPage() {
 
               <div className="pt-2 flex items-center justify-between font-mono text-xs">
                 <span className="text-[10px] text-fg-subtle">
-                  {entry.metadata?.read_time || "Reference Entry"}
+                  {entry.metadata?.read_time || ""}
                 </span>
                 <Link
                   href={`/home/${entry.topic_slug || "docs"}/${entry.slug}`}
                   className="text-fg hover:underline flex items-center space-x-1"
                 >
-                  <span>Read Article</span>
+                  <span>Read More</span>
                   <ArrowRight className="w-3 h-3" />
                 </Link>
               </div>
