@@ -14,28 +14,32 @@ export const ModalContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     title?: string;
     description?: string;
+    headerActions?: React.ReactNode;
   }
->(({ className, children, title, description, ...props }, ref) => (
+>(({ className, children, title, description, headerActions, ...props }, ref) => (
   <DialogPrimitive.Portal>
     <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-fg/40 backdrop-blur-xs transition-opacity animate-in fade-in duration-200" />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-bg-raised p-6 shadow-xl duration-200 animate-in fade-in zoom-in-95 rounded-[2px]",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border border-border bg-bg-raised p-6 shadow-xl duration-200 animate-in fade-in zoom-in-95 rounded-[8px]",
         className
       )}
       {...props}
     >
       <div className="flex items-center justify-between border-b border-border pb-3">
         {title && (
-          <DialogPrimitive.Title className="font-mono text-xs uppercase tracking-[0.16em] text-fg">
+          <DialogPrimitive.Title className="font-sans text-base font-semibold text-fg tracking-tight">
             {title}
           </DialogPrimitive.Title>
         )}
-        <DialogPrimitive.Close className="rounded-[2px] p-1 text-fg-subtle hover:text-fg hover:bg-bg-hover transition-colors">
-          <X className="h-4 w-4 stroke-[1.5]" />
-          <span className="sr-only">Close</span>
-        </DialogPrimitive.Close>
+        <div className="flex items-center space-x-1.5 ml-auto">
+          {headerActions}
+          <DialogPrimitive.Close className="rounded-[6px] p-1.5 text-fg-subtle hover:text-fg hover:bg-bg-hover transition-colors">
+            <X className="h-4 w-4 stroke-[1.5]" />
+            <span className="sr-only">Close</span>
+          </DialogPrimitive.Close>
+        </div>
       </div>
       {description && (
         <DialogPrimitive.Description className="text-xs text-fg-muted leading-relaxed">

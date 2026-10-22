@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
   Plus,
@@ -23,6 +23,10 @@ import {
   Paperclip,
   Video,
   Eye,
+  EyeOff,
+  MoreHorizontal,
+  Hash,
+  Globe,
   Sliders,
 } from "lucide-react";
 import {
@@ -62,9 +66,15 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
   // Loading state for upload
   const [uploading, setUploading] = useState(false);
 
-  // Modals for each dedicated section
+  // ── Drag & drop state for the note modal ──
+  const [isDragging, setIsDragging] = useState(false);
+
+  // ── Modals for each dedicated section ──
   const [docModalOpen, setDocModalOpen] = useState(false);
   const [editingDoc, setEditingDoc] = useState<Partial<EntryType> | null>(null);
+  const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
+  const [showVideoInput, setShowVideoInput] = useState(false);
+  const [showTagInput, setShowTagInput] = useState(false);
 
   const [appModalOpen, setAppModalOpen] = useState(false);
   const [editingApp, setEditingApp] = useState<Partial<AppType> | null>(null);
@@ -78,13 +88,8 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
   const [courseModalOpen, setCourseModalOpen] = useState(false);
   const [editingCourse, setEditingCourse] = useState<Partial<EntryType> | null>(null);
 
-  // Temporary input helpers for media inside modal
-  const [tempPhotoUrl, setTempPhotoUrl] = useState("");
-  const [tempPhotoCaption, setTempPhotoCaption] = useState("");
-  const [tempFileName, setTempFileName] = useState("");
-  const [tempFileUrl, setTempFileUrl] = useState("");
-  const [tempAppPhotoUrl, setTempAppPhotoUrl] = useState("");
-  const [showAdvancedSlug, setShowAdvancedSlug] = useState(false);
+  const photoFileInputRef = useRef<HTMLInputElement>(null);
+  const docFileInputRef = useRef<HTMLInputElement>(null);
 
   const showNotification = (msg: string) => {
     setMessage(msg);
@@ -114,27 +119,74 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     [entries]
   );
 
-  // Universal File Upload Helper
-  const handleFileUpload = async (
-    file: File,
-    onSuccess: (url: string, filename: string, sizeStr: string) => void
-  ) => {
+  // -------------------------
+  // Universal Upload & Ingestion
+  // -------------------------
+  const processFiles = async (files: File[]) => {
+    if (!files.length) return;
     setUploading(true);
+    let uploadedCount = 0;
+
     try {
-      const formData = new FormData();
-      formData.append("file", file);
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success && data.url) {
-        const sizeMb = file.size / (1024 * 1024);
-        const sizeStr = sizeMb >= 1 ? `${sizeMb.toFixed(1)} MB` : `${Math.round(file.size / 1024)} KB`;
-        onSuccess(data.url, file.name, sizeStr);
-        showNotification(`Uploaded ${file.name}`);
-      } else {
-        alert(data.error || "Upload failed");
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("file", file);
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+
+        if (data.success && data.url) {
+          uploadedCount++;
+          const ext = file.name.split(".").pop()?.toLowerCase();
+          const sizeMb = file.size / (1024 * 1024);
+          const sizeStr =
+            sizeMb >= 1
+              ? `${sizeMb.toFixed(1)} MB`
+              : `${Math.round(file.size / 1024)} KB`;
+
+          if (file.type.startsWith("image/")) {
+            setEditingDoc((prev) => ({
+              ...prev,
+              media_items: [
+                ...(prev?.media_items || []),
+                {
+                  id: `m-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                  type: "image",
+                  url: data.url,
+                  caption: file.name.replace(/\.[^/.]+$/, ""),
+                },
+              ],
+            }));
+          } else if (file.type.startsWith("video/")) {
+            setEditingDoc((prev) => ({
+              ...prev,
+              video_url: data.url,
+            }));
+          } else {
+            // PDF, Word, or other doc
+            const docType: EntryAttachedFile["type"] =
+              ext === "pdf" ? "pdf" : ext === "doc" || ext === "docx" ? "word" : "file";
+            setEditingDoc((prev) => ({
+              ...prev,
+              attached_files: [
+                ...(prev?.attached_files || []),
+                {
+                  id: `f-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+                  name: file.name,
+                  url: data.url,
+                  size: sizeStr,
+                  type: docType,
+                },
+              ],
+            }));
+          }
+        }
+      }
+
+      if (uploadedCount > 0) {
+        showNotification(`Attached ${uploadedCount} file${uploadedCount > 1 ? "s" : ""}`);
       }
     } catch (err: any) {
       alert(err.message || "Upload failed");
@@ -143,8 +195,31 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     }
   };
 
+  // Drag and Drop handlers for Note Creator
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 0) {
+      await processFiles(files);
+    }
+  };
+
   // -------------------------
-  // 1. NOTES & DOCS CRUD
+  // 1. NOTES & DOCS CRUD (Social Post Flow)
   // -------------------------
   const handleOpenNewDoc = () => {
     setEditingDoc({
@@ -161,36 +236,41 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       is_pinned: false,
       is_published: true,
     });
-    setTempPhotoUrl("");
-    setTempPhotoCaption("");
-    setTempFileName("");
-    setTempFileUrl("");
-    setShowAdvancedSlug(false);
+    setSettingsMenuOpen(false);
+    setShowVideoInput(false);
+    setShowTagInput(false);
     setDocModalOpen(true);
   };
 
   const handleOpenEditDoc = (doc: EntryType) => {
     setEditingDoc({ ...doc });
-    setTempPhotoUrl("");
-    setTempPhotoCaption("");
-    setTempFileName("");
-    setTempFileUrl("");
-    setShowAdvancedSlug(false);
+    setSettingsMenuOpen(false);
+    setShowVideoInput(Boolean(doc.video_url));
+    setShowTagInput(Boolean(doc.tags && doc.tags.length > 0));
     setDocModalOpen(true);
   };
 
   const handleSaveDoc = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!editingDoc?.title) return;
+    if (!editingDoc) return;
+
+    const trimmedContent = editingDoc.content?.trim() || "";
+    // If title was left blank, derive a clean title from the first sentence or default
+    const derivedTitle =
+      editingDoc.title?.trim() ||
+      trimmedContent.split("\n")[0]?.slice(0, 50).replace(/[#*`_]/g, "") ||
+      "Announcement";
 
     const payload = {
       ...editingDoc,
-      slug: editingDoc.slug ? slugify(editingDoc.slug) : slugify(editingDoc.title),
+      title: derivedTitle,
+      slug: editingDoc.slug ? slugify(editingDoc.slug) : slugify(derivedTitle),
       type: "doc",
       topic_slug: "docs",
+      content: trimmedContent,
       summary:
         editingDoc.summary ||
-        (editingDoc.content ? editingDoc.content.slice(0, 160).replace(/[#*`_]/g, "") + "..." : ""),
+        (trimmedContent ? trimmedContent.slice(0, 160).replace(/[#*`_]/g, "") + "..." : ""),
       tags: editingDoc.tags || [],
       media_items: editingDoc.media_items || [],
       attached_files: editingDoc.attached_files || [],
@@ -208,7 +288,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       const data = await res.json();
       if (data.success) {
         setEntries((prev) => prev.map((item) => (item.id === editingDoc.id ? data.data : item)));
-        showNotification(`Updated note "${data.data.title}"`);
+        showNotification(`Updated post "${data.data.title}"`);
       }
     } else {
       const res = await fetch("/api/entries", {
@@ -219,7 +299,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       const data = await res.json();
       if (data.success) {
         setEntries((prev) => [data.data, ...prev]);
-        showNotification(`Posted note "${data.data.title}"`);
+        showNotification(`Published post "${data.data.title}"`);
       }
     }
     setDocModalOpen(false);
@@ -245,15 +325,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       tech_stack: ["React", "TypeScript"],
       is_featured: false,
     });
-    setTempAppPhotoUrl("");
-    setShowAdvancedSlug(false);
     setAppModalOpen(true);
   };
 
   const handleOpenEditApp = (app: AppType) => {
     setEditingApp({ ...app });
-    setTempAppPhotoUrl("");
-    setShowAdvancedSlug(false);
     setAppModalOpen(true);
   };
 
@@ -309,17 +385,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       topic_slug: "ideas",
       content: "",
       summary: "",
-      metadata: { status: "Just an idea" },
       tags: ["Idea"],
       is_published: true,
     });
-    setShowAdvancedSlug(false);
     setIdeaModalOpen(true);
   };
 
   const handleOpenEditIdea = (idea: EntryType) => {
     setEditingIdea({ ...idea });
-    setShowAdvancedSlug(false);
     setIdeaModalOpen(true);
   };
 
@@ -379,13 +452,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       tags: ["Tools"],
       is_published: true,
     });
-    setShowAdvancedSlug(false);
     setResourceModalOpen(true);
   };
 
   const handleOpenEditResource = (resItem: EntryType) => {
     setEditingResource({ ...resItem });
-    setShowAdvancedSlug(false);
     setResourceModalOpen(true);
   };
 
@@ -446,13 +517,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       tags: ["CS"],
       is_published: true,
     });
-    setShowAdvancedSlug(false);
     setCourseModalOpen(true);
   };
 
   const handleOpenEditCourse = (course: EntryType) => {
     setEditingCourse({ ...course });
-    setShowAdvancedSlug(false);
     setCourseModalOpen(true);
   };
 
@@ -749,7 +818,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
           {activeTab === "docs" && (
             <Button size="sm" onClick={handleOpenNewDoc} className="rounded-[6px] cursor-pointer">
               <Plus className="w-4 h-4 mr-1.5" />
-              <span>Post New Note</span>
+              <span>Create Note / Post</span>
             </Button>
           )}
           {activeTab === "apps" && (
@@ -815,7 +884,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
         <div className="space-y-3">
           {filteredDocs.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No notes or announcements found. Click &quot;+ Post New Note&quot; to publish one.
+              No notes or announcements found. Click &quot;+ Create Note / Post&quot; to publish one.
             </div>
           ) : (
             filteredDocs.map((item) => (
@@ -831,6 +900,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                         <span>Pinned</span>
                       </span>
                     )}
+                    {!item.is_published && (
+                      <span className="inline-flex items-center space-x-1 px-1.5 py-0.5 rounded-[4px] bg-neutral-200 text-neutral-700 text-[10px] font-mono">
+                        <EyeOff className="w-2.5 h-2.5" />
+                        <span>Draft</span>
+                      </span>
+                    )}
                     <span className="font-medium text-sm text-fg tracking-tight truncate">
                       {item.title}
                     </span>
@@ -839,8 +914,8 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     </span>
                   </div>
 
-                  {item.summary && (
-                    <p className="text-xs text-fg-muted line-clamp-2">{item.summary}</p>
+                  {item.content && (
+                    <p className="text-xs text-fg-muted line-clamp-2">{item.content}</p>
                   )}
 
                   <div className="flex items-center flex-wrap gap-2 pt-0.5 text-[10px] font-mono text-fg-subtle">
@@ -1190,226 +1265,242 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       )}
 
       {/* ══════════════════════════════════════════════════════════════ */}
-      {/* 1. DEDICATED MODAL: NOTES & DOCS (Social Feed Post) */}
+      {/* 1. DEDICATED FACEBOOK-STYLE POST MODAL: NOTES & DOCS */}
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={docModalOpen} onOpenChange={setDocModalOpen}>
         <ModalContent
-          className="max-w-2xl max-h-[88vh] overflow-y-auto rounded-[12px]"
-          title={editingDoc?.id ? "Edit Note / Announcement" : "Create New Note / Announcement"}
+          className="max-w-xl p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl relative"
+          title={editingDoc?.id ? "Edit post" : "Create post"}
+          headerActions={
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setSettingsMenuOpen(!settingsMenuOpen)}
+                className="p-1.5 rounded-full hover:bg-neutral-100 text-neutral-600 hover:text-black transition-colors cursor-pointer"
+                title="Post settings (Pin, Visibility, Slug)"
+              >
+                <MoreHorizontal className="w-5 h-5" />
+              </button>
+
+              {/* Three-Dot Settings Popover */}
+              {settingsMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setSettingsMenuOpen(false)}
+                  />
+                  <div className="absolute right-0 top-9 w-64 bg-white border border-neutral-200 shadow-xl rounded-[10px] p-3 z-50 space-y-3 animate-in fade-in zoom-in-95">
+                    <div className="font-mono text-[10px] uppercase text-neutral-500 font-semibold tracking-wider">
+                      Post Settings
+                    </div>
+
+                    {/* Pin Toggle */}
+                    <label className="flex items-center justify-between text-xs font-sans cursor-pointer py-1 hover:text-black">
+                      <div className="flex items-center space-x-2">
+                        <Pin className="w-3.5 h-3.5 text-sky-600" />
+                        <span>Pin to top of feed</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editingDoc?.is_pinned || false}
+                        onChange={(e) =>
+                          setEditingDoc((prev) => (prev ? { ...prev, is_pinned: e.target.checked } : null))
+                        }
+                        className="rounded-[3px] accent-black"
+                      />
+                    </label>
+
+                    {/* Visibility Toggle */}
+                    <label className="flex items-center justify-between text-xs font-sans cursor-pointer py-1 border-t border-neutral-100 pt-2 hover:text-black">
+                      <div className="flex items-center space-x-2">
+                        <Globe className="w-3.5 h-3.5 text-neutral-500" />
+                        <span>Published publicly</span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={editingDoc?.is_published !== false}
+                        onChange={(e) =>
+                          setEditingDoc((prev) => (prev ? { ...prev, is_published: e.target.checked } : null))
+                        }
+                        className="rounded-[3px] accent-black"
+                      />
+                    </label>
+
+                    {/* URL Slug */}
+                    <div className="border-t border-neutral-100 pt-2 space-y-1">
+                      <div className="flex items-center justify-between text-[10px] font-mono text-neutral-500 uppercase">
+                        <span>Custom URL Slug</span>
+                      </div>
+                      <input
+                        type="text"
+                        value={editingDoc?.slug || ""}
+                        onChange={(e) =>
+                          setEditingDoc((prev) => (prev ? { ...prev, slug: e.target.value } : null))
+                        }
+                        placeholder="auto-generated-from-title"
+                        className="w-full bg-neutral-50 border border-neutral-200 px-2.5 py-1 text-xs font-mono rounded-[4px] focus:outline-none focus:border-black"
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          }
         >
           {editingDoc && (
-            <form onSubmit={handleSaveDoc} className="space-y-4 pt-2">
-              {/* Title */}
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Post Title *
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editingDoc.title || ""}
-                  onChange={(e) => setEditingDoc({ ...editingDoc, title: e.target.value })}
-                  placeholder="e.g. Distributed Consensus: Raft vs Paxos"
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg focus:outline-none focus:border-fg rounded-[6px]"
-                />
-              </div>
-
-              {/* Note / Body Content */}
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Note / Announcement Message *
-                </label>
-                <textarea
-                  rows={6}
-                  required
-                  value={editingDoc.content || ""}
-                  onChange={(e) => setEditingDoc({ ...editingDoc, content: e.target.value })}
-                  placeholder="Write your note or announcement here..."
-                  className="w-full bg-bg border border-border px-3 py-2 text-sm text-fg focus:outline-none focus:border-fg rounded-[6px] leading-relaxed font-sans"
-                />
-              </div>
-
-              {/* Photos Gallery (High-Res) */}
-              <div className="space-y-2 p-3 bg-neutral-50 border border-border rounded-[8px]">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase text-fg font-medium flex items-center space-x-1.5">
-                    <ImageIcon className="w-3.5 h-3.5" />
-                    <span>Photos & Images ({editingDoc.media_items?.length || 0})</span>
+            <form
+              onSubmit={handleSaveDoc}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              className="flex flex-col max-h-[82vh] relative"
+            >
+              {/* Drag & Drop Visual Overlay */}
+              {isDragging && (
+                <div className="absolute inset-0 z-30 bg-sky-500/10 border-2 border-dashed border-sky-500 backdrop-blur-2xs rounded-[12px] flex flex-col items-center justify-center pointer-events-none animate-in fade-in duration-150">
+                  <Upload className="w-10 h-10 text-sky-600 animate-bounce mb-2" />
+                  <span className="font-semibold text-sm text-sky-800">
+                    Drop photos, videos, or documents here
                   </span>
-                  <label className="inline-flex items-center space-x-1.5 px-2.5 py-1 text-xs font-mono bg-white border border-border hover:border-black/40 rounded-[6px] cursor-pointer transition-colors shadow-2xs">
-                    {uploading ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <Upload className="w-3 h-3" />
-                    )}
-                    <span>{uploading ? "Uploading..." : "Upload Photo"}</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={uploading}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleFileUpload(file, (url, filename) => {
-                            setEditingDoc((prev) => ({
-                              ...prev,
-                              media_items: [
-                                ...(prev?.media_items || []),
-                                {
-                                  id: `m-${Date.now()}`,
-                                  type: "image",
-                                  url,
-                                  caption: filename.replace(/\.[^/.]+$/, ""),
-                                },
-                              ],
-                            }));
-                          });
-                        }
-                      }}
-                    />
-                  </label>
+                  <span className="text-xs text-sky-600 mt-1">
+                    Auto-attaches directly to your post
+                  </span>
+                </div>
+              )}
+
+              {/* Scrollable Post Content Body */}
+              <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
+                {/* Author row (FB style) */}
+                <div className="flex items-center space-x-3 pt-1">
+                  <div className="w-10 h-10 rounded-full bg-neutral-900 text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
+                    JI
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-neutral-900 leading-tight">
+                      Jeptah Ildefonso
+                    </div>
+                    <div className="flex items-center space-x-1.5 mt-0.5">
+                      <span className="inline-flex items-center space-x-1 text-[11px] font-mono text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded-[4px]">
+                        <Globe className="w-3 h-3 text-neutral-500" />
+                        <span>Public Feed</span>
+                      </span>
+                      {editingDoc.is_pinned && (
+                        <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-sky-700 bg-sky-50 border border-sky-200 px-1.5 py-0.5 rounded-[4px]">
+                          <Pin className="w-2.5 h-2.5 fill-sky-700" />
+                          <span>Pinned</span>
+                        </span>
+                      )}
+                      {!editingDoc.is_published && (
+                        <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-neutral-600 bg-neutral-200 px-1.5 py-0.5 rounded-[4px]">
+                          <EyeOff className="w-2.5 h-2.5" />
+                          <span>Draft</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Current Photos Grid */}
+                {/* Optional Headline / Title Input */}
+                <input
+                  type="text"
+                  value={editingDoc.title || ""}
+                  onChange={(e) => setEditingDoc({ ...editingDoc, title: e.target.value })}
+                  placeholder="Post title or headline (optional)..."
+                  className="w-full text-base font-semibold text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
+                />
+
+                {/* Primary Post Textarea (What's on your mind?) */}
+                <textarea
+                  rows={4}
+                  value={editingDoc.content || ""}
+                  onChange={(e) => setEditingDoc({ ...editingDoc, content: e.target.value })}
+                  placeholder="What's on your mind, Jeptah? Write an announcement, note, or dev log..."
+                  className="w-full text-sm text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
+                />
+
+                {/* Attached Media Previews (Photos Mosaic) */}
                 {editingDoc.media_items && editingDoc.media_items.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                    {editingDoc.media_items.map((item, idx) => (
-                      <div key={item.id || idx} className="relative group border border-border rounded-[6px] overflow-hidden bg-white">
-                        <img
-                          src={item.url}
-                          alt={item.caption || "Photo"}
-                          className="w-full h-20 object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setEditingDoc((prev) => ({
-                              ...prev,
-                              media_items: (prev?.media_items || []).filter((_, i) => i !== idx),
-                            }));
-                          }}
-                          className="absolute top-1 right-1 p-1 bg-black/70 text-white rounded-[4px] hover:bg-red-600 transition-colors cursor-pointer"
-                          title="Remove image"
+                  <div className="pt-2">
+                    <div
+                      className={`grid gap-2 ${
+                        editingDoc.media_items.length === 1
+                          ? "grid-cols-1"
+                          : editingDoc.media_items.length === 2
+                          ? "grid-cols-2"
+                          : "grid-cols-3"
+                      }`}
+                    >
+                      {editingDoc.media_items.map((item, idx) => (
+                        <div
+                          key={item.id || idx}
+                          className="relative group rounded-[8px] overflow-hidden border border-neutral-200 bg-neutral-100"
                         >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
+                          <img
+                            src={item.url}
+                            alt={item.caption || "Attached photo"}
+                            className="w-full h-32 object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingDoc((prev) => ({
+                                ...prev,
+                                media_items: (prev?.media_items || []).filter((_, i) => i !== idx),
+                              }));
+                            }}
+                            className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 hover:bg-red-600 text-white transition-colors cursor-pointer"
+                            title="Remove photo"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 )}
 
-                {/* Add Photo by URL */}
-                <div className="flex gap-2 pt-1">
-                  <input
-                    type="url"
-                    value={tempPhotoUrl}
-                    onChange={(e) => setTempPhotoUrl(e.target.value)}
-                    placeholder="Or paste photo image URL..."
-                    className="flex-1 bg-white border border-border px-2.5 py-1 text-xs text-fg rounded-[6px] focus:outline-none focus:border-fg"
-                  />
-                  <button
-                    type="button"
-                    disabled={!tempPhotoUrl}
-                    onClick={() => {
-                      if (!tempPhotoUrl) return;
-                      setEditingDoc((prev) => ({
-                        ...prev,
-                        media_items: [
-                          ...(prev?.media_items || []),
-                          {
-                            id: `m-${Date.now()}`,
-                            type: "image",
-                            url: tempPhotoUrl,
-                            caption: tempPhotoCaption || "Visual Note",
-                          },
-                        ],
-                      }));
-                      setTempPhotoUrl("");
-                      setTempPhotoCaption("");
-                    }}
-                    className="px-3 py-1 bg-neutral-900 text-white text-xs font-mono rounded-[6px] disabled:opacity-40 cursor-pointer"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
+                {/* Attached Video Preview */}
+                {editingDoc.video_url && (
+                  <div className="flex items-center justify-between p-2.5 bg-neutral-50 border border-neutral-200 rounded-[8px] text-xs font-mono">
+                    <div className="flex items-center space-x-2 truncate">
+                      <Video className="w-4 h-4 text-rose-500 shrink-0" />
+                      <span className="truncate text-neutral-700">{editingDoc.video_url}</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setEditingDoc({ ...editingDoc, video_url: "" })}
+                      className="p-1 text-neutral-400 hover:text-red-600 transition-colors cursor-pointer"
+                      title="Remove video"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
 
-              {/* Video URL */}
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium flex items-center space-x-1.5">
-                  <Video className="w-3.5 h-3.5" />
-                  <span>Video URL (Optional)</span>
-                </label>
-                <input
-                  type="url"
-                  value={editingDoc.video_url || ""}
-                  onChange={(e) => setEditingDoc({ ...editingDoc, video_url: e.target.value })}
-                  placeholder="https://.../video.mp4 or YouTube link"
-                  className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[6px]"
-                />
-              </div>
-
-              {/* Document Attachments (PDF / Word) */}
-              <div className="space-y-2 p-3 bg-neutral-50 border border-border rounded-[8px]">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-[11px] uppercase text-fg font-medium flex items-center space-x-1.5">
-                    <Paperclip className="w-3.5 h-3.5" />
-                    <span>File Attachments (PDF, Word, Docs)</span>
-                  </span>
-                  <label className="inline-flex items-center space-x-1.5 px-2.5 py-1 text-xs font-mono bg-white border border-border hover:border-black/40 rounded-[6px] cursor-pointer transition-colors shadow-2xs">
-                    {uploading ? (
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                    ) : (
-                      <Upload className="w-3 h-3" />
-                    )}
-                    <span>{uploading ? "Uploading..." : "Upload File"}</span>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx,.zip,.txt"
-                      className="hidden"
-                      disabled={uploading}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          handleFileUpload(file, (url, filename, sizeStr) => {
-                            const ext = filename.split(".").pop()?.toLowerCase();
-                            const docType: EntryAttachedFile["type"] =
-                              ext === "pdf" ? "pdf" : ext === "doc" || ext === "docx" ? "word" : "file";
-                            setEditingDoc((prev) => ({
-                              ...prev,
-                              attached_files: [
-                                ...(prev?.attached_files || []),
-                                {
-                                  id: `f-${Date.now()}`,
-                                  name: filename,
-                                  url,
-                                  size: sizeStr,
-                                  type: docType,
-                                },
-                              ],
-                            }));
-                          });
-                        }
-                      }}
-                    />
-                  </label>
-                </div>
-
-                {/* Attached Files List */}
+                {/* Attached Document Files Preview (PDF, Word, etc.) */}
                 {editingDoc.attached_files && editingDoc.attached_files.length > 0 && (
                   <div className="space-y-1.5 pt-1">
                     {editingDoc.attached_files.map((file, idx) => (
                       <div
                         key={file.id || idx}
-                        className="flex items-center justify-between bg-white px-3 py-1.5 border border-border rounded-[6px] text-xs font-mono"
+                        className="flex items-center justify-between p-2.5 bg-neutral-50 border border-neutral-200 rounded-[8px] text-xs font-mono"
                       >
-                        <div className="flex items-center space-x-2 truncate">
-                          <span className="uppercase font-semibold px-1 py-0.5 rounded bg-neutral-100 text-[10px]">
+                        <div className="flex items-center space-x-2.5 truncate">
+                          <span
+                            className={`uppercase font-bold px-1.5 py-0.5 rounded text-[10px] ${
+                              file.type === "pdf"
+                                ? "bg-red-100 text-red-700"
+                                : file.type === "word"
+                                ? "bg-blue-100 text-blue-700"
+                                : "bg-neutral-200 text-neutral-700"
+                            }`}
+                          >
                             {file.type}
                           </span>
-                          <span className="truncate">{file.name}</span>
-                          {file.size && <span className="text-fg-subtle">({file.size})</span>}
+                          <span className="truncate font-sans font-medium text-neutral-900">
+                            {file.name}
+                          </span>
+                          {file.size && <span className="text-neutral-500">({file.size})</span>}
                         </div>
                         <button
                           type="button"
@@ -1419,7 +1510,8 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                               attached_files: (prev?.attached_files || []).filter((_, i) => i !== idx),
                             }));
                           }}
-                          className="p-1 text-fg-subtle hover:text-red-600 transition-colors cursor-pointer"
+                          className="p-1 text-neutral-400 hover:text-red-600 transition-colors cursor-pointer"
+                          title="Remove file"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>
@@ -1427,89 +1519,150 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     ))}
                   </div>
                 )}
-              </div>
 
-              {/* Tags */}
-              <div className="space-y-1">
-                <label className="font-mono text-[11px] uppercase text-fg font-medium">
-                  Hashtags / Topics (comma separated)
-                </label>
-                <input
-                  type="text"
-                  value={editingDoc.tags?.join(", ") || ""}
-                  onChange={(e) =>
-                    setEditingDoc({
-                      ...editingDoc,
-                      tags: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-                    })
-                  }
-                  placeholder="e.g. Algorithms, DistributedSystems, Python"
-                  className="w-full bg-bg border border-border px-3 py-2 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[6px]"
-                />
-              </div>
+                {/* Optional Inline Video Link Input */}
+                {showVideoInput && (
+                  <div className="flex items-center gap-2 p-2 bg-neutral-100 rounded-[8px] animate-in fade-in">
+                    <Video className="w-4 h-4 text-rose-500 shrink-0" />
+                    <input
+                      type="url"
+                      value={editingDoc.video_url || ""}
+                      onChange={(e) => setEditingDoc({ ...editingDoc, video_url: e.target.value })}
+                      placeholder="Paste MP4 video or YouTube URL..."
+                      className="flex-1 bg-transparent text-xs font-mono focus:outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowVideoInput(false)}
+                      className="text-neutral-400 hover:text-black cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
 
-              {/* Toggles */}
-              <div className="flex items-center space-x-6 pt-1">
-                <label className="flex items-center space-x-2 text-xs font-mono cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={editingDoc.is_pinned || false}
-                    onChange={(e) => setEditingDoc({ ...editingDoc, is_pinned: e.target.checked })}
-                    className="rounded-[4px]"
-                  />
-                  <span>📌 Pin to top of feed</span>
-                </label>
-
-                <label className="flex items-center space-x-2 text-xs font-mono cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={editingDoc.is_published !== false}
-                    onChange={(e) =>
-                      setEditingDoc({ ...editingDoc, is_published: e.target.checked })
-                    }
-                    className="rounded-[4px]"
-                  />
-                  <span>👁 Published (Publicly visible)</span>
-                </label>
-              </div>
-
-              {/* Optional Advanced Settings Accordion */}
-              <div className="border-t border-border pt-3">
-                <button
-                  type="button"
-                  onClick={() => setShowAdvancedSlug(!showAdvancedSlug)}
-                  className="flex items-center space-x-1.5 text-[11px] font-mono text-fg-subtle hover:text-fg transition-colors"
-                >
-                  <Sliders className="w-3 h-3" />
-                  <span>{showAdvancedSlug ? "Hide Custom URL Slug" : "Customize URL Slug (Optional)"}</span>
-                </button>
-                {showAdvancedSlug && (
-                  <div className="mt-2 space-y-1">
+                {/* Optional Inline Hashtags Input */}
+                {showTagInput && (
+                  <div className="flex items-center gap-2 p-2 bg-neutral-100 rounded-[8px] animate-in fade-in">
+                    <Hash className="w-4 h-4 text-amber-600 shrink-0" />
                     <input
                       type="text"
-                      value={editingDoc.slug || ""}
-                      onChange={(e) => setEditingDoc({ ...editingDoc, slug: e.target.value })}
-                      placeholder="auto-generated-from-title"
-                      className="w-full bg-bg border border-border px-3 py-1.5 text-xs font-mono text-fg rounded-[6px]"
+                      value={editingDoc.tags?.join(", ") || ""}
+                      onChange={(e) =>
+                        setEditingDoc({
+                          ...editingDoc,
+                          tags: e.target.value
+                            .split(",")
+                            .map((s) => s.trim().replace(/^#/, ""))
+                            .filter(Boolean),
+                        })
+                      }
+                      placeholder="Hashtags separated by comma (e.g. Algorithms, DistributedSystems)..."
+                      className="flex-1 bg-transparent text-xs font-mono focus:outline-none"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowTagInput(false)}
+                      className="text-neutral-400 hover:text-black cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 )}
               </div>
 
-              {/* Actions */}
-              <div className="border-t border-border pt-4 flex justify-end space-x-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setDocModalOpen(false)}
-                  className="rounded-[6px] cursor-pointer"
+              {/* ── Facebook-style "Add to your post" toolbar ── */}
+              <div className="px-5 py-2.5 border-t border-neutral-200 bg-neutral-50/70 flex items-center justify-between">
+                <span className="text-xs font-semibold text-neutral-700">Add to your note</span>
+
+                <div className="flex items-center space-x-1">
+                  {/* Photo / Video upload trigger */}
+                  <button
+                    type="button"
+                    onClick={() => photoFileInputRef.current?.click()}
+                    title="Photo / Video"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer"
+                  >
+                    <ImageIcon className="w-5 h-5" />
+                  </button>
+                  <input
+                    ref={photoFileInputRef}
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      processFiles(files);
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Document / File attachment trigger */}
+                  <button
+                    type="button"
+                    onClick={() => docFileInputRef.current?.click()}
+                    title="Attach Document (PDF, Word, etc.)"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </button>
+                  <input
+                    ref={docFileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.zip,.txt"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      processFiles(files);
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Video URL Link trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setShowVideoInput(!showVideoInput)}
+                    title="Add Video Link"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-rose-500 hover:text-rose-600 transition-colors cursor-pointer"
+                  >
+                    <Video className="w-5 h-5" />
+                  </button>
+
+                  {/* Hashtags trigger */}
+                  <button
+                    type="button"
+                    onClick={() => setShowTagInput(!showTagInput)}
+                    title="Add Hashtags"
+                    className="p-2 rounded-full hover:bg-neutral-200/80 text-amber-600 hover:text-amber-700 transition-colors cursor-pointer"
+                  >
+                    <Hash className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom Post Button */}
+              <div className="p-4 bg-white border-t border-neutral-100">
+                <button
+                  type="submit"
+                  disabled={
+                    uploading ||
+                    (!editingDoc.content && !editingDoc.title && !editingDoc.media_items?.length)
+                  }
+                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                 >
-                  Cancel
-                </Button>
-                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer">
-                  {editingDoc.id ? "Save Changes" : "Publish Note"}
-                </Button>
+                  {uploading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Uploading media...</span>
+                    </>
+                  ) : (
+                    <span>{editingDoc.id ? "Save Changes" : "Post Note"}</span>
+                  )}
+                </button>
               </div>
             </form>
           )}
@@ -1662,21 +1815,30 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                       accept="image/*"
                       className="hidden"
                       disabled={uploading}
-                      onChange={(e) => {
+                      onChange={async (e) => {
                         const file = e.target.files?.[0];
                         if (file) {
-                          handleFileUpload(file, (url, filename) => {
-                            setEditingApp((prev) => ({
-                              ...prev,
-                              carousel_images: [
-                                ...(prev?.carousel_images || []),
-                                {
-                                  url,
-                                  caption: filename.replace(/\.[^/.]+$/, ""),
-                                },
-                              ],
-                            }));
-                          });
+                          setUploading(true);
+                          try {
+                            const formData = new FormData();
+                            formData.append("file", file);
+                            const res = await fetch("/api/upload", { method: "POST", body: formData });
+                            const data = await res.json();
+                            if (data.success && data.url) {
+                              setEditingApp((prev) => ({
+                                ...prev,
+                                carousel_images: [
+                                  ...(prev?.carousel_images || []),
+                                  {
+                                    url: data.url,
+                                    caption: file.name.replace(/\.[^/.]+$/, ""),
+                                  },
+                                ],
+                              }));
+                            }
+                          } finally {
+                            setUploading(false);
+                          }
                         }
                       }}
                     />
