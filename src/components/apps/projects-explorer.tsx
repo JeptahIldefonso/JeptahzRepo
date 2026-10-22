@@ -118,41 +118,42 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         </div>
       </div>
 
-      {/* ── Modern Minimalist Toolbar: Search on Left, Filters on Right, Tags Below ── */}
-      <div className="space-y-2">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-          {/* Compact Minimal Search Input (Positioned on Left) */}
-          <div className="relative w-full sm:w-56 md:w-64">
-            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
-              <Search className="w-3.5 h-3.5 stroke-[2]" />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects..."
-              className="w-full pl-8 pr-9 py-1 h-7.5 bg-white/80 border border-black/15 focus:border-neutral-800 focus:bg-white rounded-[3px] text-[11px] font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
-            />
-            {searchQuery ? (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
-                aria-label="Clear search"
-              >
-                <X className="w-3 h-3" />
-              </button>
-            ) : (
-              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1 py-0.5 rounded border border-black/10">
-                  /
-                </kbd>
-              </div>
-            )}
+      {/* ── Modern Minimalist Toolbar: Search on Left, Filters & Tags on Right ── */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pt-1">
+        {/* Compact Minimal Search Input (Positioned on Left) */}
+        <div className="relative w-full sm:w-56 md:w-64 shrink-0">
+          <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
+            <Search className="w-3.5 h-3.5 stroke-[2]" />
           </div>
+          <input
+            ref={searchInputRef}
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search projects..."
+            className="w-full pl-8 pr-9 py-1 h-7.5 bg-white/80 border border-black/15 focus:border-neutral-800 focus:bg-white rounded-[3px] text-[11px] font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
+          />
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
+              aria-label="Clear search"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          ) : (
+            <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+              <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1 py-0.5 rounded border border-black/10">
+                /
+              </kbd>
+            </div>
+          )}
+        </div>
 
-          {/* Category Filter Tabs (Positioned on Right, Smaller, Dark Gray Hover & Selected) */}
-          <div className="flex flex-wrap items-center gap-1 text-[11px] font-mono">
+        {/* Right Side: Filters (Top) and Tags (Directly Below Filters) */}
+        <div className="flex flex-col items-start sm:items-end gap-1.5 w-full">
+          {/* Category Filter Tabs */}
+          <div className="flex flex-wrap items-center sm:justify-end gap-1 text-[11px] font-mono">
             <span className="text-[10px] tracking-wider text-black/40 uppercase mr-1">
               Category:
             </span>
@@ -187,37 +188,37 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               </button>
             ))}
           </div>
-        </div>
 
-        {/* Tech Stack Pills (Smaller, Dark Gray Hover & Selected) */}
-        <div className="flex flex-wrap items-center gap-1 text-[10px] font-mono pt-0.5">
-          <span className="text-[10px] tracking-wider text-black/35 uppercase mr-1">
-            Tags:
-          </span>
-          {allTechStacks.map((tech) => (
-            <button
-              key={tech}
-              onClick={() => {
-                setSelectedTech(selectedTech === tech ? "all" : tech);
-              }}
-              className={`px-1.5 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
-                selectedTech === tech
-                  ? "bg-neutral-800 text-white font-medium border border-neutral-800"
-                  : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
-              }`}
-            >
-              {tech}
-            </button>
-          ))}
+          {/* Tech Stack Pills (Positioned on Right Side Below Filters) */}
+          <div className="flex flex-wrap items-center sm:justify-end gap-1 text-[10px] font-mono">
+            <span className="text-[10px] tracking-wider text-black/35 uppercase mr-1">
+              Tags:
+            </span>
+            {allTechStacks.map((tech) => (
+              <button
+                key={tech}
+                onClick={() => {
+                  setSelectedTech(selectedTech === tech ? "all" : tech);
+                }}
+                className={`px-1.5 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
+                  selectedTech === tech
+                    ? "bg-neutral-800 text-white font-medium border border-neutral-800"
+                    : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
+                }`}
+              >
+                {tech}
+              </button>
+            ))}
 
-          {(searchQuery || selectedCategory !== "all" || selectedTech !== "all") && (
-            <button
-              onClick={resetFilters}
-              className="ml-auto text-[10px] text-black/60 hover:text-neutral-900 underline cursor-pointer"
-            >
-              Reset
-            </button>
-          )}
+            {(searchQuery || selectedCategory !== "all" || selectedTech !== "all") && (
+              <button
+                onClick={resetFilters}
+                className="ml-1 text-[10px] text-black/60 hover:text-neutral-900 underline cursor-pointer"
+              >
+                Reset
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
