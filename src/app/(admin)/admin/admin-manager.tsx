@@ -877,21 +877,21 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       </div>
 
       {/* ── Dedicated Tab Selector Pill Bar ── */}
-      <div className="flex items-center justify-between border-b border-border pb-3 gap-2 overflow-x-auto">
-        <div className="flex items-center space-x-1.5 p-1 bg-neutral-200/60 rounded-[8px] shrink-0">
+      <div className="flex items-center justify-between border-b border-border pb-3 gap-3 overflow-x-auto">
+        <div className="flex items-center space-x-1 p-0.5 bg-neutral-200/70 rounded-[6px] shrink-0">
           <button
             onClick={() => {
               setActiveTab("docs");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] text-xs font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
               activeTab === "docs"
-                ? "bg-white text-black font-semibold shadow-xs"
+                ? "bg-white text-black font-semibold shadow-2xs"
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Notes & Docs ({docsEntries.length})</span>
+            <BookOpen className="w-3 h-3" />
+            <span>Docs ({docsEntries.length})</span>
           </button>
 
           <button
@@ -899,13 +899,13 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               setActiveTab("apps");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] text-xs font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
               activeTab === "apps"
-                ? "bg-white text-black font-semibold shadow-xs"
+                ? "bg-white text-black font-semibold shadow-2xs"
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            <Box className="w-3.5 h-3.5" />
+            <Box className="w-3 h-3" />
             <span>Projects ({apps.length})</span>
           </button>
 
@@ -914,14 +914,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               setActiveTab("ideas");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] text-xs font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
               activeTab === "ideas"
-                ? "bg-white text-black font-semibold shadow-xs"
+                ? "bg-white text-black font-semibold shadow-2xs"
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            <Lightbulb className="w-3.5 h-3.5" />
-            <span>Ideas & Logs ({ideasEntries.length})</span>
+            <Lightbulb className="w-3 h-3" />
+            <span>Ideas ({ideasEntries.length})</span>
           </button>
 
           <button
@@ -929,14 +929,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               setActiveTab("resources");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] text-xs font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
               activeTab === "resources"
-                ? "bg-white text-black font-semibold shadow-xs"
+                ? "bg-white text-black font-semibold shadow-2xs"
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            <Link2 className="w-3.5 h-3.5" />
-            <span>Useful Links ({resourcesEntries.length})</span>
+            <Link2 className="w-3 h-3" />
+            <span>Links ({resourcesEntries.length})</span>
           </button>
 
           <button
@@ -944,46 +944,66 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               setActiveTab("courses");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-[6px] text-xs font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
               activeTab === "courses"
-                ? "bg-white text-black font-semibold shadow-xs"
+                ? "bg-white text-black font-semibold shadow-2xs"
                 : "text-neutral-600 hover:text-black"
             }`}
           >
-            <GraduationCap className="w-3.5 h-3.5" />
+            <GraduationCap className="w-3 h-3" />
             <span>Courses ({coursesEntries.length})</span>
           </button>
         </div>
 
-        {/* Tab Specific Quick Create Button */}
+        {/* Tab Specific Quick Create Button - Bigger & More Prominent */}
         <div className="shrink-0">
           {activeTab === "docs" && (
-            <Button size="sm" onClick={handleOpenNewDoc} className="rounded-[6px] cursor-pointer">
-              <Plus className="w-4 h-4 mr-1.5" />
+            <Button
+              size="md"
+              onClick={handleOpenNewDoc}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
               <span>Create Note / Post</span>
             </Button>
           )}
           {activeTab === "apps" && (
-            <Button size="sm" onClick={handleOpenNewApp} className="rounded-[6px] cursor-pointer">
-              <Plus className="w-4 h-4 mr-1.5" />
+            <Button
+              size="md"
+              onClick={handleOpenNewApp}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
               <span>Add Project</span>
             </Button>
           )}
           {activeTab === "ideas" && (
-            <Button size="sm" onClick={handleOpenNewIdea} className="rounded-[6px] cursor-pointer">
-              <Plus className="w-4 h-4 mr-1.5" />
+            <Button
+              size="md"
+              onClick={handleOpenNewIdea}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
               <span>New Idea / Log</span>
             </Button>
           )}
           {activeTab === "resources" && (
-            <Button size="sm" onClick={handleOpenNewResource} className="rounded-[6px] cursor-pointer">
-              <Plus className="w-4 h-4 mr-1.5" />
+            <Button
+              size="md"
+              onClick={handleOpenNewResource}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
               <span>Add Useful Link</span>
             </Button>
           )}
           {activeTab === "courses" && (
-            <Button size="sm" onClick={handleOpenNewCourse} className="rounded-[6px] cursor-pointer">
-              <Plus className="w-4 h-4 mr-1.5" />
+            <Button
+              size="md"
+              onClick={handleOpenNewCourse}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
               <span>Add Course Guide</span>
             </Button>
           )}
