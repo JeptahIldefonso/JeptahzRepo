@@ -6,8 +6,9 @@ export async function GET(request: Request) {
   const type = searchParams.get("type") || undefined;
   const topicSlug = searchParams.get("topic") || undefined;
   const query = searchParams.get("q") || undefined;
+  const includeUnpublished = searchParams.get("all") === "true";
 
-  const entries = await getEntries({ type, topicSlug, query });
+  const entries = await getEntries({ type, topicSlug, query, includeUnpublished });
   return NextResponse.json({ success: true, count: entries.length, data: entries });
 }
 

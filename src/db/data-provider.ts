@@ -217,6 +217,7 @@ export async function getEntries(options?: {
   type?: string;
   topicSlug?: string;
   query?: string;
+  includeUnpublished?: boolean;
 }): Promise<EntryType[]> {
   const supabase = getSupabase();
   if (supabase) {
@@ -224,10 +225,12 @@ export async function getEntries(options?: {
       let q = supabase
         .from("entries")
         .select("*")
-        .eq("is_published", true)
-        .eq("is_private", false)
         .order("is_pinned", { ascending: false })
         .order("created_at", { ascending: false });
+
+      if (!options?.includeUnpublished) {
+        q = q.eq("is_published", true).eq("is_private", false);
+      }
 
       if (options?.type) {
         q = q.eq("type", options.type);
@@ -248,7 +251,9 @@ export async function getEntries(options?: {
     }
   }
 
-  let list = cachedArchive.entries.filter((e) => e.is_published !== false);
+  let list = options?.includeUnpublished
+    ? [...cachedArchive.entries]
+    : cachedArchive.entries.filter((e) => e.is_published !== false);
 
   if (options?.type) {
     list = list.filter((e) => e.type === options.type);

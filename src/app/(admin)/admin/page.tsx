@@ -3,7 +3,10 @@ import { getApps, getEntries } from "@/db/data-provider";
 import { AdminManager } from "./admin-manager";
 
 export default async function AdminPage() {
-  const [apps, entries] = await Promise.all([getApps(), getEntries()]);
+  const [apps, entries] = await Promise.all([
+    getApps(),
+    getEntries({ includeUnpublished: true }),
+  ]);
 
   return (
     <div className="space-y-6">
