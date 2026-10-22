@@ -36,6 +36,14 @@ export interface EntryMediaItem {
   file_size?: number;
 }
 
+export interface EntryAttachedFile {
+  id: string;
+  name: string;
+  size?: string;
+  type: "pdf" | "word" | "doc" | "archive" | "file";
+  url: string;
+}
+
 export interface EntryType {
   id: string;
   title: string;
@@ -51,6 +59,7 @@ export interface EntryType {
   cover_image_url?: string | null;
   gallery_images?: string[];
   media_items?: EntryMediaItem[];
+  attached_files?: EntryAttachedFile[];
   video_url?: string | null;
   metadata?: Record<string, any>;
   tags: string[];

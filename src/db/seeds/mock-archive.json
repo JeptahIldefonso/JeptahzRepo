@@ -247,6 +247,15 @@
         }
       ],
       "video_url": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "attached_files": [
+        {
+          "id": "f-1",
+          "name": "VibeAlarm_Offline_Architecture_Spec.pdf",
+          "size": "2.1 MB",
+          "type": "pdf",
+          "url": "https://raft.github.io/raft.pdf"
+        }
+      ],
       "is_pinned": false,
       "is_published": true,
       "view_count": 489,
@@ -286,6 +295,22 @@
           "type": "image",
           "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=85",
           "caption": "Consensus State Machine Logs"
+        }
+      ],
+      "attached_files": [
+        {
+          "id": "f-2",
+          "name": "Raft_Consensus_Specification_Paper.pdf",
+          "size": "1.8 MB",
+          "type": "pdf",
+          "url": "https://raft.github.io/raft.pdf"
+        },
+        {
+          "id": "f-3",
+          "name": "Distributed_Systems_Study_Notes.docx",
+          "size": "480 KB",
+          "type": "word",
+          "url": "https://raft.github.io/raft.pdf"
         }
       ],
       "is_pinned": true,

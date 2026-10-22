@@ -6,13 +6,15 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
   Pin,
-  Heart,
+  CheckCircle2,
   Share2,
   Check,
   ArrowUpRight,
   Clock,
-  Sparkles,
-  BookOpen,
+  FileText,
+  FileCode,
+  Paperclip,
+  Download,
 } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { PostMediaMosaic } from "@/components/docs/post-media-mosaic";
@@ -27,26 +29,24 @@ interface FeedPostCardProps {
 
 export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const [liked, setLiked] = useState(false);
-  const [likesCount, setLikesCount] = useState(entry.likes_count || 12);
+  const [isRead, setIsRead] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  // Load liked state from localStorage
+  // Load "mark as read" state from localStorage
   useEffect(() => {
     try {
-      const stored = localStorage.getItem(`post_liked_${entry.id}`);
+      const stored = localStorage.getItem(`post_read_${entry.id}`);
       if (stored === "true") {
-        setLiked(true);
+        setIsRead(true);
       }
     } catch {}
   }, [entry.id]);
 
-  function toggleLike() {
-    const next = !liked;
-    setLiked(next);
-    setLikesCount((prev) => (next ? prev + 1 : Math.max(0, prev - 1)));
+  function toggleRead() {
+    const next = !isRead;
+    setIsRead(next);
     try {
-      localStorage.setItem(`post_liked_${entry.id}`, String(next));
+      localStorage.setItem(`post_read_${entry.id}`, String(next));
     } catch {}
   }
 
@@ -73,37 +73,21 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
   }
 
   const rawContent = entry.content || entry.summary || "";
-  const isLong = rawContent.length > 320;
+  const isLong = rawContent.length > 340;
   const displayContent =
-    isLong && !isExpanded ? `${rawContent.slice(0, 320)}...` : rawContent;
+    isLong && !isExpanded ? `${rawContent.slice(0, 340)}...` : rawContent;
 
   return (
     <article
       id={entry.slug}
-      className={`relative w-full rounded-[4px] border bg-white/80 backdrop-blur-xs transition-all shadow-xs overflow-hidden ${
+      className={`relative w-full rounded-[4px] border bg-white/85 backdrop-blur-xs transition-all shadow-xs overflow-hidden ${
         entry.is_pinned
-          ? "border-amber-400/60 ring-1 ring-amber-400/30 shadow-amber-500/5"
+          ? "border-sky-300/80 bg-sky-50/20 ring-1 ring-sky-300/40 shadow-sky-500/5"
           : "border-black/10 hover:border-black/25"
       }`}
     >
-      {/* ── Noticeable Pin Accent Header when pinned ── */}
-      {entry.is_pinned && (
-        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-1.5 flex items-center justify-between text-amber-900 font-mono text-[11px]">
-          <div className="flex items-center space-x-1.5 font-semibold">
-            {/* Highly Noticeable Graphic Pin Icon */}
-            <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white shadow-xs">
-              <Pin className="w-3 h-3 fill-current rotate-45" />
-            </span>
-            <span className="tracking-wider uppercase text-[10px]">
-              Pinned Announcement & Priority Note
-            </span>
-          </div>
-          <span className="text-[10px] text-amber-800/70">Featured Post</span>
-        </div>
-      )}
-
-      <div className="p-4 sm:p-6 space-y-4">
-        {/* ── Post Header: Author Avatar, Handle, Date, Pin ── */}
+      <div className="p-5 sm:p-7 space-y-4">
+        {/* ── Post Header: Author Avatar, Handle, Date, and Noticeable Light Blue Pin Icon ── */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center space-x-3">
             {/* Author Avatar */}
@@ -128,13 +112,13 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
             </div>
           </div>
 
-          {/* Fallback pin icon if pinned without banner */}
+          {/* Noticeable Light Blue Pin Icon (No text, pure icon) */}
           {entry.is_pinned && (
             <div
-              title="Pinned by author"
-              className="p-1.5 bg-amber-100 text-amber-900 rounded-full border border-amber-300 shadow-xs"
+              title="Pinned Post"
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-sky-100 text-sky-600 border border-sky-300/80 shadow-xs shrink-0"
             >
-              <Pin className="w-3.5 h-3.5 fill-current rotate-45" />
+              <Pin className="w-4 h-4 fill-current rotate-45" />
             </div>
           )}
         </div>
@@ -180,6 +164,70 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
           </div>
         )}
 
+        {/* ── Attached Documents (PDF, Word, etc. Click to Download) ── */}
+        {entry.attached_files && entry.attached_files.length > 0 && (
+          <div className="space-y-2 pt-2 border-t border-black/5">
+            <div className="font-mono text-[10px] uppercase tracking-wider text-black/50">
+              Attached Documents ({entry.attached_files.length})
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {entry.attached_files.map((file) => {
+                const isPdf = file.type === "pdf" || file.name.endsWith(".pdf");
+                const isWord =
+                  file.type === "word" ||
+                  file.type === "doc" ||
+                  file.name.endsWith(".docx") ||
+                  file.name.endsWith(".doc");
+
+                return (
+                  <a
+                    key={file.id || file.name}
+                    href={file.url}
+                    download={file.name}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center justify-between p-2.5 rounded-[3px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-black/40 hover:shadow-2xs transition-all cursor-pointer"
+                  >
+                    <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                      <div
+                        className={`w-8 h-8 rounded-[2px] flex items-center justify-center shrink-0 font-mono text-[10px] font-bold ${
+                          isPdf
+                            ? "bg-rose-100 text-rose-700 border border-rose-200"
+                            : isWord
+                            ? "bg-blue-100 text-blue-700 border border-blue-200"
+                            : "bg-neutral-100 text-neutral-700 border border-neutral-200"
+                        }`}
+                      >
+                        {isPdf ? (
+                          <FileText className="w-4 h-4 text-rose-600" />
+                        ) : isWord ? (
+                          <FileCode className="w-4 h-4 text-blue-600" />
+                        ) : (
+                          <Paperclip className="w-4 h-4 text-neutral-600" />
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-mono font-medium text-black truncate group-hover:underline">
+                          {file.name}
+                        </p>
+                        <p className="text-[10px] font-mono text-black/50">
+                          {isPdf ? "PDF Document" : isWord ? "Word Document" : "Attachment"}
+                          {file.size ? ` • ${file.size}` : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-1 font-mono text-[11px] text-black/60 group-hover:text-black shrink-0 px-2 py-1 rounded bg-black/5 group-hover:bg-black group-hover:text-white transition-colors">
+                      <Download className="w-3 h-3" />
+                      <span className="hidden sm:inline">Download</span>
+                    </div>
+                  </a>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* ── Unboxed Natural Social Hashtags ── */}
         {entry.tags && entry.tags.length > 0 && (
           <div className="flex flex-wrap items-center gap-2 pt-1 font-mono text-xs">
@@ -205,23 +253,23 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
 
         {/* ── Social Action & Utility Footer ── */}
         <div className="border-t border-black/10 pt-3 flex items-center justify-between font-mono text-xs text-black/60">
-          <div className="flex items-center space-x-4">
-            {/* Like Heart Button */}
+          <div className="flex items-center space-x-3">
+            {/* Mark as Read Button (Replaced Heart React) */}
             <button
-              onClick={toggleLike}
-              className={`flex items-center space-x-1.5 py-1 px-2 rounded-[2px] transition-colors cursor-pointer ${
-                liked
-                  ? "text-rose-600 bg-rose-50 font-medium"
-                  : "hover:text-black hover:bg-black/5"
+              onClick={toggleRead}
+              className={`flex items-center space-x-1.5 py-1 px-2.5 rounded-[2px] border transition-all cursor-pointer font-mono text-xs ${
+                isRead
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-300 font-medium"
+                  : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-black/30"
               }`}
-              title="Like this post"
+              title={isRead ? "Mark as unread" : "Mark as read"}
             >
-              <Heart
+              <CheckCircle2
                 className={`w-3.5 h-3.5 ${
-                  liked ? "fill-current text-rose-600" : "stroke-[1.75]"
+                  isRead ? "text-emerald-600 fill-emerald-100" : "stroke-[1.75]"
                 }`}
               />
-              <span>{likesCount}</span>
+              <span>{isRead ? "Read" : "Mark as read"}</span>
             </button>
 
             {/* Share / Copy Link */}

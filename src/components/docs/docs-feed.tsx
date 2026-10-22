@@ -57,7 +57,7 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
   }, [initialEntries, searchQuery, selectedTag]);
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-6">
+    <div className="w-full max-w-3xl lg:max-w-4xl mx-auto space-y-6">
       {/* ── Toolbar: Sleek Search Bar & Active Tag Filter ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-black/10">
         {/* Compact Search Bar */}

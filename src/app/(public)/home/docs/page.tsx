@@ -11,28 +11,31 @@ export default async function DocsTheoryPage() {
   const entries = await getEntries({ topicSlug: "docs" });
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* ── Top Header ── */}
-      <div className="border-b border-black/10 pb-5 max-w-2xl mx-auto">
-        <div className="flex items-center space-x-2 text-black/40 mb-1.5">
-          <span className="font-mono text-[10px] tracking-[0.25em] uppercase">
-            Browse // Notes & Docs
-          </span>
-        </div>
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div>
-            <h1 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-black">
-              Notes & Docs
-            </h1>
-            <p className="mt-1 text-xs sm:text-sm text-black/70 leading-relaxed">
-              Technical breakdowns, architecture write-ups, and announcements with full-resolution media.
-            </p>
+    <div className="w-full flex flex-col items-center pb-16">
+      {/* ── Main Centered & Wide Column ── */}
+      <div className="w-full max-w-3xl lg:max-w-4xl space-y-6">
+        {/* Top Header */}
+        <div className="border-b border-black/10 pb-5">
+          <div className="flex items-center space-x-2 text-black/40 mb-1.5">
+            <span className="font-mono text-[10px] tracking-[0.25em] uppercase">
+              Browse // Notes & Docs
+            </span>
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <h1 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-black">
+                Notes & Docs
+              </h1>
+              <p className="mt-1 text-xs sm:text-sm text-black/70 leading-relaxed">
+                Technical breakdowns, architecture write-ups, and announcements with full-resolution media.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Social Community Feed Stream ── */}
-      <DocsFeed initialEntries={entries} />
+        {/* Social Community Feed Stream */}
+        <DocsFeed initialEntries={entries} />
+      </div>
     </div>
   );
 }
