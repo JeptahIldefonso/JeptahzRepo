@@ -1269,7 +1269,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={docModalOpen} onOpenChange={setDocModalOpen}>
         <ModalContent
-          className="max-w-xl p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl relative"
+          className="max-w-xl p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
           title={editingDoc?.id ? "Edit post" : "Create post"}
           headerActions={
             <div className="relative">
@@ -1674,11 +1674,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={appModalOpen} onOpenChange={setAppModalOpen}>
         <ModalContent
-          className="max-w-2xl max-h-[88vh] overflow-y-auto rounded-[12px]"
+          className="max-w-2xl p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
           title={editingApp?.id ? "Edit Project Showcase" : "Add Project Showcase"}
         >
           {editingApp && (
-            <form onSubmit={handleSaveApp} className="space-y-4 pt-2">
+            <form onSubmit={handleSaveApp} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
                   <label className="font-mono text-[11px] uppercase text-fg font-medium">
@@ -1906,11 +1906,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={ideaModalOpen} onOpenChange={setIdeaModalOpen}>
         <ModalContent
-          className="max-w-lg max-h-[85vh] overflow-y-auto rounded-[12px]"
+          className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
           title={editingIdea?.id ? "Edit Idea / Log" : "New Idea or Dev Log"}
         >
           {editingIdea && (
-            <form onSubmit={handleSaveIdea} className="space-y-4 pt-2">
+            <form onSubmit={handleSaveIdea} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
               <div className="space-y-1">
                 <label className="font-mono text-[11px] uppercase text-fg font-medium">Title *</label>
                 <input
@@ -1979,11 +1979,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
         <ModalContent
-          className="max-w-lg max-h-[85vh] overflow-y-auto rounded-[12px]"
+          className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
           title={editingResource?.id ? "Edit Useful Link" : "Add Useful Link / Bookmark"}
         >
           {editingResource && (
-            <form onSubmit={handleSaveResource} className="space-y-4 pt-2">
+            <form onSubmit={handleSaveResource} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
               <div className="space-y-1">
                 <label className="font-mono text-[11px] uppercase text-fg font-medium">
                   Bookmark Title *
@@ -2075,11 +2075,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       {/* ══════════════════════════════════════════════════════════════ */}
       <Modal open={courseModalOpen} onOpenChange={setCourseModalOpen}>
         <ModalContent
-          className="max-w-lg max-h-[85vh] overflow-y-auto rounded-[12px]"
+          className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
           title={editingCourse?.id ? "Edit Course Guide" : "Add Course Guide"}
         >
           {editingCourse && (
-            <form onSubmit={handleSaveCourse} className="space-y-4 pt-2">
+            <form onSubmit={handleSaveCourse} className="space-y-4 p-5 max-h-[80vh] overflow-y-auto">
               <div className="space-y-1">
                 <label className="font-mono text-[11px] uppercase text-fg font-medium">
                   Course Title *
