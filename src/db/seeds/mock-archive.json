@@ -69,24 +69,40 @@
       "title": "VibeAlarm",
       "slug": "vibe-alarm",
       "tagline": "Computer software application open on start up very light and easy to use and straight forward and also works offline",
-      "description": "### VibeAlarm\n\nComputer software application open on start up very light and easy to use and straight forward and also works offline.\n\n#### Features:\n- **Instant startup:** Very lightweight and low memory usage.\n- **Full offline support:** Runs independently without any cloud dependency.\n- **Clean minimalist interface:** Easy to configure alarms and schedules.",
+      "description": "### What is VibeAlarm?\n\n**VibeAlarm** is a lightweight desktop productivity application that launches with your computer to keep you on schedule with custom alarms, calendar planning, and task reminders.\n\n### Main Purpose & Use Case\n- **Never Miss a Task:** Set alarms and reminders for study sessions, meetings, classes, or daily habits directly on your desktop.\n- **Calendar Planning:** View your entire month at a glance, pin exams or deadlines, and see scheduled events.\n- **Zero Distractions:** Clean, minimal user interface designed to get out of your way while working.\n- **100% Offline & Private:** Runs completely locally on your computer with no account or internet connection required.\n\n### Key Features\n- **Auto-Start on Boot:** Can run silently on computer startup with minimal CPU and RAM usage.\n- **Interactive Calendar:** Full monthly scheduler with custom task markers and date-specific notes.\n- **Customizable Alarms:** Audio alerts, snooze controls, and priority notification triggers.\n- **Built-in Dark/Light Modes:** Comfortable on the eyes during late-night study or coding sessions.",
       "version": "v1.0.0",
       "badge": "Active",
       "category": "Desktop App",
       "carousel_images": [
         {
           "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/70440f87ad09e76e8ca3156341e2209a65a8349e6e7884934e74afebce03bc97.png",
-          "caption": "VibeAlarm Main Application Calendar View"
+          "caption": "Monthly Calendar & Schedule View"
         },
         {
           "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/a966616016f1a752b7e20cfe0445543383a48ffb587d2dc977ddb06fb546960b.png",
-          "caption": "Alarm Configuration Panel"
+          "caption": "Custom Alarm Setup & Notification Triggers"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/b10ce748383ff61515f707233baacdc41dabae5ddb4aa14f9bc9ae8cb6743e7a.png",
+          "caption": "Application Dashboard & System Stats"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/26e1716360c95649f557ca2a57a4cd4fe95c7594e61b5d7340e889cb8bb7bc0a.png",
+          "caption": "Task Management & Daily To-Dos"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/b0d72f2348c7d4788d8f9309f288506c0ab8676ff49de1daba6a0e4bf3592b51.png",
+          "caption": "Alarm History & Routine Log"
+        },
+        {
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/1fbaa2c70f4c384ebe4eb90844093bf009d80d25281131b2f1494e8f9375e13d.png",
+          "caption": "Ambient Themes & Startup Settings"
         }
       ],
       "repo_url": "https://github.com/JeptahIldefonso/VibeAlarm.git",
       "gdrive_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
       "demo_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
-      "install_instructions": "### Installation\n1. Download installer via the Google Drive link.\n2. Run the executable on your desktop.",
+      "install_instructions": "### Quick Installation Guide\n1. Click **Install via GDrive** above to download the installer.\n2. Run the executable and allow desktop shortcut creation.\n3. Launch VibeAlarm and set your first reminder!",
       "tech_stack": ["Desktop", "Python", "Offline"],
       "sort_order": 1,
       "is_featured": true,

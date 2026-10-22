@@ -32,7 +32,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
     return Array.from(set).slice(0, 8); // Top tags
   }, [initialApps]);
 
-  // Live real-time search filtering
+  // Live real-time search filtering with multi-word & punctuation-insensitive matching
   const filteredApps = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     return initialApps.filter((app) => {
@@ -46,16 +46,21 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         return false;
       }
 
-      // Search query filter (matches title, tagline, description, tech stack)
+      // Search query filter (matches title, slug, tagline, description, tech stack)
       if (!q) return true;
 
-      const titleMatch = app.title.toLowerCase().includes(q);
-      const taglineMatch = app.tagline.toLowerCase().includes(q);
-      const descMatch = (app.description || "").toLowerCase().includes(q);
-      const techMatch = app.tech_stack?.some((t) => t.toLowerCase().includes(q));
-      const categoryMatch = app.category.toLowerCase().includes(q);
+      const cleanQ = q.replace(/[^a-z0-9]/g, "");
+      const cleanTitle = app.title.toLowerCase().replace(/[^a-z0-9]/g, "");
+      const cleanSlug = app.slug.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-      return titleMatch || taglineMatch || descMatch || techMatch || categoryMatch;
+      const searchable = `${app.title} ${app.slug} ${app.tagline} ${app.description || ""} ${app.category} ${(app.tech_stack || []).join(" ")}`.toLowerCase();
+      const tokens = q.split(/\s+/).filter(Boolean);
+      const tokensMatch = tokens.length > 0 && tokens.every((tok) => searchable.includes(tok));
+
+      const normalizedMatch =
+        cleanQ.length > 0 && (cleanTitle.includes(cleanQ) || cleanSlug.includes(cleanQ));
+
+      return tokensMatch || normalizedMatch;
     });
   }, [initialApps, searchQuery, selectedCategory, selectedTech]);
 
