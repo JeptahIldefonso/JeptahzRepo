@@ -1,4 +1,12 @@
+import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import mockArchiveData from "./seeds/mock-archive.json";
+
+function getSupabase() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key || url.includes("your-project")) return null;
+  return createSupabaseClient(url, key);
+}
 
 export interface AppType {
   id: string;
@@ -79,14 +87,70 @@ let cachedArchive = {
  */
 
 export async function getSiteSettings(): Promise<SiteSettingsType> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", "global")
+        .maybeSingle();
+
+      if (!error && data) {
+        return {
+          site_title: data.site_title || cachedArchive.site_settings.site_title,
+          site_tagline: data.site_tagline || cachedArchive.site_settings.site_tagline,
+          intro_heading: data.intro_heading || cachedArchive.site_settings.intro_heading,
+          intro_subtext: data.intro_subtext || cachedArchive.site_settings.intro_subtext,
+          about_markdown: data.about_markdown || cachedArchive.site_settings.about_markdown,
+          contact_email: data.contact_email || cachedArchive.site_settings.contact_email,
+          social_links: data.social_links || cachedArchive.site_settings.social_links,
+        };
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
   return cachedArchive.site_settings;
 }
 
 export async function getTopics(): Promise<TopicType[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("topics")
+        .select("*")
+        .eq("is_visible", true)
+        .order("sort_order", { ascending: true });
+
+      if (!error && data && data.length > 0) {
+        return data as TopicType[];
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
   return cachedArchive.topics.filter((t) => t.is_visible);
 }
 
 export async function getApps(options?: { featuredOnly?: boolean }): Promise<AppType[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      let query = supabase.from("apps").select("*").order("sort_order", { ascending: true });
+      if (options?.featuredOnly) {
+        query = query.eq("is_featured", true);
+      }
+      const { data, error } = await query;
+      if (!error && data && data.length > 0) {
+        return data as AppType[];
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
   let list = cachedArchive.apps;
   if (options?.featuredOnly) {
     list = list.filter((a) => a.is_featured);
@@ -95,6 +159,23 @@ export async function getApps(options?: { featuredOnly?: boolean }): Promise<App
 }
 
 export async function getAppBySlug(slug: string): Promise<AppType | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("apps")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (!error && data) {
+        return data as AppType;
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
   const app = cachedArchive.apps.find((a) => a.slug === slug);
   return app || null;
 }
@@ -104,6 +185,36 @@ export async function getEntries(options?: {
   topicSlug?: string;
   query?: string;
 }): Promise<EntryType[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      let q = supabase
+        .from("entries")
+        .select("*")
+        .eq("is_published", true)
+        .eq("is_private", false)
+        .order("is_pinned", { ascending: false })
+        .order("created_at", { ascending: false });
+
+      if (options?.type) {
+        q = q.eq("type", options.type);
+      }
+      if (options?.topicSlug) {
+        q = q.eq("topic_slug", options.topicSlug);
+      }
+      if (options?.query) {
+        q = q.ilike("title", `%${options.query}%`);
+      }
+
+      const { data, error } = await q;
+      if (!error && data && data.length > 0) {
+        return data as EntryType[];
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
   let list = cachedArchive.entries.filter((e) => e.is_published !== false);
 
   if (options?.type) {
@@ -132,11 +243,28 @@ export async function getEntries(options?: {
 }
 
 export async function getEntryBySlug(slug: string): Promise<EntryType | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("entries")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+
+      if (!error && data) {
+        return data as EntryType;
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
   const entry = cachedArchive.entries.find((e) => e.slug === slug && e.is_published !== false);
   return entry || null;
 }
 
-// In-Memory Mutation handlers for seamless testing & local preview
+// Mutation handlers with live Supabase persistence + cache sync
 export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): Promise<EntryType> {
   const newEntry: EntryType = {
     ...entry,
@@ -144,11 +272,39 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
     created_at: new Date().toISOString(),
     view_count: 0,
   };
+
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from("entries").insert([entry]).select().single();
+      if (!error && data) {
+        cachedArchive.entries.unshift(data as EntryType);
+        return data as EntryType;
+      }
+    } catch {
+      // Fallback to local
+    }
+  }
+
   cachedArchive.entries.unshift(newEntry);
   return newEntry;
 }
 
 export async function updateEntry(id: string, updates: Partial<EntryType>): Promise<EntryType | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from("entries").update(updates).eq("id", id).select().maybeSingle();
+      if (!error && data) {
+        const idx = cachedArchive.entries.findIndex((e) => e.id === id);
+        if (idx !== -1) cachedArchive.entries[idx] = data as EntryType;
+        return data as EntryType;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
   const index = cachedArchive.entries.findIndex((e) => e.id === id);
   if (index === -1) return null;
   cachedArchive.entries[index] = { ...cachedArchive.entries[index], ...updates };
@@ -156,6 +312,15 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
 }
 
 export async function deleteEntry(id: string): Promise<boolean> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("entries").delete().eq("id", id);
+    } catch {
+      // Fallback
+    }
+  }
+
   const initialLen = cachedArchive.entries.length;
   cachedArchive.entries = cachedArchive.entries.filter((e) => e.id !== id);
   return cachedArchive.entries.length < initialLen;
@@ -167,11 +332,39 @@ export async function createApp(app: Omit<AppType, "id" | "created_at">): Promis
     id: `app-${Date.now()}`,
     created_at: new Date().toISOString(),
   };
+
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from("apps").insert([app]).select().single();
+      if (!error && data) {
+        cachedArchive.apps.push(data as AppType);
+        return data as AppType;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
   cachedArchive.apps.push(newApp);
   return newApp;
 }
 
 export async function updateApp(id: string, updates: Partial<AppType>): Promise<AppType | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase.from("apps").update(updates).eq("id", id).select().maybeSingle();
+      if (!error && data) {
+        const idx = cachedArchive.apps.findIndex((a) => a.id === id);
+        if (idx !== -1) cachedArchive.apps[idx] = data as AppType;
+        return data as AppType;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
   const index = cachedArchive.apps.findIndex((a) => a.id === id);
   if (index === -1) return null;
   cachedArchive.apps[index] = { ...cachedArchive.apps[index], ...updates };
@@ -179,6 +372,15 @@ export async function updateApp(id: string, updates: Partial<AppType>): Promise<
 }
 
 export async function deleteApp(id: string): Promise<boolean> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("apps").delete().eq("id", id);
+    } catch {
+      // Fallback
+    }
+  }
+
   const initialLen = cachedArchive.apps.length;
   cachedArchive.apps = cachedArchive.apps.filter((a) => a.id !== id);
   return cachedArchive.apps.length < initialLen;

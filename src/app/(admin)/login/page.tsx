@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Lock, ArrowLeft, ArrowRight, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/lib/supabase/client";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -18,10 +19,32 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError(null);
 
-    // Mock authentication bypass for seamless local resilience
+    const supabase = createClient();
+    if (supabase) {
+      try {
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (authError) {
+          setError(authError.message);
+          setLoading(false);
+          return;
+        }
+
+        router.push("/admin");
+        return;
+      } catch (err: any) {
+        setError(err.message || "Failed to authenticate with Supabase");
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Mock authentication bypass if Supabase is not configured
     setTimeout(() => {
       setLoading(false);
-      // In local mode, bypass directly to admin studio
       router.push("/admin");
     }, 600);
   };
