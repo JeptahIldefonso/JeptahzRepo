@@ -19,6 +19,7 @@ import {
   Lock,
   PanelLeftClose,
   PanelLeftOpen,
+  Shield,
 } from "lucide-react";
 import { NAVIGATION_ITEMS, CATEGORY_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -33,6 +34,7 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   Lightbulb: <Lightbulb className="w-4 h-4 stroke-[1.5]" />,
   User: <User className="w-4 h-4 stroke-[1.5]" />,
   Send: <Send className="w-4 h-4 stroke-[1.5]" />,
+  Shield: <Shield className="w-4 h-4 stroke-[1.5]" />,
 };
 
 interface SidebarProps {
@@ -76,7 +78,7 @@ export function Sidebar({
     }
   }
 
-  const categories = ["browse", "explore", "more", "info"] as const;
+  const categories = ["browse", "explore", "more", "manage", "info"] as const;
 
   const renderNav = (isFloatingDesktop = false) => (
     <div className="flex h-full flex-col justify-between p-4 sm:p-5 select-none">

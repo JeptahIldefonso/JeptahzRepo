@@ -2,7 +2,7 @@ export interface NavItem {
   slug: string;
   href: string;
   label: string;
-  category: "browse" | "explore" | "more" | "info";
+  category: "browse" | "explore" | "more" | "manage" | "info";
   icon: string;
   description: string;
 }
@@ -62,6 +62,16 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     description: "Tools, references, and bookmarks worth sharing",
   },
 
+  // Manage
+  {
+    slug: "admin",
+    href: "/admin",
+    label: "Admin Panel",
+    category: "manage",
+    icon: "Shield",
+    description: "Manage repository entries, projects, and media",
+  },
+
   // Info
   {
     slug: "about",
@@ -85,5 +95,6 @@ export const CATEGORY_LABELS: Record<string, string> = {
   browse: "Browse",
   explore: "Explore",
   more: "More",
+  manage: "Manage",
   info: "Info",
 };

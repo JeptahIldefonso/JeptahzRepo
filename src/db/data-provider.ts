@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import mockArchiveData from "./seeds/mock-archive.json";
 
@@ -6,6 +8,17 @@ function getSupabase() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (!url || !key || url.includes("your-project")) return null;
   return createSupabaseClient(url, key);
+}
+
+function persistCachedArchive() {
+  try {
+    const seedPath = path.join(process.cwd(), "src", "db", "seeds", "mock-archive.json");
+    if (fs.existsSync(seedPath)) {
+      fs.writeFileSync(seedPath, JSON.stringify(cachedArchive, null, 2), "utf-8");
+    }
+  } catch (err) {
+    // Non-blocking in serverless/read-only environments
+  }
 }
 
 export interface AppType {
@@ -299,6 +312,7 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
       const { data, error } = await supabase.from("entries").insert([entry]).select().single();
       if (!error && data) {
         cachedArchive.entries.unshift(data as EntryType);
+        persistCachedArchive();
         return data as EntryType;
       }
     } catch {
@@ -307,6 +321,7 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
   }
 
   cachedArchive.entries.unshift(newEntry);
+  persistCachedArchive();
   return newEntry;
 }
 
@@ -318,6 +333,7 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
       if (!error && data) {
         const idx = cachedArchive.entries.findIndex((e) => e.id === id);
         if (idx !== -1) cachedArchive.entries[idx] = data as EntryType;
+        persistCachedArchive();
         return data as EntryType;
       }
     } catch {
@@ -328,6 +344,7 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
   const index = cachedArchive.entries.findIndex((e) => e.id === id);
   if (index === -1) return null;
   cachedArchive.entries[index] = { ...cachedArchive.entries[index], ...updates };
+  persistCachedArchive();
   return cachedArchive.entries[index];
 }
 
@@ -343,6 +360,7 @@ export async function deleteEntry(id: string): Promise<boolean> {
 
   const initialLen = cachedArchive.entries.length;
   cachedArchive.entries = cachedArchive.entries.filter((e) => e.id !== id);
+  persistCachedArchive();
   return cachedArchive.entries.length < initialLen;
 }
 
@@ -359,6 +377,7 @@ export async function createApp(app: Omit<AppType, "id" | "created_at">): Promis
       const { data, error } = await supabase.from("apps").insert([app]).select().single();
       if (!error && data) {
         cachedArchive.apps.push(data as AppType);
+        persistCachedArchive();
         return data as AppType;
       }
     } catch {
@@ -367,6 +386,7 @@ export async function createApp(app: Omit<AppType, "id" | "created_at">): Promis
   }
 
   cachedArchive.apps.push(newApp);
+  persistCachedArchive();
   return newApp;
 }
 
@@ -378,6 +398,7 @@ export async function updateApp(id: string, updates: Partial<AppType>): Promise<
       if (!error && data) {
         const idx = cachedArchive.apps.findIndex((a) => a.id === id);
         if (idx !== -1) cachedArchive.apps[idx] = data as AppType;
+        persistCachedArchive();
         return data as AppType;
       }
     } catch {
@@ -388,6 +409,7 @@ export async function updateApp(id: string, updates: Partial<AppType>): Promise<
   const index = cachedArchive.apps.findIndex((a) => a.id === id);
   if (index === -1) return null;
   cachedArchive.apps[index] = { ...cachedArchive.apps[index], ...updates };
+  persistCachedArchive();
   return cachedArchive.apps[index];
 }
 
@@ -403,5 +425,6 @@ export async function deleteApp(id: string): Promise<boolean> {
 
   const initialLen = cachedArchive.apps.length;
   cachedArchive.apps = cachedArchive.apps.filter((a) => a.id !== id);
+  persistCachedArchive();
   return cachedArchive.apps.length < initialLen;
 }
