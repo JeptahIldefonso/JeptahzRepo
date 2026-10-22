@@ -118,13 +118,43 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         </div>
       </div>
 
-      {/* ── Modern Minimalist Toolbar: Filters + Compact Search ── */}
-      <div className="space-y-2.5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          {/* Category Filter Tabs */}
-          <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+      {/* ── Modern Minimalist Toolbar: Search on Left, Filters on Right, Tags Below ── */}
+      <div className="space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          {/* Compact Minimal Search Input (Positioned on Left) */}
+          <div className="relative w-full sm:w-56 md:w-64">
+            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search projects..."
+              className="w-full pl-8 pr-9 py-1 h-7.5 bg-white/80 border border-black/15 focus:border-neutral-800 focus:bg-white rounded-[3px] text-[11px] font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
+            />
+            {searchQuery ? (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
+                aria-label="Clear search"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            ) : (
+              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1 py-0.5 rounded border border-black/10">
+                  /
+                </kbd>
+              </div>
+            )}
+          </div>
+
+          {/* Category Filter Tabs (Positioned on Right, Smaller, Dark Gray Hover & Selected) */}
+          <div className="flex flex-wrap items-center gap-1 text-[11px] font-mono">
             <span className="text-[10px] tracking-wider text-black/40 uppercase mr-1">
-              Filter:
+              Category:
             </span>
 
             <button
@@ -132,10 +162,10 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 setSelectedCategory("all");
                 setSelectedTech("all");
               }}
-              className={`px-2.5 py-1 rounded-[2px] transition-colors cursor-pointer ${
+              className={`px-2 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
                 selectedCategory === "all" && selectedTech === "all"
-                  ? "bg-black text-white font-medium"
-                  : "bg-white/60 border border-black/15 text-black/70 hover:border-black hover:text-black"
+                  ? "bg-neutral-800 text-white font-medium border border-neutral-800"
+                  : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
               }`}
             >
               All ({initialApps.length})
@@ -147,50 +177,20 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 onClick={() => {
                   setSelectedCategory(selectedCategory === cat ? "all" : cat);
                 }}
-                className={`px-2.5 py-1 rounded-[2px] transition-colors cursor-pointer ${
+                className={`px-2 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-black text-white font-medium"
-                    : "bg-white/60 border border-black/15 text-black/70 hover:border-black hover:text-black"
+                    ? "bg-neutral-800 text-white font-medium border border-neutral-800"
+                    : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
                 }`}
               >
                 {cat}
               </button>
             ))}
           </div>
-
-          {/* Compact Modern Minimal Search Input */}
-          <div className="relative w-full sm:w-60 md:w-64">
-            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
-              <Search className="w-3.5 h-3.5 stroke-[2]" />
-            </div>
-            <input
-              ref={searchInputRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search projects..."
-              className="w-full pl-8 pr-10 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-black focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
-            />
-            {searchQuery ? (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
-                aria-label="Clear search"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1.5 py-0.5 rounded border border-black/10">
-                  /
-                </kbd>
-              </div>
-            )}
-          </div>
         </div>
 
-        {/* Tech Stack Pills (Subtle Secondary Filter) */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono pt-0.5">
+        {/* Tech Stack Pills (Smaller, Dark Gray Hover & Selected) */}
+        <div className="flex flex-wrap items-center gap-1 text-[10px] font-mono pt-0.5">
           <span className="text-[10px] tracking-wider text-black/35 uppercase mr-1">
             Tags:
           </span>
@@ -200,10 +200,10 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               onClick={() => {
                 setSelectedTech(selectedTech === tech ? "all" : tech);
               }}
-              className={`px-2 py-0.5 rounded-[2px] text-[11px] transition-colors cursor-pointer ${
+              className={`px-1.5 py-0.5 rounded-[2px] transition-all duration-150 cursor-pointer ${
                 selectedTech === tech
-                  ? "bg-black text-white font-medium"
-                  : "bg-black/[0.03] border border-black/10 text-black/60 hover:border-black/30 hover:text-black"
+                  ? "bg-neutral-800 text-white font-medium border border-neutral-800"
+                  : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
               }`}
             >
               {tech}
@@ -213,7 +213,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
           {(searchQuery || selectedCategory !== "all" || selectedTech !== "all") && (
             <button
               onClick={resetFilters}
-              className="ml-auto text-[11px] text-black/60 hover:text-black underline cursor-pointer"
+              className="ml-auto text-[10px] text-black/60 hover:text-neutral-900 underline cursor-pointer"
             >
               Reset
             </button>
