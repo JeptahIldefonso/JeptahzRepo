@@ -28,6 +28,14 @@ export interface AppType {
   created_at: string;
 }
 
+export interface EntryMediaItem {
+  id: string;
+  type: "image" | "video";
+  url: string;
+  caption?: string;
+  file_size?: number;
+}
+
 export interface EntryType {
   id: string;
   title: string;
@@ -42,6 +50,8 @@ export interface EntryType {
   external_url?: string | null;
   cover_image_url?: string | null;
   gallery_images?: string[];
+  media_items?: EntryMediaItem[];
+  video_url?: string | null;
   metadata?: Record<string, any>;
   tags: string[];
   access_level?: string;
@@ -50,6 +60,7 @@ export interface EntryType {
   is_pinned?: boolean;
   is_published?: boolean;
   view_count?: number;
+  likes_count?: number;
   created_at: string;
 }
 

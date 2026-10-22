@@ -219,6 +219,41 @@
   ],
   "entries": [
     {
+      "id": "entry-6",
+      "title": "VibeAlarm Desktop & Offline Architecture Walkthrough",
+      "slug": "vibealarm-desktop-offline-architecture",
+      "type": "doc",
+      "topic_slug": "docs",
+      "summary": "A deep dive into how VibeAlarm manages persistent desktop alarms, audio triggers, and local-first SQLite persistence with zero network dependency.",
+      "content": "### Building a Zero-Distraction Local Desktop Utility\n\nWhen building desktop software that runs 24/7 on boot, keeping memory consumption low (<30MB RAM) and latency predictable is everything.\n\nHere's how we structured VibeAlarm:\n- **Event-Driven Alarm Daemon:** Uses a background timer tick with zero CPU polling spinlocks.\n- **Local SQLite Store:** Saves scheduled tasks and routine histories directly in your OS app data directory.\n- **Native Audio Triggers:** Direct sound buffer playback with smooth fade-in.\n\nCheck out the demo video and screenshot previews below!",
+      "metadata": {
+        "read_time": "4 min read",
+        "difficulty": "Intermediate",
+        "tags": ["Desktop", "Python", "Architecture"]
+      },
+      "tags": ["Desktop", "Python", "Architecture", "OfflineFirst"],
+      "media_items": [
+        {
+          "id": "m-1",
+          "type": "image",
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/70440f87ad09e76e8ca3156341e2209a65a8349e6e7884934e74afebce03bc97.png",
+          "caption": "Monthly Calendar & Schedule View (Full HD)"
+        },
+        {
+          "id": "m-2",
+          "type": "image",
+          "url": "https://f78hkirlzn5kxtyj.public.blob.vercel-storage.com/assets/b10ce748383ff61515f707233baacdc41dabae5ddb4aa14f9bc9ae8cb6743e7a.png",
+          "caption": "Application Dashboard & System Stats"
+        }
+      ],
+      "video_url": "https://www.w3schools.com/html/mov_bbb.mp4",
+      "is_pinned": false,
+      "is_published": true,
+      "view_count": 489,
+      "likes_count": 28,
+      "created_at": "2026-10-21T18:00:00Z"
+    },
+    {
       "id": "entry-1",
       "title": "Raft vs Paxos: How Distributed Systems Stay in Sync",
       "slug": "distributed-consensus-raft-vs-paxos",
@@ -226,36 +261,38 @@
       "topic_slug": "docs",
       "cover_image_url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85",
       "summary": "A breakdown of how Raft and Paxos keep data consistent across multiple servers, even when things go wrong.",
-      "content": "## How Do Distributed Systems Agree on Data?\n\nWhen you have multiple servers, they need a way to agree on what the current state is. That's what consensus protocols like **Raft** and **Paxos** solve.\n\n![Raft Consensus Node Cluster Architecture](https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85)\n\n### Raft's 3 Key Rules\n\n1. **One leader at a time:** Only one server is in charge during any given term.\n2. **Leader only adds:** The leader never deletes or overwrites its own log — it only appends.\n3. **Logs must match:** If two servers have the same entry at the same position, everything before that point is identical too.\n\n```python\nclass RaftNode:\n    def __init__(self, node_id, peers):\n        self.node_id = node_id\n        self.peers = peers\n        self.current_term = 0\n        self.voted_for = None\n        self.log = []\n        self.state = 'FOLLOWER'\n\n    def start_election(self):\n        self.state = 'CANDIDATE'\n        self.current_term += 1\n        self.voted_for = self.node_id\n        # Ask other nodes to vote for us\n```\n\n### What Happens During a Network Split?\n\nIf the network splits in half, Raft makes sure only the side with the majority can commit new data. The smaller side can still receive writes, but they won't be saved permanently until the network heals.",
+      "content": "## How Do Distributed Systems Agree on Data?\n\nWhen you have multiple servers, they need a way to agree on what the current state is. That's what consensus protocols like **Raft** and **Paxos** solve.\n\n### Raft's 3 Key Rules\n\n1. **One leader at a time:** Only one server is in charge during any given term.\n2. **Leader only adds:** The leader never deletes or overwrites its own log — it only appends.\n3. **Logs must match:** If two servers have the same entry at the same position, everything before that point is identical too.\n\n```python\nclass RaftNode:\n    def __init__(self, node_id, peers):\n        self.node_id = node_id\n        self.peers = peers\n        self.current_term = 0\n        self.voted_for = None\n        self.log = []\n        self.state = 'FOLLOWER'\n\n    def start_election(self):\n        self.state = 'CANDIDATE'\n        self.current_term += 1\n        self.voted_for = self.node_id\n```\n\n### What Happens During a Network Split?\n\nIf the network splits in half, Raft makes sure only the side with the majority can commit new data. The smaller side can still receive writes, but they won't be saved permanently until the network heals.",
       "metadata": {
         "read_time": "8 min read",
         "difficulty": "Advanced",
         "tags": ["Distributed Systems", "Algorithms"]
       },
-      "tags": ["Distributed Systems", "Algorithms"],
+      "tags": ["DistributedSystems", "Algorithms", "Concurrency"],
+      "media_items": [
+        {
+          "id": "m-3",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1600&q=85",
+          "caption": "Distributed Server Cluster Architecture (Full HD)"
+        },
+        {
+          "id": "m-4",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1600&q=85",
+          "caption": "Fiber Network Node Relays"
+        },
+        {
+          "id": "m-5",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1600&q=85",
+          "caption": "Consensus State Machine Logs"
+        }
+      ],
       "is_pinned": true,
       "is_published": true,
       "view_count": 342,
+      "likes_count": 42,
       "created_at": "2026-09-20T12:00:00Z"
-    },
-    {
-      "id": "entry-2",
-      "title": "CS 350: Operating Systems — Course Notes",
-      "slug": "cs350-operating-systems-curriculum",
-      "type": "course",
-      "topic_slug": "courses",
-      "summary": "My notes from CS 350 covering virtual memory, concurrency, file systems, and Linux kernel basics.",
-      "content": "## Course Info\n\n- **Subject:** CS 350 — Operating Systems\n- **Prerequisites:** C programming, Computer Organization\n- **Textbook:** *Operating Systems: Three Easy Pieces*\n\n### Topics Covered\n\n#### 1. Virtual Memory & Page Tables\n- How the CPU translates virtual addresses to physical ones.\n- What happens when a page fault occurs.\n- Page replacement algorithms (Clock, LRU).\n\n#### 2. Concurrency & Locks\n- How threads share memory safely.\n- Mutexes, semaphores, and condition variables.\n- Classic problems: Dining Philosophers, Producer-Consumer.\n\n#### 3. File Systems\n- How files are stored on disk (inodes, blocks).\n- Journaling: how file systems recover from crashes.",
-      "metadata": {
-        "semester": "Fall 2026",
-        "credits": 4,
-        "code": "CS-350"
-      },
-      "tags": ["Operating Systems", "Linux", "C"],
-      "is_pinned": true,
-      "is_published": true,
-      "view_count": 512,
-      "created_at": "2026-09-01T09:00:00Z"
     },
     {
       "id": "entry-3",
@@ -264,15 +301,24 @@
       "type": "doc",
       "topic_slug": "docs",
       "summary": "How to break down DP problems step by step, with examples from common interview and LeetCode questions.",
-      "content": "## Making DP Less Scary\n\nA lot of people struggle with dynamic programming because they try to see all the recursive paths at once. Here's a simpler way to think about it.\n\n### 4 Steps to Solve Any DP Problem\n1. **What's the subproblem?** What's the smallest piece of info you need to describe where you are?\n2. **How do you move forward?** How does the current step relate to the previous one?\n3. **What's the starting point?** What's the answer when the input is trivially small?\n4. **Which direction do you build?** Bottom-up or top-down?",
+      "content": "## Making DP Less Scary\n\nA lot of people struggle with dynamic programming because they try to see all the recursive paths at once. Here's a simpler way to think about it.\n\n### 4 Steps to Solve Any DP Problem\n1. **What's the subproblem?** What's the smallest piece of info you need to describe where you are?\n2. **How do you move forward?** How does the current step relate to the previous one?\n3. **What's the starting point?** What's the answer when the input is trivially small?\n4. **Which direction do you build?** Bottom-up or top-down?\n\n```python\ndef fib_memo(n, memo={}):\n    if n in memo: return memo[n]\n    if n <= 1: return n\n    memo[n] = fib_memo(n-1, memo) + fib_memo(n-2, memo)\n    return memo[n]\n```",
       "metadata": {
         "read_time": "6 min read",
         "difficulty": "Intermediate"
       },
-      "tags": ["Algorithms", "LeetCode", "Problem Solving"],
+      "tags": ["Algorithms", "LeetCode", "ProblemSolving"],
+      "media_items": [
+        {
+          "id": "m-6",
+          "type": "image",
+          "url": "https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=1600&q=85",
+          "caption": "Dynamic Programming Memoization Tree Diagram"
+        }
+      ],
       "is_pinned": false,
       "is_published": true,
       "view_count": 219,
+      "likes_count": 19,
       "created_at": "2026-10-05T15:00:00Z"
     },
     {
