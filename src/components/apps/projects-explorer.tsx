@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Search, X, ExternalLink, Code2, ArrowRight, Sparkles } from "lucide-react";
 import { AppType } from "@/db/data-provider";
@@ -14,6 +14,26 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<string>("all");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global keyboard shortcut to focus search: '/' or 'Cmd+K' / 'Ctrl+K'
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      } else if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Extract all unique categories and tech stacks
   const categories = useMemo(() => {
@@ -98,70 +118,82 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         </div>
       </div>
 
-      {/* ── Interactive Search Engine & Filters ── */}
-      <div className="space-y-4">
-        {/* Main Search Bar */}
-        <div className="relative w-full">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-black/40">
-            <Search className="w-4 h-4 stroke-[1.75]" />
-          </div>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder='Search projects (e.g. "VibeAlarm", "Flutter", "Mobile", "Python")...'
-            className="w-full pl-10 pr-10 py-2.5 bg-white/70 border border-black/15 focus:border-black rounded-[2px] text-xs sm:text-sm font-mono text-black placeholder:text-black/40 focus:outline-none transition-colors shadow-2xs"
-          />
-          {searchQuery && (
+      {/* ── Modern Minimalist Toolbar: Filters + Compact Search ── */}
+      <div className="space-y-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          {/* Category Filter Tabs */}
+          <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
+            <span className="text-[10px] tracking-wider text-black/40 uppercase mr-1">
+              Filter:
+            </span>
+
             <button
-              onClick={() => setSearchQuery("")}
-              className="absolute inset-y-0 right-0 pr-3 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
-              aria-label="Clear search"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-
-        {/* Filter Pills: Categories & Tech Badges */}
-        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
-          <span className="text-[10px] tracking-wider text-black/50 uppercase mr-1">
-            Filter:
-          </span>
-
-          <button
-            onClick={() => {
-              setSelectedCategory("all");
-              setSelectedTech("all");
-            }}
-            className={`px-2.5 py-1 rounded-[2px] transition-colors cursor-pointer ${
-              selectedCategory === "all" && selectedTech === "all"
-                ? "bg-black text-white font-medium"
-                : "bg-white/60 border border-black/15 text-black/70 hover:border-black hover:text-black"
-            }`}
-          >
-            All ({initialApps.length})
-          </button>
-
-          {categories.map((cat) => (
-            <button
-              key={cat}
               onClick={() => {
-                setSelectedCategory(selectedCategory === cat ? "all" : cat);
+                setSelectedCategory("all");
+                setSelectedTech("all");
               }}
               className={`px-2.5 py-1 rounded-[2px] transition-colors cursor-pointer ${
-                selectedCategory === cat
+                selectedCategory === "all" && selectedTech === "all"
                   ? "bg-black text-white font-medium"
                   : "bg-white/60 border border-black/15 text-black/70 hover:border-black hover:text-black"
               }`}
             >
-              {cat}
+              All ({initialApps.length})
             </button>
-          ))}
 
-          {/* Key Tech Stack Pills */}
-          <span className="text-black/30 mx-1">|</span>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => {
+                  setSelectedCategory(selectedCategory === cat ? "all" : cat);
+                }}
+                className={`px-2.5 py-1 rounded-[2px] transition-colors cursor-pointer ${
+                  selectedCategory === cat
+                    ? "bg-black text-white font-medium"
+                    : "bg-white/60 border border-black/15 text-black/70 hover:border-black hover:text-black"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
 
+          {/* Compact Modern Minimal Search Input */}
+          <div className="relative w-full sm:w-60 md:w-64">
+            <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            </div>
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search projects..."
+              className="w-full pl-8 pr-10 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-black focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
+            />
+            {searchQuery ? (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
+                aria-label="Clear search"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            ) : (
+              <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+                <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1.5 py-0.5 rounded border border-black/10">
+                  /
+                </kbd>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Tech Stack Pills (Subtle Secondary Filter) */}
+        <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono pt-0.5">
+          <span className="text-[10px] tracking-wider text-black/35 uppercase mr-1">
+            Tags:
+          </span>
           {allTechStacks.map((tech) => (
             <button
               key={tech}
@@ -171,7 +203,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               className={`px-2 py-0.5 rounded-[2px] text-[11px] transition-colors cursor-pointer ${
                 selectedTech === tech
                   ? "bg-black text-white font-medium"
-                  : "bg-black/[0.04] border border-black/10 text-black/60 hover:border-black/40 hover:text-black"
+                  : "bg-black/[0.03] border border-black/10 text-black/60 hover:border-black/30 hover:text-black"
               }`}
             >
               {tech}
@@ -183,7 +215,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               onClick={resetFilters}
               className="ml-auto text-[11px] text-black/60 hover:text-black underline cursor-pointer"
             >
-              Reset Filters
+              Reset
             </button>
           )}
         </div>
