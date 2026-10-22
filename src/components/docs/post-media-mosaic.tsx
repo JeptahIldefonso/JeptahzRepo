@@ -75,13 +75,13 @@ export function PostMediaMosaic({ media, postTitle }: PostMediaMosaicProps) {
       {count === 1 && (
         <div
           onClick={() => setActiveIdx(0)}
-          className="group relative overflow-hidden rounded-[3px] border border-black/10 bg-black/[0.02] cursor-zoom-in"
+          className="group relative overflow-hidden rounded-[6px] border border-black/10 bg-black/[0.02] cursor-zoom-in flex items-center justify-center"
         >
           <img
             src={images[0].url}
             alt={images[0].caption || postTitle}
             draggable="true"
-            className="w-full max-h-[480px] object-cover transition-transform duration-300 group-hover:scale-[1.008]"
+            className="w-full h-auto max-h-[640px] object-contain mx-auto transition-transform duration-300 group-hover:scale-[1.005]"
             loading="lazy"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors pointer-events-none" />

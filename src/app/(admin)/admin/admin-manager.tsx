@@ -1418,11 +1418,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   className="w-full text-sm text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
                 />
 
-                {/* Attached Media Previews (Photos Mosaic) */}
+                {/* Attached Media Previews (Photos Mosaic - Full Uncropped View) */}
                 {editingDoc.media_items && editingDoc.media_items.length > 0 && (
                   <div className="pt-2">
                     <div
-                      className={`grid gap-2 ${
+                      className={`grid gap-2.5 ${
                         editingDoc.media_items.length === 1
                           ? "grid-cols-1"
                           : editingDoc.media_items.length === 2
@@ -1433,12 +1433,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                       {editingDoc.media_items.map((item, idx) => (
                         <div
                           key={item.id || idx}
-                          className="relative group rounded-[8px] overflow-hidden border border-neutral-200 bg-neutral-100"
+                          className="relative group rounded-[10px] overflow-hidden border border-neutral-200 bg-neutral-100/60 flex items-center justify-center p-1"
                         >
                           <img
                             src={item.url}
                             alt={item.caption || "Attached photo"}
-                            className="w-full h-32 object-cover"
+                            className="w-full h-auto max-h-[460px] object-contain rounded-[6px] block"
                           />
                           <button
                             type="button"
@@ -1448,10 +1448,10 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                                 media_items: (prev?.media_items || []).filter((_, i) => i !== idx),
                               }));
                             }}
-                            className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 hover:bg-red-600 text-white transition-colors cursor-pointer"
+                            className="absolute top-2.5 right-2.5 p-1.5 rounded-full bg-black/75 hover:bg-red-600 text-white shadow-md transition-all cursor-pointer"
                             title="Remove photo"
                           >
-                            <X className="w-3.5 h-3.5" />
+                            <X className="w-4 h-4" />
                           </button>
                         </div>
                       ))}
