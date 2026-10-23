@@ -1,11 +1,12 @@
 import React from "react";
-import { getApps, getEntries } from "@/db/data-provider";
+import { getApps, getEntries, getChangelogItems } from "@/db/data-provider";
 import { AdminManager } from "./admin-manager";
 
 export default async function AdminPage() {
-  const [apps, entries] = await Promise.all([
+  const [apps, entries, changelog] = await Promise.all([
     getApps(),
     getEntries({ includeUnpublished: true }),
+    getChangelogItems(),
   ]);
 
   return (
@@ -15,11 +16,15 @@ export default async function AdminPage() {
           Content Manager
         </h1>
         <p className="text-xs sm:text-sm text-fg-muted mt-1">
-          Create, edit, and manage your notes, projects, ideas, links, and courses.
+          Create, edit, and manage your notes, projects, ideas, links, courses, and system changelog.
         </p>
       </div>
 
-      <AdminManager initialApps={apps} initialEntries={entries} />
+      <AdminManager
+        initialApps={apps}
+        initialEntries={entries}
+        initialChangelog={changelog}
+      />
     </div>
   );
 }

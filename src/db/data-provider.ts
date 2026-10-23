@@ -105,12 +105,25 @@ export interface SiteSettingsType {
   social_links: Record<string, string>;
 }
 
+export interface ChangelogItem {
+  id: string;
+  version_tag?: string;
+  category: "feature" | "release" | "fix" | "doc" | "system";
+  title: string;
+  description: string;
+  timestamp: string;
+  href?: string;
+  sort_order: number;
+  created_at: string;
+}
+
 // In-memory runtime cache for fallback / zero-downtime operation
 let cachedArchive = {
   apps: [...(mockArchiveData.apps as any[])],
   entries: [...(mockArchiveData.entries as any[])],
   topics: [...(mockArchiveData.topics as any[])],
   site_settings: { ...(mockArchiveData.site_settings as any) },
+  changelog_items: [...(((mockArchiveData as any).changelog_items || []) as ChangelogItem[])],
 };
 
 /**
@@ -433,3 +446,113 @@ export async function deleteApp(id: string): Promise<boolean> {
   persistCachedArchive();
   return cachedArchive.apps.length < initialLen;
 }
+
+export async function getChangelogItems(): Promise<ChangelogItem[]> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("changelog_items")
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+
+      if (!error && data && data.length > 0) {
+        return data as ChangelogItem[];
+      }
+    } catch {
+      // Fall through to in-memory fallback
+    }
+  }
+
+  return [...cachedArchive.changelog_items].sort((a, b) => {
+    if ((a.sort_order ?? 0) !== (b.sort_order ?? 0)) {
+      return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+    }
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
+}
+
+export async function createChangelogItem(
+  item: Omit<ChangelogItem, "id" | "created_at">
+): Promise<ChangelogItem> {
+  const newItem: ChangelogItem = {
+    ...item,
+    id: `log-${Date.now()}`,
+    sort_order: item.sort_order ?? cachedArchive.changelog_items.length + 1,
+    created_at: new Date().toISOString(),
+  };
+
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("changelog_items")
+        .insert([newItem])
+        .select()
+        .single();
+      if (!error && data) {
+        cachedArchive.changelog_items.unshift(data as ChangelogItem);
+        persistCachedArchive();
+        return data as ChangelogItem;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  cachedArchive.changelog_items.unshift(newItem);
+  persistCachedArchive();
+  return newItem;
+}
+
+export async function updateChangelogItem(
+  id: string,
+  updates: Partial<ChangelogItem>
+): Promise<ChangelogItem | null> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from("changelog_items")
+        .update(updates)
+        .eq("id", id)
+        .select()
+        .maybeSingle();
+      if (!error && data) {
+        const idx = cachedArchive.changelog_items.findIndex((c) => c.id === id);
+        if (idx !== -1) cachedArchive.changelog_items[idx] = data as ChangelogItem;
+        persistCachedArchive();
+        return data as ChangelogItem;
+      }
+    } catch {
+      // Fallback
+    }
+  }
+
+  const index = cachedArchive.changelog_items.findIndex((c) => c.id === id);
+  if (index === -1) return null;
+  cachedArchive.changelog_items[index] = {
+    ...cachedArchive.changelog_items[index],
+    ...updates,
+  };
+  persistCachedArchive();
+  return cachedArchive.changelog_items[index];
+}
+
+export async function deleteChangelogItem(id: string): Promise<boolean> {
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("changelog_items").delete().eq("id", id);
+    } catch {
+      // Fallback
+    }
+  }
+
+  const initialLen = cachedArchive.changelog_items.length;
+  cachedArchive.changelog_items = cachedArchive.changelog_items.filter((c) => c.id !== id);
+  persistCachedArchive();
+  return cachedArchive.changelog_items.length < initialLen;
+}
+

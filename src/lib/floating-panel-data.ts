@@ -1,98 +1,90 @@
 /**
- * Right Floating Panel Data & Configuration
- * -----------------------------------------
- * Edit this file to customize the Announcement/Promo banner image,
- * text, action button, and the History/Changelog timeline logs.
+ * Right Side Changelog Panel Data & Configuration
+ * -----------------------------------------------
+ * Formal, authentic repository changelog stream styled in singular brand color #041a24.
+ * Customizable inside Admin Content Manager (/admin).
  */
-
-export interface PromoCardConfig {
-  /** Optional custom banner image URL. Leave empty to use the built-in GitHub Universe pixel banner */
-  bannerImageUrl?: string;
-  /** Badge/Title displayed on the banner (e.g. "UNIVERSE'26" or "JEPTAHZ'26") */
-  title: string;
-  /** Subtitle or short description */
-  description: string;
-  /** Text for the call-to-action button */
-  buttonText: string;
-  /** Link for the action button */
-  buttonHref: string;
-  /** Whether the user can dismiss this card via the 'X' button */
-  dismissible: boolean;
-}
 
 export interface ChangelogItem {
   id: string;
-  /** Time string (e.g. "8 hours ago", "Yesterday", "Oct 23") */
-  timestamp: string;
-  /** Main update headline */
+  version_tag?: string;
+  category: "feature" | "release" | "fix" | "doc" | "system";
   title: string;
-  /** Optional brief description */
-  description?: string;
-  /** Optional link to full doc or external note */
+  description: string;
+  timestamp: string;
   href?: string;
+  sort_order: number;
+  created_at: string;
 }
 
-export interface ChangelogCardConfig {
-  /** Card header title */
+export interface ChangelogPanelConfig {
   title: string;
-  /** Link at the bottom of the changelog */
+  subtitle: string;
   viewAllText: string;
-  /** Link target for view all */
   viewAllHref: string;
-  /** Timeline entries (newest first) */
   items: ChangelogItem[];
 }
 
-export interface RightPanelData {
-  promo: PromoCardConfig;
-  changelog: ChangelogCardConfig;
-}
-
-export const RIGHT_PANEL_DATA: RightPanelData = {
-  // ── Top Announcement / Promo Card ─────────────────────────────
-  promo: {
-    bannerImageUrl: "", // Put a custom image URL here (e.g. "/uploads/banner.png"), or leave empty for default Universe graphic
-    title: "UNIVERSE'26",
-    description: "Join Universe virtually, from anywhere.",
-    buttonText: "Save your seat",
-    buttonHref: "https://github.com/JeptahIldefonso",
-    dismissible: true,
-  },
-
-  // ── Bottom History & Changelog Stream ──────────────────────────
-  changelog: {
-    title: "Latest from our changelog",
-    viewAllText: "View changelog →",
-    viewAllHref: "/home/docs",
-    items: [
-      {
-        id: "log-1",
-        timestamp: "8 hours ago",
-        title: "GitHub Copilot in Visual Studio — September update",
-        description: "Unified authentic GitHub profile avatar across hero and sidebar.",
-        href: "/home/docs",
-      },
-      {
-        id: "log-2",
-        timestamp: "10 hours ago",
-        title: "Custom skills, agents, and MCP servers in usage metrics API",
-        description: "Refined navigation column width and balanced screen margins.",
-        href: "/home/docs",
-      },
-      {
-        id: "log-3",
-        timestamp: "12 hours ago",
-        title: "Global default for Copilot features generally available",
-        description: "Interactive WebGL botanical silk wave shader on intro hero.",
-        href: "/home/docs",
-      },
-      {
-        id: "log-4",
-        timestamp: "14 hours ago",
-        title: "Meta API endpoints updated for Actions blob storage",
-        description: "Verified Newsreader Italic masthead & @websiteBlog identity.",
-        href: "/home/docs",
-      },
-    ],
-  },
+export const INITIAL_CHANGELOG_DATA: ChangelogPanelConfig = {
+  title: "System Changelog",
+  subtitle: "Active Repository Feed",
+  viewAllText: "All Notes & Docs →",
+  viewAllHref: "/home/docs",
+  items: [
+    {
+      id: "log-1",
+      version_tag: "v1.2.4",
+      category: "feature",
+      title: "Unified GitHub profile avatar across platform",
+      description: "Integrated authentic circular GitHub avatar across hero intro, floating sidebar, and community feed.",
+      timestamp: "Today",
+      href: "/home/docs",
+      sort_order: 1,
+      created_at: "2026-10-23T12:00:00Z",
+    },
+    {
+      id: "log-2",
+      version_tag: "v1.2.3",
+      category: "system",
+      title: "Refined sidebar & optical screen centering",
+      description: "Adjusted navigation column geometry to keep reading flow perfectly centered across high-res displays.",
+      timestamp: "Yesterday",
+      href: "/home/docs",
+      sort_order: 2,
+      created_at: "2026-10-22T16:30:00Z",
+    },
+    {
+      id: "log-3",
+      version_tag: "v1.2.2",
+      category: "feature",
+      title: "WebGL botanical silk wave hero shader",
+      description: "Deployed GPU-accelerated interactive silk wave backdrop on entry view with smooth cursor reaction.",
+      timestamp: "Oct 20",
+      href: "/home/docs",
+      sort_order: 3,
+      created_at: "2026-10-20T10:15:00Z",
+    },
+    {
+      id: "log-4",
+      version_tag: "v1.2.1",
+      category: "doc",
+      title: "Editorial typography & verified author identity",
+      description: "Aligned Newsreader serif mastheads, Geist sans body text, and verified @websiteBlog identity badges.",
+      timestamp: "Oct 18",
+      href: "/home/docs",
+      sort_order: 4,
+      created_at: "2026-10-18T09:00:00Z",
+    },
+    {
+      id: "log-5",
+      version_tag: "v1.2.0",
+      category: "release",
+      title: "Public archive initial release",
+      description: "Launched open documentation vault for systems programming notes, university courses, and project builds.",
+      timestamp: "Oct 15",
+      href: "/home/docs",
+      sort_order: 5,
+      created_at: "2026-10-15T08:00:00Z",
+    },
+  ],
 };

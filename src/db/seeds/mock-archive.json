@@ -1,68 +1,4 @@
 {
-  "site_settings": {
-    "site_title": "JeptahzRepo",
-    "site_tagline": "A CS student's collection of notes, projects, and ideas",
-    "intro_heading": "Notes, Projects & Ideas",
-    "intro_subtext": "Notes, projects, courses, and ideas — all in one place.",
-    "about_markdown": "### About JeptahzRepo\n\nHey, I'm Jeptah — a Computer Science student sharing what I'm learning and building.\n\nHere you'll find:\n- **Notes & Guides:** Things I've learned about algorithms, systems, web dev, and more.\n- **Projects:** Apps and tools I've built or I'm working on.\n- **Courses:** Notes from CS courses I've taken.\n- **Ideas & Logs:** Random thoughts, experiments, and dev journals.",
-    "contact_email": "jeptah@example.com",
-    "social_links": {
-      "github": "https://github.com/JeptahIldefonso",
-      "twitter": "https://twitter.com/jeptah",
-      "linkedin": "https://linkedin.com/in/jeptah",
-      "gdrive": "https://drive.google.com/drive"
-    }
-  },
-  "topics": [
-    {
-      "slug": "apps",
-      "name": "Projects",
-      "description": "Software builds, tools, and side projects",
-      "icon": "Box",
-      "sort_order": 1,
-      "is_visible": true
-    },
-    {
-      "slug": "docs",
-      "name": "Notes & Docs",
-      "description": "Technical write-ups, architecture notes, and guides",
-      "icon": "BookOpen",
-      "sort_order": 2,
-      "is_visible": true
-    },
-    {
-      "slug": "courses",
-      "name": "Courses",
-      "description": "Course notes and learning roadmaps",
-      "icon": "GraduationCap",
-      "sort_order": 3,
-      "is_visible": true
-    },
-    {
-      "slug": "projects",
-      "name": "Code & Repos",
-      "description": "Source code and open-source work",
-      "icon": "Code2",
-      "sort_order": 4,
-      "is_visible": true
-    },
-    {
-      "slug": "resources",
-      "name": "Helpful Links",
-      "description": "Tools, references, and bookmarks worth sharing",
-      "icon": "Link2",
-      "sort_order": 5,
-      "is_visible": true
-    },
-    {
-      "slug": "ideas",
-      "name": "Ideas & Logs",
-      "description": "Thoughts, experiments, and dev logs",
-      "icon": "Lightbulb",
-      "sort_order": 6,
-      "is_visible": true
-    }
-  ],
   "apps": [
     {
       "id": "app-1",
@@ -103,7 +39,11 @@
       "gdrive_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
       "demo_url": "https://drive.google.com/file/d/157pyTlz4CZxIaVozc5dCwBsV2Bm-5u3t/view?usp=sharing",
       "install_instructions": "### Quick Installation Guide\n1. Click **Install via GDrive** above to download the installer.\n2. Run the executable and allow desktop shortcut creation.\n3. Launch VibeAlarm and set your first reminder!",
-      "tech_stack": ["Desktop", "Python", "Offline"],
+      "tech_stack": [
+        "Desktop",
+        "Python",
+        "Offline"
+      ],
       "sort_order": 1,
       "is_featured": true,
       "created_at": "2026-10-01T08:00:00Z"
@@ -127,7 +67,11 @@
       "gdrive_url": "https://drive.google.com/file/d/1cMFcLk5YK5C7VbhUEVVmp6nPbxiM-2Qw/view?usp=drive_link",
       "demo_url": "https://drive.google.com/file/d/1cMFcLk5YK5C7VbhUEVVmp6nPbxiM-2Qw/view?usp=drive_link",
       "install_instructions": "### Mobile Install\nDownload the APK package via Google Drive and install on your Android device.",
-      "tech_stack": ["Flutter", "Python", "Dart"],
+      "tech_stack": [
+        "Flutter",
+        "Python",
+        "Dart"
+      ],
       "sort_order": 2,
       "is_featured": true,
       "created_at": "2026-10-05T10:30:00Z"
@@ -155,7 +99,10 @@
       "gdrive_url": "https://drive.google.com/drive/folders/1bg166vjv8NKecpKoeFH4Ab35dyNEvRe_?usp=drive_link",
       "demo_url": "https://drive.google.com/drive/folders/1bg166vjv8NKecpKoeFH4Ab35dyNEvRe_?usp=drive_link",
       "install_instructions": "### Install via Google Drive\nDownload the APK file from Google Drive and enable install from unknown sources.",
-      "tech_stack": ["Kotlin", "React Native"],
+      "tech_stack": [
+        "Kotlin",
+        "React Native"
+      ],
       "sort_order": 3,
       "is_featured": true,
       "created_at": "2026-10-10T14:15:00Z"
@@ -183,7 +130,11 @@
       "gdrive_url": null,
       "demo_url": "https://github.com/JeptahIldefonso/Expenses-Tracker",
       "install_instructions": "Clone and run with npm start in React Native environment.",
-      "tech_stack": ["React Native", "Local Storage", "Node.js"],
+      "tech_stack": [
+        "React Native",
+        "Local Storage",
+        "Node.js"
+      ],
       "sort_order": 4,
       "is_featured": false,
       "created_at": "2026-10-12T09:00:00Z"
@@ -211,7 +162,11 @@
       "gdrive_url": null,
       "demo_url": "https://github.com/JeptahIldefonso/Personal_Mobile_app",
       "install_instructions": "Check GitHub repository for build and setup instructions.",
-      "tech_stack": ["React Native", "JavaScript", "Local Storage"],
+      "tech_stack": [
+        "React Native",
+        "JavaScript",
+        "Local Storage"
+      ],
       "sort_order": 5,
       "is_featured": false,
       "created_at": "2026-10-15T16:20:00Z"
@@ -226,7 +181,12 @@
       "topic_slug": "courses",
       "summary": "Foundational systems programming covering virtual memory, scheduling, concurrency primitives, file systems, and distributed consensus.",
       "content": "### Course Overview & Core Curricula\nThis curriculum covers the core principles behind modern operating systems design and low-level system programming.\n\n#### Core Modules:\n1. **Concurrency & Synchronization:** Semaphores, mutexes, condition variables, monitor locks, and deadlock avoidance (Banker's Algorithm).\n2. **Virtual Memory Architecture:** Address translation, TLBs, multi-level page tables, demand paging, and page replacement policies (LRU, Clock).\n3. **File Systems & Storage:** Inode architecture, journaling, log-structured file systems (LFS), and crash consistency.\n4. **Networking & Distributed Systems:** Socket programming, RPC abstractions, two-phase commit, and Raft consensus.\n\n#### Recommended Textbooks:\n- *Operating Systems: Three Easy Pieces (OSTEP)* — Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau\n- *Computer Systems: A Programmer's Perspective (CS:APP)* — Randal E. Bryant and David R. O'Hallaron",
-      "tags": ["CS162", "OperatingSystems", "Concurrency", "Kernel"],
+      "tags": [
+        "CS162",
+        "OperatingSystems",
+        "Concurrency",
+        "Kernel"
+      ],
       "external_url": "https://cs162.org",
       "is_pinned": true,
       "is_published": true,
@@ -243,9 +203,18 @@
       "metadata": {
         "read_time": "4 min read",
         "difficulty": "Intermediate",
-        "tags": ["Desktop", "Python", "Architecture"]
+        "tags": [
+          "Desktop",
+          "Python",
+          "Architecture"
+        ]
       },
-      "tags": ["Desktop", "Python", "Architecture", "OfflineFirst"],
+      "tags": [
+        "Desktop",
+        "Python",
+        "Architecture",
+        "OfflineFirst"
+      ],
       "media_items": [
         {
           "id": "m-1",
@@ -288,9 +257,16 @@
       "metadata": {
         "read_time": "8 min read",
         "difficulty": "Advanced",
-        "tags": ["Distributed Systems", "Algorithms"]
+        "tags": [
+          "Distributed Systems",
+          "Algorithms"
+        ]
       },
-      "tags": ["DistributedSystems", "Algorithms", "Concurrency"],
+      "tags": [
+        "DistributedSystems",
+        "Algorithms",
+        "Concurrency"
+      ],
       "media_items": [
         {
           "id": "m-3",
@@ -345,7 +321,11 @@
         "read_time": "6 min read",
         "difficulty": "Intermediate"
       },
-      "tags": ["Algorithms", "LeetCode", "ProblemSolving"],
+      "tags": [
+        "Algorithms",
+        "LeetCode",
+        "ProblemSolving"
+      ],
       "media_items": [
         {
           "id": "m-6",
@@ -372,7 +352,11 @@
         "status": "Just an idea",
         "maturity": "Early thoughts"
       },
-      "tags": ["P2P", "Open Source", "Side Project Idea"],
+      "tags": [
+        "P2P",
+        "Open Source",
+        "Side Project Idea"
+      ],
       "is_pinned": false,
       "is_published": true,
       "view_count": 184,
@@ -390,11 +374,136 @@
       "metadata": {
         "category": "Bookmarks"
       },
-      "tags": ["Bookmarks", "Tools", "Learning"],
+      "tags": [
+        "Bookmarks",
+        "Tools",
+        "Learning"
+      ],
       "is_pinned": true,
       "is_published": true,
       "view_count": 145,
       "created_at": "2026-10-10T11:20:00Z"
+    }
+  ],
+  "topics": [
+    {
+      "slug": "apps",
+      "name": "Projects",
+      "description": "Software builds, tools, and side projects",
+      "icon": "Box",
+      "sort_order": 1,
+      "is_visible": true
+    },
+    {
+      "slug": "docs",
+      "name": "Notes & Docs",
+      "description": "Technical write-ups, architecture notes, and guides",
+      "icon": "BookOpen",
+      "sort_order": 2,
+      "is_visible": true
+    },
+    {
+      "slug": "courses",
+      "name": "Courses",
+      "description": "Course notes and learning roadmaps",
+      "icon": "GraduationCap",
+      "sort_order": 3,
+      "is_visible": true
+    },
+    {
+      "slug": "projects",
+      "name": "Code & Repos",
+      "description": "Source code and open-source work",
+      "icon": "Code2",
+      "sort_order": 4,
+      "is_visible": true
+    },
+    {
+      "slug": "resources",
+      "name": "Helpful Links",
+      "description": "Tools, references, and bookmarks worth sharing",
+      "icon": "Link2",
+      "sort_order": 5,
+      "is_visible": true
+    },
+    {
+      "slug": "ideas",
+      "name": "Ideas & Logs",
+      "description": "Thoughts, experiments, and dev logs",
+      "icon": "Lightbulb",
+      "sort_order": 6,
+      "is_visible": true
+    }
+  ],
+  "site_settings": {
+    "site_title": "JeptahzRepo",
+    "site_tagline": "A CS student's collection of notes, projects, and ideas",
+    "intro_heading": "Notes, Projects & Ideas",
+    "intro_subtext": "Notes, projects, courses, and ideas — all in one place.",
+    "about_markdown": "### About JeptahzRepo\n\nHey, I'm Jeptah — a Computer Science student sharing what I'm learning and building.\n\nHere you'll find:\n- **Notes & Guides:** Things I've learned about algorithms, systems, web dev, and more.\n- **Projects:** Apps and tools I've built or I'm working on.\n- **Courses:** Notes from CS courses I've taken.\n- **Ideas & Logs:** Random thoughts, experiments, and dev journals.",
+    "contact_email": "jeptah@example.com",
+    "social_links": {
+      "github": "https://github.com/JeptahIldefonso",
+      "twitter": "https://twitter.com/jeptah",
+      "linkedin": "https://linkedin.com/in/jeptah",
+      "gdrive": "https://drive.google.com/drive"
+    }
+  },
+  "changelog_items": [
+    {
+      "id": "log-1",
+      "version_tag": "v1.2.4",
+      "category": "feature",
+      "title": "Unified GitHub profile avatar across platform",
+      "description": "Integrated authentic circular GitHub avatar across hero intro, floating sidebar, and community feed.",
+      "timestamp": "Today",
+      "href": "/home/docs",
+      "sort_order": 1,
+      "created_at": "2026-10-23T12:00:00Z"
+    },
+    {
+      "id": "log-2",
+      "version_tag": "v1.2.3",
+      "category": "system",
+      "title": "Refined sidebar & optical screen centering",
+      "description": "Adjusted navigation column geometry to keep reading flow perfectly centered across high-res displays.",
+      "timestamp": "Yesterday",
+      "href": "/home/docs",
+      "sort_order": 2,
+      "created_at": "2026-10-22T16:30:00Z"
+    },
+    {
+      "id": "log-3",
+      "version_tag": "v1.2.2",
+      "category": "feature",
+      "title": "WebGL botanical silk wave hero shader",
+      "description": "Deployed GPU-accelerated interactive silk wave backdrop on entry view with smooth cursor reaction.",
+      "timestamp": "Oct 20",
+      "href": "/home/docs",
+      "sort_order": 3,
+      "created_at": "2026-10-20T10:15:00Z"
+    },
+    {
+      "id": "log-4",
+      "version_tag": "v1.2.1",
+      "category": "doc",
+      "title": "Editorial typography & verified author identity",
+      "description": "Aligned Newsreader serif mastheads, Geist sans body text, and verified @websiteBlog identity badges.",
+      "timestamp": "Oct 18",
+      "href": "/home/docs",
+      "sort_order": 4,
+      "created_at": "2026-10-18T09:00:00Z"
+    },
+    {
+      "id": "log-5",
+      "version_tag": "v1.2.0",
+      "category": "release",
+      "title": "Public archive initial release",
+      "description": "Launched open documentation vault for systems programming notes, university courses, and project builds.",
+      "timestamp": "Oct 15",
+      "href": "/home/docs",
+      "sort_order": 5,
+      "created_at": "2026-10-15T08:00:00Z"
     }
   ]
 }

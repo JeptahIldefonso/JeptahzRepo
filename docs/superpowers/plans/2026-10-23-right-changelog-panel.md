@@ -42,7 +42,7 @@
 - Modify: `src/db/data-provider.ts`
 - Modify: `src/db/seeds/mock-archive.json`
 
-- [ ] **Step 1: Define `ChangelogItem` TypeScript interface**
+- [x] **Step 1: Define `ChangelogItem` TypeScript interface**
   Add the interface in `src/db/data-provider.ts`:
   ```ts
   export interface ChangelogItem {
@@ -58,7 +58,7 @@
   }
   ```
 
-- [ ] **Step 2: Seed initial formal changelog entries in `mock-archive.json`**
+- [x] **Step 2: Seed initial formal changelog entries in `mock-archive.json`**
   Add `changelog_items` array in `src/db/seeds/mock-archive.json` documenting real repository milestones:
   - `v1.2.4` - Authentic circular GitHub profile avatar integration across hero, sidebar, and community feed
   - `v1.2.3` - Responsive sidebar width refinement and balanced optical screen centering
@@ -66,7 +66,7 @@
   - `v1.2.1` - Editorial typography alignment and @websiteBlog verified identity
   - `v1.2.0` - Initial public archive launch with multi-format notes & documentation stream
 
-- [ ] **Step 3: Implement CRUD operations in `data-provider.ts`**
+- [x] **Step 3: Implement CRUD operations in `data-provider.ts`**
   Implement:
   - `getChangelogItems(): Promise<ChangelogItem[]>` (sorted by `sort_order` or `created_at` desc)
   - `createChangelogItem(item: Omit<ChangelogItem, "id" | "created_at">): Promise<ChangelogItem>`
@@ -74,7 +74,7 @@
   - `deleteChangelogItem(id: string): Promise<boolean>`
   All write operations call `persistCachedArchive()`.
 
-- [ ] **Step 4: Verify with `npx tsc --noEmit`**
+- [x] **Step 4: Verify with `npx tsc --noEmit`**
   Ensure zero TypeScript errors.
 
 ---
@@ -85,15 +85,15 @@
 - Create: `src/app/api/changelog/route.ts`
 - Create: `src/app/api/changelog/[id]/route.ts`
 
-- [ ] **Step 1: Build `GET` and `POST` in `/api/changelog/route.ts`**
+- [x] **Step 1: Build `GET` and `POST` in `/api/changelog/route.ts`**
   - `GET`: Returns `{ success: true, items: ChangelogItem[] }`
   - `POST`: Validates payload (`title`, `description`, `timestamp`, `category`, `version_tag`), calls `createChangelogItem`, returns created item.
 
-- [ ] **Step 2: Build `PUT` and `DELETE` in `/api/changelog/[id]/route.ts`**
+- [x] **Step 2: Build `PUT` and `DELETE` in `/api/changelog/[id]/route.ts`**
   - `PUT`: Updates existing entry fields and calls `updateChangelogItem`.
   - `DELETE`: Calls `deleteChangelogItem` and returns success status.
 
-- [ ] **Step 3: Test endpoints with PowerShell `Invoke-WebRequest`**
+- [x] **Step 3: Test endpoints with PowerShell `Invoke-WebRequest`**
   Confirm 200 responses on `GET /api/changelog`.
 
 ---
@@ -103,14 +103,14 @@
 **Files:**
 - Modify: `src/app/(admin)/admin/admin-manager.tsx`
 
-- [ ] **Step 1: Add "Changelog" tab to navigation in `admin-manager.tsx`**
+- [x] **Step 1: Add "Changelog" tab to navigation in `admin-manager.tsx`**
   Add a `Changelog` tab alongside Apps, Docs, Courses, Ideas, and Resources, with an activity/history icon (`GitCommit` or `History`).
 
-- [ ] **Step 2: Build Changelog Management Panel**
+- [x] **Step 2: Build Changelog Management Panel**
   - Display a list of current changelog entries with drag/sort or chronological order.
   - Show version tag badge, timestamp, title, description, and action buttons (Edit, Delete).
 
-- [ ] **Step 3: Build "New Entry / Edit Entry" Modal Form**
+- [x] **Step 3: Build "New Entry / Edit Entry" Modal Form**
   Form inputs:
   - Title (e.g. `GitHub profile avatar unified across platform`)
   - Version / Tag (e.g. `v1.2.4` or `FEATURE`)
@@ -120,10 +120,10 @@
   - Optional Target Link (e.g. `/home/docs`)
   - Submit button with instant optimistic UI update.
 
-- [ ] **Step 4: Implement Delete confirmation and live reload**
+- [x] **Step 4: Implement Delete confirmation and live reload**
   Hook to `/api/changelog/[id]` with notification toast.
 
-- [ ] **Step 5: Verify type safety with `npx tsc --noEmit`**
+- [x] **Step 5: Verify type safety with `npx tsc --noEmit`**
 
 ---
 
@@ -133,11 +133,11 @@
 - Modify: `src/components/navigation/right-floating-panel.tsx`
 - Modify: `src/lib/floating-panel-data.ts`
 
-- [ ] **Step 1: Remove unnecessary promotional and ad elements**
+- [x] **Step 1: Remove unnecessary promotional and ad elements**
   - Remove the "UNIVERSE'26" gaming block graphic, peeking mascot, and "Save your seat" button.
   - Simplify into a single, cohesive, formal changelog card.
 
-- [ ] **Step 2: Apply the `#041a24` Formal Theme**
+- [x] **Step 2: Apply the `#041a24` Formal Theme**
   - Card background: `bg-[#041a24]` (solid, rich dark midnight).
   - Borders: `border border-white/10` with subtle elevation `shadow-md rounded-[8px]`.
   - Header:
@@ -145,7 +145,7 @@
     - Right: Active live status indicator (`span.w-1.5.h-1.5.rounded-full.bg-emerald-400.animate-pulse` + `LIVE`).
     - Hairline divider below header: `border-b border-white/10 pb-3`.
 
-- [ ] **Step 3: Build the Formal Timeline Stream**
+- [x] **Step 3: Build the Formal Timeline Stream**
   - Vertical guideline: `border-l border-white/15 ml-1.5 pl-3.5 space-y-4`.
   - Node indicators: `w-2 h-2 rounded-full bg-sky-400 ring-2 ring-[#041a24]`.
   - Entry Header:
@@ -154,11 +154,11 @@
   - Entry Title: `text-xs font-sans font-medium text-white hover:text-sky-300 leading-snug transition-colors`.
   - Entry Description: `text-[11px] text-white/65 leading-normal line-clamp-2 mt-0.5`.
 
-- [ ] **Step 4: Add Card Footer**
+- [x] **Step 4: Add Card Footer**
   - Discrete bottom row with total log count, e.g. `● 5 Milestones Recorded`.
   - Subtle link to view all archive notes: `View Full Archive →` (`font-mono text-[10px] text-white/50 hover:text-white`).
 
-- [ ] **Step 5: Connect to Live Data Source**
+- [x] **Step 5: Connect to Live Data Source**
   - Fetch entries from `/api/changelog` with fallback to `mock-archive.json`.
   - Automatic revalidation so admin edits reflect immediately.
 
@@ -169,18 +169,18 @@
 **Files:**
 - Verify: `src/app/(public)/home/hub-layout-client.tsx`
 
-- [ ] **Step 1: Verify Middle Content Isolation**
+- [x] **Step 1: Verify Middle Content Isolation**
   - Confirm `<main>` preserves `lg:pl-56 pr-0`.
   - Confirm middle content wrapper preserves `w-full flex-1 flex flex-col ${sidebarCollapsed ? "" : "xl:pr-56"}` and `max-w-[940px] mx-auto`.
-  - Confirm right rail is an unbound fixed overlay: `fixed right-4 lg:right-6 2xl:right-8 top-8 w-[275px] z-30 pointer-events-auto`.
+  - Confirm right rail is placed in-page naturally (`absolute right-4 lg:right-6 2xl:right-8 top-8 sm:top-10 md:top-12 w-[270px]`) so it moves on scroll without displacing middle content.
 
-- [ ] **Step 2: Verify Route Exclusions**
+- [x] **Step 2: Verify Route Exclusions**
   - Test `/home/apps` (Projects): Right rail is 100% hidden.
   - Test `/home/about` (About): Right rail is 100% hidden.
   - Test `/home/contact` (Contact): Right rail is 100% hidden.
   - Test `/home`, `/home/docs`, `/home/courses`, `/home/ideas`, `/home/resources`: Right rail displays cleanly on desktop.
 
-- [ ] **Step 3: Verification Suite**
+- [x] **Step 3: Verification Suite**
   - Run `npx tsc --noEmit` (0 errors).
   - Verify HTTP 200 on all public and admin routes.
   - Commit and push to GitHub `origin/main`.

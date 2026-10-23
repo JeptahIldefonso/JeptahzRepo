@@ -29,12 +29,14 @@ import {
   Hash,
   Globe,
   Sliders,
+  GitCommit,
 } from "lucide-react";
 import {
   AppType,
   EntryType,
   EntryMediaItem,
   EntryAttachedFile,
+  ChangelogItem,
 } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -44,9 +46,10 @@ import { formatDate } from "@/lib/utils";
 interface AdminManagerProps {
   initialApps: AppType[];
   initialEntries: EntryType[];
+  initialChangelog?: ChangelogItem[];
 }
 
-type TabType = "docs" | "apps" | "ideas" | "resources" | "courses";
+type TabType = "docs" | "apps" | "ideas" | "resources" | "courses" | "changelog";
 
 function slugify(text: string): string {
   return text
@@ -170,9 +173,10 @@ function parseAppSingleBox(text: string) {
   };
 }
 
-export function AdminManager({ initialApps, initialEntries }: AdminManagerProps) {
+export function AdminManager({ initialApps, initialEntries, initialChangelog }: AdminManagerProps) {
   const [apps, setApps] = useState<AppType[]>(initialApps);
   const [entries, setEntries] = useState<EntryType[]>(initialEntries);
+  const [changelog, setChangelog] = useState<ChangelogItem[]>(initialChangelog || []);
   const [activeTab, setActiveTab] = useState<TabType>("docs");
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -209,6 +213,24 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
   const [isCourseDragging, setIsCourseDragging] = useState(false);
   const coursePhotoFileInputRef = useRef<HTMLInputElement>(null);
   const courseDocFileInputRef = useRef<HTMLInputElement>(null);
+
+  const [changelogModalOpen, setChangelogModalOpen] = useState(false);
+  const [editingChangelog, setEditingChangelog] = useState<Partial<ChangelogItem> | null>(null);
+  const [changelogForm, setChangelogForm] = useState<{
+    title: string;
+    version_tag: string;
+    category: ChangelogItem["category"];
+    timestamp: string;
+    description: string;
+    href: string;
+  }>({
+    title: "",
+    version_tag: "v1.2.5",
+    category: "feature",
+    timestamp: "Today",
+    description: "",
+    href: "/home/docs",
+  });
 
   const photoFileInputRef = useRef<HTMLInputElement>(null);
   const docFileInputRef = useRef<HTMLInputElement>(null);
@@ -805,6 +827,100 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
     }
   };
 
+  // -------------------------
+  // Changelog Management Handlers
+  // -------------------------
+  const handleOpenNewChangelog = () => {
+    setEditingChangelog(null);
+    setChangelogForm({
+      title: "",
+      version_tag: "v1.2.5",
+      category: "feature",
+      timestamp: "Today",
+      description: "",
+      href: "/home/docs",
+    });
+    setChangelogModalOpen(true);
+  };
+
+  const handleOpenEditChangelog = (item: ChangelogItem) => {
+    setEditingChangelog(item);
+    setChangelogForm({
+      title: item.title,
+      version_tag: item.version_tag || "",
+      category: item.category || "feature",
+      timestamp: item.timestamp,
+      description: item.description || "",
+      href: item.href || "/home/docs",
+    });
+    setChangelogModalOpen(true);
+  };
+
+  const handleSaveChangelog = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!changelogForm.title.trim()) return;
+
+    const payload = {
+      title: changelogForm.title.trim(),
+      version_tag: changelogForm.version_tag.trim(),
+      category: changelogForm.category,
+      timestamp: changelogForm.timestamp.trim() || "Just now",
+      description: changelogForm.description.trim(),
+      href: changelogForm.href.trim() || "/home/docs",
+    };
+
+    if (editingChangelog?.id) {
+      const res = await fetch(`/api/changelog/${editingChangelog.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setChangelog((prev) =>
+          prev.map((item) => (item.id === editingChangelog.id ? data.data : item))
+        );
+        showNotification(`Updated changelog "${data.data.title}"`);
+        window.dispatchEvent(new CustomEvent("changelog_updated"));
+        try {
+          localStorage.setItem("changelog_last_updated", String(Date.now()));
+        } catch {}
+      }
+    } else {
+      const res = await fetch("/api/changelog", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setChangelog((prev) => [data.data, ...prev]);
+        showNotification(`Added changelog "${data.data.title}"`);
+        window.dispatchEvent(new CustomEvent("changelog_updated"));
+        try {
+          localStorage.setItem("changelog_last_updated", String(Date.now()));
+        } catch {}
+      }
+    }
+
+    setChangelogModalOpen(false);
+    setEditingChangelog(null);
+  };
+
+  const handleDeleteChangelog = async (id: string, title: string) => {
+    if (!confirm(`Delete changelog entry "${title}"?`)) return;
+    const res = await fetch(`/api/changelog/${id}`, { method: "DELETE" });
+    const data = await res.json();
+    if (data.success) {
+      setChangelog((prev) => prev.filter((item) => item.id !== id));
+      showNotification(`Deleted "${title}"`);
+      window.dispatchEvent(new CustomEvent("changelog_updated"));
+      try {
+        localStorage.setItem("changelog_last_updated", String(Date.now()));
+      } catch {}
+    }
+  };
+
   // Filter items in active tab based on search query
   const filteredDocs = docsEntries.filter(
     (e) =>
@@ -856,6 +972,15 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const filteredChangelog = changelog.filter(
+    (c) =>
+      !searchQuery ||
+      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.version_tag && c.version_tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      (c.category && c.category.toLowerCase().includes(searchQuery.toLowerCase()))
+  );
+
   return (
     <div className="space-y-6">
       {/* Toast Notification */}
@@ -867,7 +992,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       )}
 
       {/* ── Section Metric Cards (Clickable Quick Switchers) ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         <button
           onClick={() => {
             setActiveTab("docs");
@@ -949,7 +1074,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
             setActiveTab("courses");
             setSearchQuery("");
           }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer col-span-2 sm:col-span-1 ${
+          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
             activeTab === "courses"
               ? "bg-black text-white border-black shadow-sm"
               : "bg-bg-raised border-border hover:border-black/30 text-fg"
@@ -961,6 +1086,25 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
           </div>
           <div className="text-2xl font-display font-medium mt-1">{coursesEntries.length}</div>
           <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/courses</div>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab("changelog");
+            setSearchQuery("");
+          }}
+          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
+            activeTab === "changelog"
+              ? "bg-[#041a24] text-white border-[#041a24] shadow-sm"
+              : "bg-bg-raised border-border hover:border-black/30 text-fg"
+          }`}
+        >
+          <div className="flex items-center justify-between text-xs font-mono opacity-80">
+            <span>Changelog</span>
+            <GitCommit className="w-3.5 h-3.5 text-sky-400" />
+          </div>
+          <div className="text-2xl font-display font-medium mt-1">{changelog.length}</div>
+          <div className="text-[10px] opacity-70 mt-0.5 truncate">#041a24 Rail Stream</div>
         </button>
       </div>
 
@@ -1041,6 +1185,21 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
             <GraduationCap className="w-3 h-3" />
             <span>Courses ({coursesEntries.length})</span>
           </button>
+
+          <button
+            onClick={() => {
+              setActiveTab("changelog");
+              setSearchQuery("");
+            }}
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+              activeTab === "changelog"
+                ? "bg-white text-black font-semibold shadow-2xs"
+                : "text-neutral-600 hover:text-black"
+            }`}
+          >
+            <GitCommit className="w-3 h-3 text-sky-500" />
+            <span>Changelog ({changelog.length})</span>
+          </button>
         </div>
 
         {/* Tab Specific Quick Create Button - Bigger & More Prominent */}
@@ -1095,6 +1254,16 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               <span>Add Course Guide</span>
             </Button>
           )}
+          {activeTab === "changelog" && (
+            <Button
+              size="md"
+              onClick={handleOpenNewChangelog}
+              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer bg-[#041a24] hover:bg-[#062432] text-white"
+            >
+              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
+              <span>Add Changelog Entry</span>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -1121,7 +1290,9 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               ? filteredIdeas.length
               : activeTab === "resources"
               ? filteredResources.length
-              : filteredCourses.length}
+              : activeTab === "courses"
+              ? filteredCourses.length
+              : filteredChangelog.length}
           </span>{" "}
           items
         </div>
@@ -1534,6 +1705,89 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     onClick={() => handleDeleteEntry(course.id, course.title)}
                     className="p-1.5 text-fg-subtle hover:text-red-600 border border-border hover:border-red-200 rounded-[6px] transition-colors cursor-pointer"
                     title="Delete Course"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* TAB 6: CHANGELOG (Right Floating Panel Entries) */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {activeTab === "changelog" && (
+        <div className="space-y-3">
+          <div className="p-3.5 rounded-[8px] bg-[#041a24] text-white border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-center space-x-2.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="font-mono text-[11px] text-white/80">
+                These entries power the formal right-side changelog rail on /home, /home/docs, /home/courses, /home/ideas, and /home/resources.
+              </span>
+            </div>
+            <Link
+              href="/home"
+              target="_blank"
+              className="inline-flex items-center space-x-1 font-mono text-[10px] text-sky-300 hover:text-white transition-colors shrink-0"
+            >
+              <span>Preview Live Rail</span>
+              <ExternalLink className="w-3 h-3" />
+            </Link>
+          </div>
+
+          {filteredChangelog.length === 0 ? (
+            <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
+              No changelog entries found. Click &quot;+ Add Changelog Entry&quot; to publish your first milestone.
+            </div>
+          ) : (
+            filteredChangelog.map((log) => (
+              <div
+                key={log.id}
+                className="border border-border bg-bg-raised p-4 rounded-[8px] hover:border-black/30 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div className="space-y-1.5 flex-1 min-w-0">
+                  <div className="flex items-center space-x-2 flex-wrap">
+                    {log.version_tag && (
+                      <span className="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded-[3px] bg-[#041a24] text-white">
+                        {log.version_tag}
+                      </span>
+                    )}
+                    <span className="font-medium text-sm text-fg tracking-tight">
+                      {log.title}
+                    </span>
+                    <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded-[3px] bg-neutral-200 text-neutral-700 font-semibold">
+                      {log.category}
+                    </span>
+                    <span className="text-[10px] font-mono text-fg-subtle">
+                      {log.timestamp}
+                    </span>
+                  </div>
+
+                  <p className="text-xs text-fg-muted line-clamp-2">
+                    {log.description}
+                  </p>
+
+                  {log.href && (
+                    <div className="text-[10px] font-mono text-fg-subtle pt-0.5">
+                      Target Link: <span className="text-neutral-500">{log.href}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center space-x-2 shrink-0">
+                  <button
+                    onClick={() => handleOpenEditChangelog(log)}
+                    className="p-1.5 text-fg-subtle hover:text-fg border border-border hover:border-black/30 rounded-[6px] transition-colors cursor-pointer"
+                    title="Edit Changelog Entry"
+                  >
+                    <Edit2 className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteChangelog(log.id, log.title)}
+                    className="p-1.5 text-fg-subtle hover:text-red-600 border border-border hover:border-red-200 rounded-[6px] transition-colors cursor-pointer"
+                    title="Delete Changelog Entry"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
                   </button>
@@ -2804,6 +3058,136 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               </div>
             </form>
           )}
+        </ModalContent>
+      </Modal>
+
+      {/* ══════════════════════════════════════════════════════════════ */}
+      {/* 6. DEDICATED CHANGELOG ENTRY MODAL */}
+      {/* ══════════════════════════════════════════════════════════════ */}
+      <Modal open={changelogModalOpen} onOpenChange={setChangelogModalOpen}>
+        <ModalContent
+          className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
+          title={editingChangelog?.id ? "Edit Changelog Entry" : "New Changelog Entry"}
+        >
+          <form onSubmit={handleSaveChangelog} className="p-5 space-y-4">
+            <div>
+              <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                Headline / Title *
+              </label>
+              <input
+                type="text"
+                required
+                value={changelogForm.title}
+                onChange={(e) =>
+                  setChangelogForm((prev) => ({ ...prev, title: e.target.value }))
+                }
+                placeholder="e.g. Unified GitHub profile avatar across platform"
+                className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-sans"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                  Version / Tag
+                </label>
+                <input
+                  type="text"
+                  value={changelogForm.version_tag}
+                  onChange={(e) =>
+                    setChangelogForm((prev) => ({ ...prev, version_tag: e.target.value }))
+                  }
+                  placeholder="e.g. v1.2.5 or FEATURE"
+                  className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                  Category
+                </label>
+                <select
+                  value={changelogForm.category}
+                  onChange={(e) =>
+                    setChangelogForm((prev) => ({
+                      ...prev,
+                      category: e.target.value as ChangelogItem["category"],
+                    }))
+                  }
+                  className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-mono bg-white cursor-pointer"
+                >
+                  <option value="feature">Feature</option>
+                  <option value="release">Release</option>
+                  <option value="fix">Fix</option>
+                  <option value="doc">Documentation</option>
+                  <option value="system">System</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                  Timestamp / Date Display
+                </label>
+                <input
+                  type="text"
+                  value={changelogForm.timestamp}
+                  onChange={(e) =>
+                    setChangelogForm((prev) => ({ ...prev, timestamp: e.target.value }))
+                  }
+                  placeholder="e.g. Today, Oct 23, 8 hours ago"
+                  className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                  Target Link (Optional)
+                </label>
+                <input
+                  type="text"
+                  value={changelogForm.href}
+                  onChange={(e) =>
+                    setChangelogForm((prev) => ({ ...prev, href: e.target.value }))
+                  }
+                  placeholder="e.g. /home/docs"
+                  className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-mono"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-mono font-semibold text-neutral-700 mb-1">
+                Summary / Description
+              </label>
+              <textarea
+                rows={3}
+                value={changelogForm.description}
+                onChange={(e) =>
+                  setChangelogForm((prev) => ({ ...prev, description: e.target.value }))
+                }
+                placeholder="Briefly explain what was added, updated, or improved..."
+                className="w-full px-3 py-2 text-xs border border-neutral-300 rounded-[6px] focus:outline-none focus:border-black font-sans resize-none"
+              />
+            </div>
+
+            <div className="pt-3 border-t border-neutral-100 flex items-center justify-end space-x-2">
+              <button
+                type="button"
+                onClick={() => setChangelogModalOpen(false)}
+                className="px-3.5 py-2 text-xs font-mono rounded-[6px] border border-neutral-300 hover:bg-neutral-100 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-[#041a24] text-white hover:bg-[#062432] transition-colors cursor-pointer shadow-xs"
+              >
+                {editingChangelog?.id ? "Save Changes" : "Publish to Changelog"}
+              </button>
+            </div>
+          </form>
         </ModalContent>
       </Modal>
     </div>
