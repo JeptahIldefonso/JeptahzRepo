@@ -936,7 +936,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
           }`}
         >
           <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Useful Links</span>
+            <span>Helpful Links</span>
             <Link2 className="w-3.5 h-3.5" />
           </div>
           <div className="text-2xl font-display font-medium mt-1">{resourcesEntries.length}</div>
@@ -1081,7 +1081,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
             >
               <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>Add Useful Link</span>
+              <span>Add Helpful Link</span>
             </Button>
           )}
           {activeTab === "courses" && (
@@ -1370,7 +1370,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
         <div className="space-y-3">
           {filteredResources.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No useful links found. Click &quot;+ Add Useful Link&quot; to save a bookmark.
+              No helpful links found. Click &quot;+ Add Helpful Link&quot; to save a bookmark.
             </div>
           ) : (
             filteredResources.map((resItem) => (
@@ -2272,7 +2272,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       <Modal open={resourceModalOpen} onOpenChange={setResourceModalOpen}>
         <ModalContent
           className="max-w-lg p-0 overflow-hidden rounded-[14px] bg-white border border-neutral-300 shadow-2xl"
-          title={editingResource?.id ? "Edit Useful Link" : "Add Useful Link / Bookmark"}
+          title={editingResource?.id ? "Edit Helpful Link" : "Add Helpful Link / Bookmark"}
         >
           {editingResource && (
             <form onSubmit={handleSaveResource} className="space-y-4 p-5 max-h-[85vh] overflow-y-auto">

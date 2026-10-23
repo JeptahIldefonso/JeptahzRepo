@@ -56,7 +56,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
   {
     slug: "resources",
     href: "/home/resources",
-    label: "Useful Links",
+    label: "Helpful Links",
     category: "more",
     icon: "Link2",
     description: "Tools, references, and bookmarks worth sharing",
