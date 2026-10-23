@@ -69,7 +69,7 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search curricula, codes, syllabi..."
-            className="w-full pl-8 pr-8 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-neutral-800 focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
+            className="w-full pl-8 pr-8 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-[#041a24] focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
           />
           {searchQuery && (
             <button
@@ -84,7 +84,7 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
         {/* Right Info: Curricula Count & Active Tag Indicator */}
         <div className="flex items-center space-x-2 font-mono text-xs">
           {selectedTag ? (
-            <div className="flex items-center space-x-1.5 bg-neutral-900 text-white px-2.5 py-1 rounded-[2px] shadow-2xs">
+            <div className="flex items-center space-x-1.5 bg-[#041a24] text-white px-2.5 py-1 rounded-[2px] shadow-2xs">
               <Hash className="w-3 h-3 text-white/60" />
               <span>#{selectedTag}</span>
               <button
@@ -154,7 +154,7 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
                 setSearchQuery("");
                 setSelectedTag(null);
               }}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-[2px] bg-neutral-900 text-white font-mono text-xs hover:bg-black transition-colors cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-[2px] bg-[#041a24] text-white font-mono text-xs hover:opacity-90 transition-opacity cursor-pointer"
             >
               <X className="w-3 h-3" />
               <span>Reset Filters</span>

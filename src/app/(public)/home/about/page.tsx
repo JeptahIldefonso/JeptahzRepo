@@ -63,7 +63,7 @@ export default async function AboutPage() {
 
           {/* Pinned Pill & Domain Header Row */}
           <div className="relative z-10 flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-neutral-200/80">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-neutral-900 text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#041a24] text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
               <Pin className="w-3 h-3 fill-white rotate-45" />
               <span>PINNED LINK</span>
             </div>
@@ -76,8 +76,8 @@ export default async function AboutPage() {
 
           {/* Domain Pill */}
           <div className="relative z-10 flex items-center justify-between flex-wrap gap-2">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[4px] bg-white border border-neutral-300 group-hover:border-neutral-400 group-hover:bg-neutral-50/80 text-neutral-800 font-mono text-xs font-semibold shadow-2xs transition-colors duration-200">
-              <Globe className="w-3.5 h-3.5 text-neutral-600" />
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[4px] bg-white border border-neutral-300 group-hover:border-[#041a24] group-hover:bg-neutral-50/80 text-black font-mono text-xs font-semibold shadow-2xs transition-colors duration-200">
+              <Globe className="w-3.5 h-3.5 text-black/60" />
               <span className="tracking-wide">JEPTAHPORTFOLIO.VERCEL.APP</span>
             </div>
           </div>
@@ -86,9 +86,9 @@ export default async function AboutPage() {
           <div className="relative z-10 space-y-1.5">
             <div className="font-display text-lg sm:text-xl font-semibold text-black flex items-center justify-between">
               <span>Jeptah Ashley Ildefonso — Portfolio</span>
-              <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
+              <ArrowUpRight className="w-4 h-4 text-black/50 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
             </div>
-            <p className="text-sm text-neutral-700 leading-relaxed font-sans">
+            <p className="text-sm text-black/80 leading-relaxed font-sans">
               Portfolio of Jeptah Ildefonso — projects, writing, work history, and experiments.
               Explore live web builds, mobile applications, and software engineering experience.
             </p>
@@ -96,11 +96,11 @@ export default async function AboutPage() {
 
           {/* Trust Footer Bar */}
           <div className="relative z-10 pt-3 border-t border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-            <div className="flex items-center space-x-1.5 text-neutral-600 font-mono">
+            <div className="flex items-center space-x-1.5 text-black/60 font-mono">
               <Lock className="w-3.5 h-3.5 text-emerald-600" />
               <span>Safe external link • Verified HTTPS encryption</span>
             </div>
-            <div className="font-mono text-xs text-black font-semibold inline-flex items-center space-x-1 self-start sm:self-auto bg-white border border-neutral-300 px-3 py-1 rounded-[4px] shadow-2xs group-hover:bg-neutral-900 group-hover:text-white group-hover:border-neutral-900 transition-all duration-200">
+            <div className="font-mono text-xs text-black font-semibold inline-flex items-center space-x-1 self-start sm:self-auto bg-white border border-neutral-300 px-3 py-1 rounded-[4px] shadow-2xs group-hover:bg-[#041a24] group-hover:text-white group-hover:border-[#041a24] transition-all duration-200">
               <span>Open portfolio</span>
               <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
             </div>

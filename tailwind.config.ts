@@ -9,6 +9,7 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        black: "#041a24",
         bg: "var(--bg)",
         "bg-raised": "var(--bg-raised)",
         "bg-hover": "var(--bg-hover)",

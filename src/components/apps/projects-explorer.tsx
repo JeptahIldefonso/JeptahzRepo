@@ -162,8 +162,8 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               }}
               className={`px-2.5 py-0.5 rounded-[5px] transition-all duration-150 cursor-pointer ${
                 selectedCategory === "all" && selectedTech === "all"
-                  ? "bg-neutral-800 text-white font-medium border border-neutral-800"
-                  : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
+                  ? "bg-[#041a24] text-white font-medium border border-[#041a24]"
+                  : "bg-white/60 border border-black/15 text-black/70 hover:bg-[#041a24] hover:text-white hover:border-[#041a24]"
               }`}
             >
               All ({initialApps.length})
@@ -177,8 +177,8 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 }}
                 className={`px-2.5 py-0.5 rounded-[5px] transition-all duration-150 cursor-pointer ${
                   selectedCategory === cat
-                    ? "bg-neutral-800 text-white font-medium border border-neutral-800"
-                    : "bg-white/60 border border-black/15 text-black/70 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
+                    ? "bg-[#041a24] text-white font-medium border border-[#041a24]"
+                    : "bg-white/60 border border-black/15 text-black/70 hover:bg-[#041a24] hover:text-white hover:border-[#041a24]"
                 }`}
               >
                 {cat}
@@ -199,8 +199,8 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                 }}
                 className={`px-1.5 py-0.5 rounded-[4px] transition-all duration-150 cursor-pointer ${
                   selectedTech === tech
-                    ? "bg-neutral-800 text-white font-medium border border-neutral-800"
-                    : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-neutral-800 hover:text-white hover:border-neutral-800"
+                    ? "bg-[#041a24] text-white font-medium border border-[#041a24]"
+                    : "bg-black/[0.03] border border-black/10 text-black/60 hover:bg-[#041a24] hover:text-white hover:border-[#041a24]"
                 }`}
               >
                 {tech}
@@ -210,7 +210,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
             {(searchQuery || selectedCategory !== "all" || selectedTech !== "all") && (
               <button
                 onClick={resetFilters}
-                className="ml-1 text-[10px] text-black/60 hover:text-neutral-900 underline cursor-pointer"
+                className="ml-1 text-[10px] text-black/60 hover:text-black hover:font-semibold underline cursor-pointer"
               >
                 Reset
               </button>

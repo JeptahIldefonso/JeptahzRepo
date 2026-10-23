@@ -114,8 +114,8 @@ export function BotanicalCanvas() {
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rotation);
-        ctx.fillStyle = `rgba(10, 10, 10, ${p.opacity})`;
-        ctx.strokeStyle = `rgba(10, 10, 10, ${p.opacity * 1.2})`;
+        ctx.fillStyle = `rgba(4, 26, 36, ${p.opacity})`;
+        ctx.strokeStyle = `rgba(4, 26, 36, ${p.opacity * 1.2})`;
         ctx.lineWidth = 0.8;
 
         if (p.type === 0) {

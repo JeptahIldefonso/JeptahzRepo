@@ -200,7 +200,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
                 <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
                   <div className="flex items-center space-x-2">
                     {entry.is_pinned ? (
-                      <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-neutral-900 text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
+                      <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-[#041a24] text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
                         <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
                         <span>PINNED LINK</span>
                       </span>

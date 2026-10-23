@@ -91,7 +91,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center space-x-3">
             {/* Author Avatar */}
-            <div className="w-10 h-10 rounded-full bg-neutral-900 text-white flex items-center justify-center font-mono font-bold text-sm select-none shadow-xs shrink-0 ring-2 ring-black/5">
+            <div className="w-10 h-10 rounded-full bg-[#041a24] text-white flex items-center justify-center font-mono font-bold text-sm select-none shadow-xs shrink-0 ring-2 ring-black/5">
               JI
             </div>
 
@@ -100,7 +100,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                 <span className="font-sans font-bold text-sm text-black hover:underline cursor-pointer">
                   Jeptah Ildefonso
                 </span>
-                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-[2px] bg-neutral-800 text-white font-medium">
+                <span className="font-mono text-[10px] px-1.5 py-0.2 rounded-[2px] bg-[#041a24] text-white font-medium">
                   Author
                 </span>
               </div>
@@ -143,7 +143,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
           {isLong && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="font-mono text-xs font-semibold text-neutral-800 hover:text-black hover:underline pt-0.5 cursor-pointer block"
+              className="font-mono text-xs font-semibold text-black hover:underline pt-0.5 cursor-pointer block"
             >
               {isExpanded ? "Show Less ↑" : "See More... ↓"}
             </button>
@@ -240,8 +240,8 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                   onClick={() => onTagClick?.(cleanTag)}
                   className={`transition-colors cursor-pointer font-medium ${
                     isSelected
-                      ? "text-neutral-900 font-bold underline"
-                      : "text-black/60 hover:text-neutral-900 hover:underline"
+                      ? "text-black font-bold underline"
+                      : "text-black/60 hover:text-black hover:underline"
                   }`}
                 >
                   #{cleanTag}

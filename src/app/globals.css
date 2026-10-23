@@ -7,13 +7,13 @@
   --bg-raised: #FFFFFF;
   --bg-hover: #EAEAE4;
   --bg-subtle: #DFDFD7;
-  --fg: #0A0A0A;
-  --fg-muted: #3E3E38;
-  --fg-subtle: #5A5A54;
-  --accent: #0A0A0A;
-  --accent-dim: rgba(10, 10, 10, 0.05);
-  --border: rgba(10, 10, 10, 0.16);
-  --border-strong: #0A0A0A;
+  --fg: #041a24;
+  --fg-muted: #1c313b;
+  --fg-subtle: #41555f;
+  --accent: #041a24;
+  --accent-dim: rgba(4, 26, 36, 0.05);
+  --border: rgba(4, 26, 36, 0.16);
+  --border-strong: #041a24;
   --border-hover: #041a24;
 }
 
@@ -50,11 +50,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(10, 10, 10, 0.25);
+  background: rgba(4, 26, 36, 0.25);
   border-radius: 1px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(10, 10, 10, 0.5);
+  background: rgba(4, 26, 36, 0.5);
 }
 
 /* Editorial Monochromatic Typography Utility */

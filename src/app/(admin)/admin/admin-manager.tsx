@@ -1381,7 +1381,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center space-x-2 flex-wrap">
                     {resItem.is_pinned && (
-                      <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[4px] bg-neutral-900 text-white text-[10px] font-mono font-medium shadow-2xs">
+                      <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[4px] bg-[#041a24] text-white text-[10px] font-mono font-medium shadow-2xs">
                         <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
                         <span>Pinned</span>
                       </span>
@@ -1651,11 +1651,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
                 {/* Author row (FB style) */}
                 <div className="flex items-center space-x-3 pt-1">
-                  <div className="w-10 h-10 rounded-full bg-neutral-900 text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#041a24] text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
                     JI
                   </div>
                   <div>
-                    <div className="font-semibold text-sm text-neutral-900 leading-tight">
+                    <div className="font-semibold text-sm text-[#041a24] leading-tight">
                       Jeptah Ildefonso
                     </div>
                     <div className="flex items-center space-x-1.5 mt-0.5">
@@ -1685,7 +1685,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   value={editingDoc.title || ""}
                   onChange={(e) => setEditingDoc({ ...editingDoc, title: e.target.value })}
                   placeholder="Post title or headline (optional)..."
-                  className="w-full text-base font-semibold text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
+                  className="w-full text-base font-semibold text-[#041a24] placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
                 />
 
                 {/* Primary Post Textarea (What's on your mind?) */}
@@ -1694,7 +1694,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   value={editingDoc.content || ""}
                   onChange={(e) => setEditingDoc({ ...editingDoc, content: e.target.value })}
                   placeholder="What's on your mind, Jeptah? Write an announcement, note, or dev log..."
-                  className="w-full text-sm text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
+                  className="w-full text-sm text-[#041a24] placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
                 />
 
                 {/* Attached Media Previews (Photos Mosaic - Full Uncropped View) */}
@@ -1776,7 +1776,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                           >
                             {file.type}
                           </span>
-                          <span className="truncate font-sans font-medium text-neutral-900">
+                          <span className="truncate font-sans font-medium text-black">
                             {file.name}
                           </span>
                           {file.size && <span className="text-neutral-500">({file.size})</span>}
@@ -1931,7 +1931,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     uploading ||
                     (!editingDoc.content && !editingDoc.title && !editingDoc.media_items?.length)
                   }
-                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
+                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                 >
                   {uploading ? (
                     <>
@@ -2085,7 +2085,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-0.5">
                     <div className="flex items-center space-x-2">
-                      <ImageIcon className="w-4 h-4 text-neutral-800" />
+                      <ImageIcon className="w-4 h-4 text-black" />
                       <span className="font-mono text-xs uppercase text-fg font-semibold tracking-wider">
                         Carousel Screenshots ({editingApp.carousel_images?.length || 0})
                       </span>
@@ -2095,7 +2095,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                     </p>
                   </div>
 
-                  <label className="inline-flex items-center justify-center space-x-2 px-4 py-2 text-xs font-mono font-medium bg-black text-white hover:bg-neutral-800 rounded-[6px] cursor-pointer transition-colors shadow-2xs shrink-0">
+                  <label className="inline-flex items-center justify-center space-x-2 px-4 py-2 text-xs font-mono font-medium bg-black text-white hover:opacity-90 rounded-[6px] cursor-pointer transition-opacity shadow-2xs shrink-0">
                     {uploading ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
@@ -2383,7 +2383,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   <span className="text-fg font-medium">Pin link to top (noticeable shining gray)</span>
                 </label>
                 {editingResource.is_pinned && (
-                  <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-white bg-neutral-900 px-1.5 py-0.5 rounded-[4px]">
+                  <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-white bg-[#041a24] px-1.5 py-0.5 rounded-[4px]">
                     <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
                     <span>Pinned</span>
                   </span>
@@ -2441,7 +2441,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
                     {/* Pin to top */}
                     <label className="flex items-center justify-between text-xs cursor-pointer hover:bg-neutral-50 p-1.5 rounded-[6px]">
-                      <span className="flex items-center space-x-2 font-medium text-neutral-800">
+                      <span className="flex items-center space-x-2 font-medium text-black">
                         <Pin className="w-3.5 h-3.5 text-sky-600" />
                         <span>Pin to top of Curricula</span>
                       </span>
@@ -2457,7 +2457,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
 
                     {/* Published status */}
                     <label className="flex items-center justify-between text-xs cursor-pointer hover:bg-neutral-50 p-1.5 rounded-[6px]">
-                      <span className="flex items-center space-x-2 font-medium text-neutral-800">
+                      <span className="flex items-center space-x-2 font-medium text-black">
                         <Globe className="w-3.5 h-3.5 text-emerald-600" />
                         <span>Published Publicly</span>
                       </span>
@@ -2517,11 +2517,11 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
                 {/* Academic Instructor Banner */}
                 <div className="flex items-center space-x-3 pt-1">
-                  <div className="w-10 h-10 rounded-full bg-neutral-900 text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
+                  <div className="w-10 h-10 rounded-full bg-[#041a24] text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
                     JI
                   </div>
                   <div>
-                    <div className="font-semibold text-sm text-neutral-900 leading-tight">
+                    <div className="font-semibold text-sm text-[#041a24] leading-tight">
                       Jeptah Ildefonso
                     </div>
                     <div className="flex items-center space-x-1.5 mt-0.5">
@@ -2552,7 +2552,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   value={editingCourse.title || ""}
                   onChange={(e) => setEditingCourse({ ...editingCourse, title: e.target.value })}
                   placeholder="Course Code & Title (e.g. CS 162: Operating Systems & System Programming)..."
-                  className="w-full text-base font-semibold text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
+                  className="w-full text-base font-semibold text-[#041a24] placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0"
                 />
 
                 {/* Syllabus / Curriculum Roadmaps Body */}
@@ -2561,7 +2561,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   value={editingCourse.content || ""}
                   onChange={(e) => setEditingCourse({ ...editingCourse, content: e.target.value })}
                   placeholder="Syllabus overview, core lecture roadmaps, recommended textbooks, prerequisite concepts, and study notes (Markdown supported)..."
-                  className="w-full text-sm text-neutral-900 placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
+                  className="w-full text-sm text-[#041a24] placeholder:text-neutral-400 border-none bg-transparent px-0 py-1 focus:outline-none focus:ring-0 resize-none font-sans leading-relaxed"
                 />
 
                 {/* Attached Diagrams / Lecture Slides Preview Mosaic (Uncropped) */}
@@ -2625,7 +2625,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                           >
                             {file.type}
                           </span>
-                          <span className="truncate font-sans font-medium text-neutral-900">
+                          <span className="truncate font-sans font-medium text-black">
                             {file.name}
                           </span>
                           {file.size && <span className="text-neutral-500">({file.size})</span>}
@@ -2777,7 +2777,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                 <button
                   type="submit"
                   disabled={uploading || (!editingCourse.title && !editingCourse.content)}
-                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
+                  className="w-full py-2.5 rounded-[8px] bg-black text-white text-sm font-medium hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-sm cursor-pointer flex items-center justify-center space-x-2"
                 >
                   {uploading ? (
                     <>
