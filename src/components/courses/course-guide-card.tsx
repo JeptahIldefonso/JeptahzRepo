@@ -84,7 +84,7 @@ export function CourseGuideCard({ entry, onTagClick, activeTag }: CourseGuideCar
       className={`relative w-full rounded-[6px] border bg-white/90 backdrop-blur-xs transition-all shadow-xs overflow-hidden ${
         entry.is_pinned
           ? "border-sky-300/80 bg-sky-50/20 ring-1 ring-sky-300/40 shadow-sky-500/5"
-          : "border-black/10 hover:border-black/25"
+          : "border-black/10 hover:border-[#041a24]"
       }`}
     >
       <div className="p-5 sm:p-7 space-y-4">
@@ -138,7 +138,7 @@ export function CourseGuideCard({ entry, onTagClick, activeTag }: CourseGuideCar
               href={entry.external_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-1 text-xs font-mono text-neutral-600 hover:text-black border border-neutral-200 hover:border-black/40 px-2 py-1 rounded-[4px] bg-neutral-50 shrink-0 transition-colors"
+              className="inline-flex items-center space-x-1 text-xs font-mono text-neutral-600 hover:text-black border border-neutral-200 hover:border-[#041a24] px-2 py-1 rounded-[4px] bg-neutral-50 shrink-0 transition-colors"
             >
               <ExternalLink className="w-3 h-3" />
               <span>Course Portal</span>
@@ -203,7 +203,7 @@ export function CourseGuideCard({ entry, onTagClick, activeTag }: CourseGuideCar
                     download={file.name}
                     target="_blank"
                     rel="noreferrer"
-                    className="group flex items-center justify-between p-2.5 rounded-[6px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-black/40 hover:shadow-2xs transition-all cursor-pointer"
+                    className="group flex items-center justify-between p-2.5 rounded-[6px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-[#041a24] hover:shadow-2xs transition-all cursor-pointer"
                   >
                     <div className="flex items-center space-x-2.5 min-w-0 pr-2">
                       <div
@@ -277,7 +277,7 @@ export function CourseGuideCard({ entry, onTagClick, activeTag }: CourseGuideCar
               className={`flex items-center space-x-1.5 py-1 px-3 rounded-[6px] border transition-all cursor-pointer font-mono text-xs ${
                 isStudied
                   ? "bg-emerald-50 text-emerald-700 border-emerald-300 font-medium"
-                  : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-black/30"
+                  : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-[#041a24]"
               }`}
               title={isStudied ? "Mark as unstudied" : "Mark as studied"}
             >

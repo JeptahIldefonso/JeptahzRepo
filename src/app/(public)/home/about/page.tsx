@@ -52,7 +52,7 @@ export default async function AboutPage() {
           href={portfolioUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group block relative rounded-[10px] border-2 border-neutral-300 hover:border-neutral-500 bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 hover:from-neutral-200/90 hover:via-neutral-100 hover:to-neutral-300/90 p-5 sm:p-6 space-y-4 shadow-sm hover:shadow-md ring-1 ring-black/5 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden cursor-pointer"
+          className="group block relative rounded-[10px] border-2 border-neutral-300 hover:border-[#041a24] bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 hover:from-neutral-200/90 hover:via-neutral-100 hover:to-neutral-300/90 p-5 sm:p-6 space-y-4 shadow-sm hover:shadow-md ring-1 ring-black/5 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden cursor-pointer"
           aria-label="Visit Jeptah's official developer portfolio at jeptahportfolio.vercel.app"
         >
           {/* Specular Top Shine Bar */}
@@ -131,7 +131,7 @@ export default async function AboutPage() {
 
         {/* Repository Contents Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <div className="border border-border bg-bg-raised p-4 rounded-[4px] space-y-1.5">
+          <div className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors space-y-1.5">
             <div className="flex items-center space-x-2 text-fg font-medium text-xs font-mono">
               <FolderGit2 className="w-4 h-4 text-fg-subtle" />
               <span>Projects & Showcases</span>
@@ -141,7 +141,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="border border-border bg-bg-raised p-4 rounded-[4px] space-y-1.5">
+          <div className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors space-y-1.5">
             <div className="flex items-center space-x-2 text-fg font-medium text-xs font-mono">
               <BookOpen className="w-4 h-4 text-fg-subtle" />
               <span>Notes & Docs</span>
@@ -151,7 +151,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="border border-border bg-bg-raised p-4 rounded-[4px] space-y-1.5">
+          <div className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors space-y-1.5">
             <div className="flex items-center space-x-2 text-fg font-medium text-xs font-mono">
               <GraduationCap className="w-4 h-4 text-fg-subtle" />
               <span>Course Archives</span>
@@ -161,7 +161,7 @@ export default async function AboutPage() {
             </p>
           </div>
 
-          <div className="border border-border bg-bg-raised p-4 rounded-[4px] space-y-1.5">
+          <div className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors space-y-1.5">
             <div className="flex items-center space-x-2 text-fg font-medium text-xs font-mono">
               <Lightbulb className="w-4 h-4 text-fg-subtle" />
               <span>Ideas & Dev Logs</span>
@@ -183,7 +183,7 @@ export default async function AboutPage() {
             href={portfolioUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-fg/40 transition-colors flex items-center justify-between group"
+            className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors flex items-center justify-between group"
           >
             <div className="flex items-center space-x-3">
               <Globe className="w-4 h-4 text-fg-subtle group-hover:text-fg transition-colors" />
@@ -201,7 +201,7 @@ export default async function AboutPage() {
             href={githubUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-fg/40 transition-colors flex items-center justify-between group"
+            className="border border-border bg-bg-raised p-4 rounded-[4px] hover:border-[#041a24] transition-colors flex items-center justify-between group"
           >
             <div className="flex items-center space-x-3">
               <Github className="w-4 h-4 text-fg-subtle group-hover:text-fg transition-colors" />

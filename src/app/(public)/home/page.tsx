@@ -45,7 +45,7 @@ export default async function HubOverviewPage() {
             </Link>
           </div>
 
-          <div className="border border-border bg-bg-raised p-6 sm:p-8 rounded-[4px] space-y-5 hover:border-fg/40 transition-colors">
+          <div className="border border-border bg-bg-raised p-6 sm:p-8 rounded-[4px] space-y-5 hover:border-[#041a24] transition-colors">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center space-x-2">
                 <Badge variant="default" className="text-[10px]">
@@ -133,7 +133,7 @@ export default async function HubOverviewPage() {
           {recentEntries.map((entry) => (
             <div
               key={entry.id}
-              className="border border-border bg-bg-raised p-5 sm:p-6 rounded-[4px] hover:border-fg/40 transition-colors space-y-3"
+              className="border border-border bg-bg-raised p-5 sm:p-6 rounded-[4px] hover:border-[#041a24] transition-colors space-y-3"
             >
               <div className="flex items-center justify-between font-mono text-[10px] text-fg-subtle">
                 <span className="uppercase bg-bg border border-border px-1.5 py-0.5 rounded-[2px]">

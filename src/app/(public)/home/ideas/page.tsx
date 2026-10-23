@@ -39,7 +39,7 @@ export default async function IdeasPage() {
           {entries.map((entry) => (
             <div
               key={entry.id}
-              className="border border-border bg-bg-raised p-6 rounded-[2px] hover:border-fg/40 transition-colors space-y-3"
+              className="border border-border bg-bg-raised p-6 rounded-[2px] hover:border-[#041a24] transition-colors space-y-3"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">

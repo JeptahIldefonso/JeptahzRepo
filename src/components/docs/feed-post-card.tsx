@@ -83,7 +83,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
       className={`relative w-full rounded-[4px] border bg-white/85 backdrop-blur-xs transition-all shadow-xs overflow-hidden ${
         entry.is_pinned
           ? "border-sky-300/80 bg-sky-50/20 ring-1 ring-sky-300/40 shadow-sky-500/5"
-          : "border-black/10 hover:border-black/25"
+          : "border-black/10 hover:border-[#041a24]"
       }`}
     >
       <div className="p-5 sm:p-7 space-y-4">
@@ -186,7 +186,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                     download={file.name}
                     target="_blank"
                     rel="noreferrer"
-                    className="group flex items-center justify-between p-2.5 rounded-[6px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-black/40 hover:shadow-2xs transition-all cursor-pointer"
+                    className="group flex items-center justify-between p-2.5 rounded-[6px] border border-black/15 bg-black/[0.02] hover:bg-white hover:border-[#041a24] hover:shadow-2xs transition-all cursor-pointer"
                   >
                     <div className="flex items-center space-x-2.5 min-w-0 pr-2">
                       <div
@@ -260,7 +260,7 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
               className={`flex items-center space-x-1.5 py-1 px-3 rounded-[6px] border transition-all cursor-pointer font-mono text-xs ${
                 isRead
                   ? "bg-emerald-50 text-emerald-700 border-emerald-300 font-medium"
-                  : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-black/30"
+                  : "bg-white/60 border-black/15 text-black/60 hover:text-black hover:border-[#041a24]"
               }`}
               title={isRead ? "Mark as unread" : "Mark as read"}
             >

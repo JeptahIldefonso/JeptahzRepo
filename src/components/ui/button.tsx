@@ -16,7 +16,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       default:
         "bg-fg text-bg-raised hover:bg-fg/90 shadow-sm border border-transparent",
       outline:
-        "bg-transparent text-fg border border-border hover:bg-bg-hover hover:border-fg/40",
+        "bg-transparent text-fg border border-border hover:bg-bg-hover hover:border-[#041a24]",
       ghost:
         "bg-transparent text-fg hover:bg-bg-hover hover:text-fg",
       subtle:

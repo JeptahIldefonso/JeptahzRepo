@@ -20,6 +20,8 @@ const config: Config = {
         "accent-dim": "var(--accent-dim)",
         border: "var(--border)",
         "border-strong": "var(--border-strong)",
+        "border-hover": "var(--border-hover)",
+        brand: "#041a24",
       },
       fontFamily: {
         editorial: ["var(--font-editorial)", "Newsreader", "Georgia", "serif"],

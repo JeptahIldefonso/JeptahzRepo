@@ -60,7 +60,7 @@ export function DocContent({
                 alt: coverImageCaption || "Document Cover Image",
               })
             }
-            className="group relative overflow-hidden rounded-[3px] border border-border bg-bg-raised cursor-zoom-in transition-all hover:border-fg/50"
+            className="group relative overflow-hidden rounded-[3px] border border-border bg-bg-raised cursor-zoom-in transition-all hover:border-[#041a24]"
           >
             <img
               src={coverImageUrl}
@@ -96,7 +96,7 @@ export function DocContent({
                   <figure className="my-6 space-y-2">
                     <div
                       onClick={() => setActiveImage({ src, alt })}
-                      className="group relative inline-block w-full overflow-hidden rounded-[3px] border border-border bg-bg-raised cursor-zoom-in transition-all hover:border-fg/50"
+                      className="group relative inline-block w-full overflow-hidden rounded-[3px] border border-border bg-bg-raised cursor-zoom-in transition-all hover:border-[#041a24]"
                     >
                       <img
                         {...props}

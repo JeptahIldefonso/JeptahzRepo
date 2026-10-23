@@ -21,7 +21,7 @@ export default async function ContactPage() {
       {/* Primary Channels */}
       <div className="space-y-4">
         {settings.contact_email && (
-          <div className="border border-border bg-bg-raised p-5 rounded-[2px] flex items-center justify-between">
+          <div className="border border-border bg-bg-raised p-5 rounded-[2px] flex items-center justify-between hover:border-[#041a24] transition-colors">
             <div className="flex items-center space-x-3">
               <Mail className="w-5 h-5 text-fg stroke-[1.5]" />
               <div>
@@ -45,7 +45,7 @@ export default async function ContactPage() {
                 href={settings.social_links.github}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-fg/40 text-xs font-mono text-fg transition-colors"
+                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-[#041a24] text-xs font-mono text-fg transition-colors"
               >
                 <div className="flex items-center space-x-2">
                   <Github className="w-4 h-4" />
@@ -59,7 +59,7 @@ export default async function ContactPage() {
                 href={settings.social_links.twitter}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-fg/40 text-xs font-mono text-fg transition-colors"
+                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-[#041a24] text-xs font-mono text-fg transition-colors"
               >
                 <div className="flex items-center space-x-2">
                   <Twitter className="w-4 h-4" />
@@ -73,7 +73,7 @@ export default async function ContactPage() {
                 href={settings.social_links.linkedin}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-fg/40 text-xs font-mono text-fg transition-colors"
+                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-[#041a24] text-xs font-mono text-fg transition-colors"
               >
                 <div className="flex items-center space-x-2">
                   <Linkedin className="w-4 h-4" />
@@ -87,7 +87,7 @@ export default async function ContactPage() {
                 href={settings.social_links.gdrive}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-fg/40 text-xs font-mono text-fg transition-colors"
+                className="flex items-center justify-between border border-border bg-bg p-3 rounded-[2px] hover:border-[#041a24] text-xs font-mono text-fg transition-colors"
               >
                 <div className="flex items-center space-x-2">
                   <HardDrive className="w-4 h-4" />

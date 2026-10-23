@@ -32,7 +32,7 @@ export function EntryCard({ entry, basePath }: EntryCardProps) {
     basePath || `/home/${entry.topic_slug || "docs"}/${entry.slug}`;
 
   return (
-    <article className="border border-border bg-bg-raised p-5 rounded-[2px] transition-all hover:border-fg flex flex-col justify-between space-y-4">
+    <article className="border border-border bg-bg-raised p-5 rounded-[2px] transition-all hover:border-[#041a24] flex flex-col justify-between space-y-4">
       <div className="space-y-2.5">
         {/* Header Tags & Metadata */}
         <div className="flex items-center justify-between font-mono text-[10px]">

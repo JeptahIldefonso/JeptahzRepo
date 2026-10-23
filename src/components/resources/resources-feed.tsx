@@ -101,7 +101,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search links..."
-            className="w-full pl-8 pr-9 py-1 h-8 bg-bg-raised border border-border focus:border-fg rounded-[4px] text-xs font-mono text-fg placeholder:text-fg-subtle focus:outline-none transition-all shadow-2xs"
+            className="w-full pl-8 pr-9 py-1 h-8 bg-bg-raised border border-border focus:border-[#041a24] rounded-[4px] text-xs font-mono text-fg placeholder:text-fg-subtle focus:outline-none transition-all shadow-2xs"
           />
           {searchQuery ? (
             <button
@@ -127,7 +127,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
             className={`px-2.5 py-1 rounded-[4px] transition-all cursor-pointer ${
               selectedTag === "all"
                 ? "bg-fg text-bg-raised font-medium shadow-2xs"
-                : "bg-bg-raised border border-border text-fg-muted hover:border-fg/40 hover:text-fg"
+                : "bg-bg-raised border border-border text-fg-muted hover:border-[#041a24] hover:text-fg"
             }`}
           >
             All ({initialEntries.length})
@@ -140,7 +140,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
               className={`px-2.5 py-1 rounded-[4px] transition-all cursor-pointer ${
                 selectedTag === tag
                   ? "bg-fg text-bg-raised font-medium shadow-2xs"
-                  : "bg-bg-raised border border-border text-fg-muted hover:border-fg/40 hover:text-fg"
+                  : "bg-bg-raised border border-border text-fg-muted hover:border-[#041a24] hover:text-fg"
               }`}
             >
               #{tag}
@@ -187,8 +187,8 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
                 key={entry.id}
                 className={`relative rounded-[10px] p-6 sm:p-7 space-y-4 transition-all duration-200 overflow-hidden ${
                   entry.is_pinned
-                    ? "border-2 border-neutral-300 hover:border-neutral-500 bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 hover:from-neutral-200/90 hover:via-neutral-100 hover:to-neutral-300/90 shadow-sm hover:shadow-md ring-1 ring-black/5"
-                    : "border border-border bg-bg-raised hover:border-fg/40 shadow-2xs hover:shadow-sm"
+                    ? "border-2 border-neutral-300 hover:border-[#041a24] bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 hover:from-neutral-200/90 hover:via-neutral-100 hover:to-neutral-300/90 shadow-sm hover:shadow-md ring-1 ring-black/5"
+                    : "border border-border bg-bg-raised hover:border-[#041a24] shadow-2xs hover:shadow-sm"
                 }`}
               >
                 {/* Specular Top Shine Bar for Pinned Links */}
@@ -261,7 +261,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
                           className={`font-mono text-[10px] px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer ${
                             selectedTag === tag
                               ? "bg-fg text-bg-raised font-medium"
-                              : "bg-bg border border-border/80 text-fg-subtle hover:text-fg hover:border-fg/40"
+                              : "bg-bg border border-border/80 text-fg-subtle hover:text-fg hover:border-[#041a24]"
                           }`}
                         >
                           #{tag}
@@ -280,8 +280,8 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
                       rel="noopener noreferrer"
                       className={`inline-flex items-center space-x-1.5 font-mono text-xs px-3.5 py-1.5 rounded-[4px] font-medium transition-all self-start sm:self-auto cursor-pointer ${
                         entry.is_pinned
-                          ? "bg-white border border-neutral-300 text-black shadow-2xs hover:bg-neutral-900 hover:text-white hover:border-neutral-900"
-                          : "bg-bg border border-border hover:border-fg/40 hover:text-fg text-fg-muted"
+                          ? "bg-white border border-neutral-300 text-black shadow-2xs hover:bg-[#041a24] hover:text-white hover:border-[#041a24]"
+                          : "bg-bg border border-border hover:border-[#041a24] hover:text-fg text-fg-muted"
                       }`}
                     >
                       <span>Visit Portal</span>

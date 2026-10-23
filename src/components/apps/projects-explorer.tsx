@@ -128,7 +128,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search projects..."
-            className="w-full pl-8 pr-9 py-1 h-7.5 bg-white/80 border border-black/15 focus:border-neutral-800 focus:bg-white rounded-[3px] text-[11px] font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
+            className="w-full pl-8 pr-9 py-1 h-7.5 bg-white/80 border border-black/15 focus:border-[#041a24] focus:bg-white rounded-[3px] text-[11px] font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
           />
           {searchQuery ? (
             <button
@@ -245,7 +245,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
             return (
               <article
                 key={app.id}
-                className="group border border-black/15 bg-white/70 backdrop-blur-xs rounded-[6px] overflow-hidden flex flex-col justify-between hover:border-black/50 transition-all duration-200 shadow-2xs"
+                className="group border border-black/15 bg-white/70 backdrop-blur-xs rounded-[6px] overflow-hidden flex flex-col justify-between hover:border-[#041a24] transition-all duration-200 shadow-2xs"
               >
                 {/* Media Viewport */}
                 <Link
@@ -313,7 +313,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                         href={repoUrl}
                         target="_blank"
                         rel="noreferrer"
-                        className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px]"
+                        className="border border-black/25 hover:border-[#041a24] bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px]"
                       >
                         GITHUB
                       </a>
@@ -321,7 +321,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
                     <Link
                       href={`/home/apps/${app.slug}`}
-                      className="border border-black/25 hover:border-black bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px] ml-auto"
+                      className="border border-black/25 hover:border-[#041a24] bg-white/60 hover:bg-white px-3 py-1.5 text-[10px] uppercase tracking-wider text-black transition-colors rounded-[4px] ml-auto"
                     >
                       INFO
                     </Link>

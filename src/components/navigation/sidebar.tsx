@@ -90,7 +90,7 @@ export function Sidebar({
         {onSearchOpen && (
           <button
             onClick={onSearchOpen}
-            className="mt-4 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-black/30 px-3 py-1.5 text-xs text-neutral-500 hover:text-black transition-colors rounded-[6px] cursor-pointer"
+            className="mt-4 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-[#041a24] px-3 py-1.5 text-xs text-neutral-500 hover:text-black transition-colors rounded-[6px] cursor-pointer"
           >
             <div className="flex items-center space-x-2">
               <Search className="h-3.5 w-3.5 stroke-[1.5]" />
