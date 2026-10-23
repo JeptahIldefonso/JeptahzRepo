@@ -143,15 +143,15 @@ export function Sidebar({
       <div className="pt-4 border-t border-neutral-100 mt-auto flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
           <div className="w-7 h-7 rounded-[4px] bg-black text-white flex items-center justify-center font-mono text-[10px] font-bold">
-            JI
+            JR
           </div>
           <div className="flex flex-col text-left">
-            <span className="font-sans text-xs font-semibold text-black leading-tight flex items-center space-x-1">
-              <span>Jeptah Ildefonso</span>
+            <span className="font-editorial italic text-sm text-black leading-tight flex items-center space-x-1">
+              <span>JeptahzRepo</span>
               <CheckCircle2 className="w-3 h-3 text-sky-500 fill-sky-500/20" />
             </span>
             <span className="text-[11px] text-neutral-400 font-sans leading-tight">
-              @jeptah
+              @websiteBlog
             </span>
           </div>
         </div>
