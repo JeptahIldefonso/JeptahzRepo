@@ -59,19 +59,19 @@ export function Sidebar({
   }
 
   const renderNav = (isDesktop = false) => (
-    <div className="flex h-full flex-col justify-between px-3.5 py-4 select-none">
+    <div className="flex h-full flex-col justify-between p-5 select-none">
       <div>
         {/* Brand & Masthead */}
-        <div className="flex items-start justify-between pb-4 border-b border-neutral-100">
+        <div className="flex items-start justify-between pb-5 border-b border-neutral-100">
           <Link
             href="/home"
             className="group block"
             onClick={() => setMobileOpen(false)}
           >
-            <div className="font-editorial italic text-[21px] font-normal tracking-tight text-black group-hover:text-black/70 transition-colors leading-none">
+            <div className="font-editorial italic text-[25px] font-normal tracking-tight text-black group-hover:text-black/70 transition-colors leading-none">
               JeptahzRepo
             </div>
-            <div className="font-mono text-[9px] tracking-widest text-neutral-400 uppercase mt-0.5">
+            <div className="font-mono text-[10px] tracking-widest text-neutral-400 uppercase mt-1">
               Blog Archive
             </div>
           </Link>
@@ -79,10 +79,10 @@ export function Sidebar({
           {isDesktop && (
             <button
               onClick={() => toggleCollapse(true)}
-              className="p-1 rounded-[4px] text-neutral-400 hover:text-black hover:bg-neutral-100 transition-colors cursor-pointer"
+              className="p-1.5 rounded-[6px] text-neutral-400 hover:text-black hover:bg-neutral-100 transition-colors cursor-pointer"
               title="Collapse sidebar"
             >
-              <PanelLeftClose className="w-3.5 h-3.5 stroke-[1.5]" />
+              <PanelLeftClose className="w-4 h-4 stroke-[1.5]" />
             </button>
           )}
         </div>
@@ -91,7 +91,7 @@ export function Sidebar({
         {onSearchOpen && (
           <button
             onClick={onSearchOpen}
-            className="mt-3.5 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-[#041a24] px-2.5 py-1.5 text-[12px] text-neutral-500 hover:text-black transition-colors rounded-[5px] cursor-pointer"
+            className="mt-4 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-[#041a24] px-3 py-1.5 text-[13px] text-neutral-500 hover:text-black transition-colors rounded-[6px] cursor-pointer"
           >
             <div className="flex items-center space-x-2">
               <Search className="h-3.5 w-3.5 stroke-[1.5]" />
@@ -104,7 +104,7 @@ export function Sidebar({
         )}
 
         {/* Minimalist Flat Vertical Navigation Stream (Matches X / Clean Reference) */}
-        <nav className="mt-4 space-y-0.5">
+        <nav className="mt-5 space-y-0.5">
           {NAVIGATION_ITEMS.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -117,7 +117,7 @@ export function Sidebar({
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "group flex items-center justify-between py-1.5 px-1.5 text-[14px] font-sans transition-colors cursor-pointer rounded-[4px]",
+                  "group flex items-center justify-between py-2 px-1 text-[15px] font-sans transition-colors cursor-pointer",
                   isActive
                     ? "font-bold text-black"
                     : "text-neutral-600 hover:text-black font-medium"
@@ -141,8 +141,8 @@ export function Sidebar({
       </div>
 
       {/* Footer Profile & Discreet Admin Touchpoint (Matches Bottom-Left Reference Badge) */}
-      <div className="pt-3 border-t border-neutral-100 mt-auto flex items-center justify-between">
-        <div className="flex items-center space-x-2 min-w-0">
+      <div className="pt-4 border-t border-neutral-100 mt-auto flex items-center justify-between">
+        <div className="flex items-center space-x-2.5">
           <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-black/10 shrink-0 shadow-xs">
             <Image
               src="/avatar.png"
@@ -153,11 +153,11 @@ export function Sidebar({
             />
           </div>
           <div className="flex flex-col text-left min-w-0">
-            <span className="font-editorial italic text-[13.5px] text-black leading-tight flex items-center space-x-1 truncate">
+            <span className="font-editorial italic text-[15px] text-black leading-tight flex items-center space-x-1 truncate">
               <span>JeptahzRepo</span>
-              <CheckCircle2 className="w-3 h-3 text-sky-500 fill-sky-500/20 shrink-0" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20 shrink-0" />
             </span>
-            <span className="text-[11px] text-neutral-400 font-sans leading-tight truncate">
+            <span className="text-xs text-neutral-400 font-sans leading-tight truncate">
               @websiteBlog
             </span>
           </div>
@@ -165,7 +165,7 @@ export function Sidebar({
 
         <Link
           href="/admin"
-          className="p-1 text-neutral-400 hover:text-black rounded-[4px] transition-colors cursor-pointer shrink-0"
+          className="p-1.5 text-neutral-400 hover:text-black rounded-[4px] transition-colors cursor-pointer shrink-0"
           title="Admin Management"
           onClick={() => setMobileOpen(false)}
         >
@@ -194,7 +194,7 @@ export function Sidebar({
       {/* Mobile Off-Canvas Drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs">
-          <div className="fixed inset-y-0 left-0 w-52 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
+          <div className="fixed inset-y-0 left-0 w-60 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
             {renderNav(false)}
           </div>
         </div>
@@ -215,7 +215,7 @@ export function Sidebar({
       {/* Desktop Side Panel (Clean vertical column matching reference) */}
       <aside
         className={cn(
-          "hidden lg:flex fixed left-0 top-0 bottom-0 w-48 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
+          "hidden lg:flex fixed left-0 top-0 bottom-0 w-56 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
           isCollapsed
             ? "-translate-x-full opacity-0 pointer-events-none"
             : "translate-x-0 opacity-100"
