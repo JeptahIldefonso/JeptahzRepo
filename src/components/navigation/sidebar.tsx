@@ -187,7 +187,7 @@ export function Sidebar({
       {/* Mobile Off-Canvas Drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs">
-          <div className="fixed inset-y-0 left-0 w-64 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
+          <div className="fixed inset-y-0 left-0 w-72 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
             {renderNav(false)}
           </div>
         </div>
@@ -208,7 +208,7 @@ export function Sidebar({
       {/* Desktop Side Panel (Clean vertical column matching reference) */}
       <aside
         className={cn(
-          "hidden lg:flex fixed left-0 top-0 bottom-0 w-60 xl:w-64 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
+          "hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
           isCollapsed
             ? "-translate-x-full opacity-0 pointer-events-none"
             : "translate-x-0 opacity-100"
