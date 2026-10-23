@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, Info, Compass, FolderGit2 } from "lucide-react";
+import { ArrowRight, FolderGit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function IntroHero() {
@@ -46,35 +46,12 @@ export function IntroHero() {
         </div>
 
         {/* Main Headline */}
-        <h1 className="font-editorial text-4xl sm:text-5xl font-normal text-fg tracking-tight leading-tight mb-3">
+        <h1 className="font-editorial text-4xl sm:text-5xl font-normal text-fg tracking-tight leading-tight mb-8">
           Welcome to <span className="italic font-normal">JeptahzRepo</span>
         </h1>
 
-        {/* Short Definition */}
-        <p className="text-xs sm:text-sm text-fg-muted font-normal max-w-md mx-auto leading-relaxed mb-8">
-          A wholesome community repository of computer science theory, production application showcases, and curriculum roadmaps.
-        </p>
-
         {/* Center Box Panel Card */}
-        <div className="w-full bg-white border border-border/80 shadow-sm rounded-[10px] p-6 sm:p-7 text-left space-y-5">
-          {/* Inside Info Callout Box */}
-          <div className="bg-bg/60 border border-border/70 rounded-[6px] p-4 text-xs text-fg-muted flex items-start space-x-3 leading-relaxed">
-            <Info className="w-4 h-4 text-fg shrink-0 mt-0.5 stroke-[1.5]" />
-            <div className="space-y-1">
-              <span className="font-medium text-fg block">
-                Public Community Repository
-              </span>
-              <p className="text-[11px] text-fg-muted leading-normal">
-                Direct access to verified application downloads, algorithm proofs, and university study guides.
-              </p>
-            </div>
-          </div>
-
-          {/* Subtext Prompt */}
-          <div className="text-xs text-fg-subtle font-mono">
-            Direct archive entry:
-          </div>
-
+        <div className="w-full bg-white border border-border/80 shadow-sm rounded-[10px] p-6 sm:p-7 space-y-4">
           {/* Full-Width Action Button */}
           <Link href="/hub" className="block w-full">
             <Button
@@ -87,7 +64,7 @@ export function IntroHero() {
           </Link>
 
           {/* Fine Print Note Below Button */}
-          <p className="text-[10px] text-fg-subtle text-center font-mono pt-1">
+          <p className="text-[10px] text-fg-subtle text-center font-mono">
             Free and open access &bull; Offline resilient &bull; Zero tracking
           </p>
         </div>
