@@ -60,7 +60,7 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
         items={searchItems}
       />
 
-      {/* Main Content Area */}
+      {/* Main Content Area - Fully Untouched & Independent (Phase 57 Architecture) */}
       <main
         className={`flex flex-col min-h-screen w-full transition-all duration-300 ${
           sidebarCollapsed
@@ -68,31 +68,11 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
             : "lg:pl-56 pr-0"
         }`}
       >
-        {isExcluded ? (
-          /* Standard Full-Width Grid (Projects, About, Contact) */
-          <div className={`w-full flex-1 flex flex-col ${sidebarCollapsed ? "" : "xl:pr-56"}`}>
-            <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto px-4 sm:px-6 flex flex-col">
-              {children}
-            </div>
+        <div className={`w-full flex-1 flex flex-col ${sidebarCollapsed ? "" : "xl:pr-56"}`}>
+          <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto px-4 sm:px-6 flex flex-col">
+            {children}
           </div>
-        ) : (
-          /* Middle-Centered Feed + Far-Right Floating Log Rail (Home, Docs, Courses, Ideas, Resources) */
-          <div className="w-full flex-1 flex flex-col relative">
-            <div className="flex-1 py-8 sm:py-10 md:py-12 w-full mx-auto px-4 sm:px-6 flex justify-center relative">
-              {/* Main Center Stream - 100% Centered in the middle */}
-              <div className="w-full max-w-[800px] min-w-0">
-                {children}
-              </div>
-
-              {/* Far Right Floating Log Rail - Positioned far right, detached from middle stream */}
-              <div className="hidden xl:block absolute right-4 lg:right-6 2xl:right-8 top-8 w-[270px] shrink-0">
-                <div className="sticky top-8">
-                  <RightFloatingPanel />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Global Hub Footer (Styled in requested #041a24 color) */}
         <footer className="w-full mt-auto bg-[#041a24] text-white/80 border-t border-[#041a24]">
@@ -114,6 +94,13 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
           </div>
         </footer>
       </main>
+
+      {/* Completely Unbound Right Floating Log Rail (GitHub Style in #c3cdd6) */}
+      {!isExcluded && (
+        <div className="hidden xl:block fixed right-4 lg:right-6 2xl:right-8 top-8 w-[270px] z-30 pointer-events-auto">
+          <RightFloatingPanel />
+        </div>
+      )}
     </div>
   );
 }
