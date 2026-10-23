@@ -76,17 +76,19 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
             </div>
           </div>
         ) : (
-          /* 2-Column Feed + Right Floating Rail (Home, Docs, Courses, Ideas, Resources) */
-          <div className="w-full flex-1 flex flex-col">
-            <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[1120px] mx-auto px-4 sm:px-6 flex flex-col xl:flex-row items-start justify-center gap-8">
-              {/* Main Center Stream */}
-              <div className="flex-1 w-full min-w-0 max-w-[740px]">
+          /* Middle-Centered Feed + Far-Right Floating Log Rail (Home, Docs, Courses, Ideas, Resources) */
+          <div className="w-full flex-1 flex flex-col relative">
+            <div className="flex-1 py-8 sm:py-10 md:py-12 w-full mx-auto px-4 sm:px-6 flex justify-center relative">
+              {/* Main Center Stream - 100% Centered in the middle */}
+              <div className="w-full max-w-[800px] min-w-0">
                 {children}
               </div>
 
-              {/* Right Floating Rail (GitHub Style Announcement & Changelog) */}
-              <div className="hidden xl:block w-[320px] shrink-0 sticky top-8">
-                <RightFloatingPanel />
+              {/* Far Right Floating Log Rail - Positioned far right, detached from middle stream */}
+              <div className="hidden xl:block absolute right-4 lg:right-6 2xl:right-8 top-8 w-[270px] shrink-0">
+                <div className="sticky top-8">
+                  <RightFloatingPanel />
+                </div>
               </div>
             </div>
           </div>
@@ -94,12 +96,8 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
 
         {/* Global Hub Footer (Styled in requested #041a24 color) */}
         <footer className="w-full mt-auto bg-[#041a24] text-white/80 border-t border-[#041a24]">
-          <div className={`w-full ${sidebarCollapsed || !isExcluded ? "" : "xl:pr-56"}`}>
-            <div
-              className={`mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono ${
-                isExcluded ? "max-w-[940px]" : "max-w-[1120px]"
-              }`}
-            >
+          <div className={`w-full ${sidebarCollapsed ? "" : "xl:pr-56"}`}>
+            <div className="max-w-[940px] mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
               <div className="flex items-center space-x-2.5">
                 <span className="font-editorial italic text-base text-white font-normal">
                   JeptahzRepo
