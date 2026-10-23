@@ -17,7 +17,7 @@ export default async function HubOverviewPage() {
   const recentEntries = entries.slice(0, 3);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-16 py-4 sm:py-8">
+    <div className="w-full space-y-16 py-4 sm:py-8">
       {/* Clean Welcome Header */}
       <header className="space-y-4 border-b border-border pb-8">
         <h1 className="font-editorial text-4xl sm:text-5xl font-normal tracking-tight text-fg leading-tight">

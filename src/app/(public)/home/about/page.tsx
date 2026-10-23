@@ -23,7 +23,7 @@ export default async function AboutPage() {
   const githubUrl = settings.social_links?.github || "https://github.com/JeptahIldefonso";
 
   return (
-    <div className="max-w-3xl space-y-10">
+    <div className="w-full space-y-10">
       {/* Header */}
       <div className="border-b border-border pb-6">
         <h1 className="font-display text-3xl font-medium tracking-tight text-fg">

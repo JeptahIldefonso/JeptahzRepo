@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HubLoading() {
   return (
-    <div className="max-w-4xl mx-auto space-y-16 py-4 sm:py-8">
+    <div className="w-full space-y-16 py-4 sm:py-8">
       {/* Header Skeleton */}
       <div className="border-b border-border pb-8 space-y-3">
         <Skeleton className="h-3 w-28" />

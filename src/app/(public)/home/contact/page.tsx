@@ -7,7 +7,7 @@ export default async function ContactPage() {
   const settings = await getSiteSettings();
 
   return (
-    <div className="max-w-2xl space-y-8">
+    <div className="w-full space-y-8">
       {/* Header */}
       <div className="border-b border-border pb-6">
         <h1 className="font-display text-3xl font-medium tracking-tight text-fg">
