@@ -62,16 +62,6 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     description: "Tools, references, and bookmarks worth sharing",
   },
 
-  // Manage
-  {
-    slug: "admin",
-    href: "/admin",
-    label: "Admin Panel",
-    category: "manage",
-    icon: "Shield",
-    description: "Manage repository entries, projects, and media",
-  },
-
   // Info
   {
     slug: "about",

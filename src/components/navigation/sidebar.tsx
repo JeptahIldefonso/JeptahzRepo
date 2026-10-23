@@ -78,7 +78,7 @@ export function Sidebar({
     }
   }
 
-  const categories = ["browse", "explore", "more", "manage", "info"] as const;
+  const categories = ["browse", "explore", "more", "info"] as const;
 
   const renderNav = (isFloatingDesktop = false) => (
     <div className="flex h-full flex-col justify-between p-4 sm:p-5 select-none">
@@ -176,17 +176,17 @@ export function Sidebar({
         </div>
       </div>
 
-      {/* Footer System Status & Discreet Admin Touchpoint */}
-      <div className="border-t border-border pt-3.5 mt-6">
+      {/* Footer System Status & Discreet Admin Touchpoint at very bottom of side panel left */}
+      <div className="border-t border-border pt-3.5 mt-auto">
         <div className="flex items-center justify-between text-xs font-mono text-fg-subtle">
           <div className="flex items-center space-x-2">
-            <span className="h-2 w-2 rounded-full bg-fg" />
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="tracking-wider uppercase text-[10px]">Online</span>
           </div>
           <Link
-            href="/login"
+            href="/admin"
             className="flex items-center space-x-1.5 text-xs text-fg-subtle hover:text-fg hover:underline transition-colors tracking-wider px-2 py-0.5 rounded-[4px]"
-            title="Admin Login"
+            title="Admin Management"
             onClick={() => setMobileOpen(false)}
           >
             <Lock className="w-3 h-3 stroke-[1.5]" />
