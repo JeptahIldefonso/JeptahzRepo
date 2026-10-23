@@ -76,10 +76,10 @@ export const NAVIGATION_ITEMS: NavItem[] = [
   {
     slug: "about",
     href: "/home/about",
-    label: "About",
+    label: "Portfolio & About",
     category: "info",
     icon: "User",
-    description: "Who I am and what this is about",
+    description: "Personal portfolio, background, and archive overview",
   },
   {
     slug: "contact",
