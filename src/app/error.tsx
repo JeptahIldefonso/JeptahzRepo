@@ -14,6 +14,23 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     console.error("Archival Node Runtime Exception:", error);
+    // Automatically recover from stale Webpack/Turbopack chunk loading mismatches
+    if (
+      error.message?.includes("Loading chunk") ||
+      error.message?.includes("ChunkLoadError") ||
+      error.name === "ChunkLoadError"
+    ) {
+      try {
+        const lastReload = sessionStorage.getItem("chunk_reload_ts");
+        const now = Date.now();
+        if (!lastReload || now - parseInt(lastReload, 10) > 8000) {
+          sessionStorage.setItem("chunk_reload_ts", String(now));
+          window.location.reload();
+        }
+      } catch {
+        window.location.reload();
+      }
+    }
   }, [error]);
 
   return (
