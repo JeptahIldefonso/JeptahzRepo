@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, FolderGit2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -12,9 +13,16 @@ export function IntroHero() {
       <header className="fixed top-0 inset-x-0 z-20 flex items-center justify-between p-6 sm:p-8 max-w-7xl mx-auto w-full">
         {/* Top-Left: Brand & Subtitle */}
         <div className="flex items-center space-x-3">
-          {/* Pixel Cloud / Brand Icon */}
-          <div className="h-8 w-10 flex items-center justify-center bg-white/90 text-[#041a24] rounded-[2px] shadow-sm backdrop-blur-xs">
-            <span className="font-mono text-[10px] font-bold tracking-tight">JR</span>
+          {/* Top-Left Avatar / Brand Icon */}
+          <div className="w-9 h-9 rounded-full overflow-hidden shadow-sm ring-1 ring-white/60 shrink-0">
+            <Image
+              src="/avatar.png"
+              alt="JeptahzRepo"
+              width={36}
+              height={36}
+              priority
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col text-left">
             <span className="font-editorial italic text-lg sm:text-xl text-white tracking-tight leading-tight drop-shadow-sm">
@@ -67,9 +75,16 @@ export function IntroHero() {
             }}
           />
 
-          {/* Center Pixel Logo Badge */}
-          <div className="relative z-10 w-12 h-12 flex items-center justify-center bg-[#041a24] text-white rounded-[2px] shadow-sm ring-2 ring-white/70">
-            <span className="font-mono text-xs font-bold tracking-widest">JR</span>
+          {/* Center Profile Avatar (Classic Circular) */}
+          <div className="relative z-10 w-16 h-16 rounded-full overflow-hidden shadow-md ring-2 ring-white/90 shrink-0">
+            <Image
+              src="/avatar.png"
+              alt="JeptahzRepo"
+              width={64}
+              height={64}
+              priority
+              className="w-full h-full object-cover"
+            />
           </div>
 
           <div className="relative z-10">

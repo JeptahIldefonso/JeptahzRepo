@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
@@ -91,9 +92,15 @@ export function CourseGuideCard({ entry, onTagClick, activeTag }: CourseGuideCar
         {/* ── Academic Course Header: Instructor, Role, Date, Pinned Badge ── */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center space-x-3">
-            {/* Academic Monogram */}
-            <div className="w-10 h-10 rounded-full bg-[#041a24] text-white flex items-center justify-center font-mono font-bold text-sm select-none shadow-xs shrink-0 ring-2 ring-black/5">
-              JI
+            {/* Academic Author Avatar */}
+            <div className="w-10 h-10 rounded-full overflow-hidden shadow-xs shrink-0 ring-2 ring-black/5">
+              <Image
+                src="/avatar.png"
+                alt="Jeptah Ildefonso"
+                width={40}
+                height={40}
+                className="w-full h-full object-cover"
+              />
             </div>
 
             <div className="space-y-0.5">

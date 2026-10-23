@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   Menu,
@@ -142,8 +143,14 @@ export function Sidebar({
       {/* Footer Profile & Discreet Admin Touchpoint (Matches Bottom-Left Reference Badge) */}
       <div className="pt-4 border-t border-neutral-100 mt-auto flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-[4px] bg-black text-white flex items-center justify-center font-mono text-[10px] font-bold shrink-0">
-            JR
+          <div className="w-7 h-7 rounded-full overflow-hidden ring-1 ring-black/10 shrink-0 shadow-xs">
+            <Image
+              src="/avatar.png"
+              alt="JeptahzRepo"
+              width={28}
+              height={28}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col text-left min-w-0">
             <span className="font-editorial italic text-[15px] text-black leading-tight flex items-center space-x-1 truncate">

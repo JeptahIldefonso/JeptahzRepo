@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 import {
   Plus,
   Trash2,
@@ -1651,8 +1652,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
                 {/* Author row (FB style) */}
                 <div className="flex items-center space-x-3 pt-1">
-                  <div className="w-10 h-10 rounded-full bg-[#041a24] text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
-                    JI
+                  <div className="w-10 h-10 rounded-full overflow-hidden shadow-xs shrink-0 ring-1 ring-black/10 select-none">
+                    <NextImage
+                      src="/avatar.png"
+                      alt="Jeptah Ildefonso"
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-[#041a24] leading-tight">
@@ -2517,8 +2524,14 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               <div className="overflow-y-auto px-5 py-3 space-y-3 flex-1">
                 {/* Academic Instructor Banner */}
                 <div className="flex items-center space-x-3 pt-1">
-                  <div className="w-10 h-10 rounded-full bg-[#041a24] text-white font-medium flex items-center justify-center text-sm shadow-xs shrink-0 select-none">
-                    JI
+                  <div className="w-10 h-10 rounded-full overflow-hidden shadow-xs shrink-0 ring-1 ring-black/10 select-none">
+                    <NextImage
+                      src="/avatar.png"
+                      alt="Jeptah Ildefonso"
+                      width={40}
+                      height={40}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div>
                     <div className="font-semibold text-sm text-[#041a24] leading-tight">

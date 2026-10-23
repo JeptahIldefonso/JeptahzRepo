@@ -26,7 +26,12 @@ export const metadata: Metadata = {
   description:
     "An open, editorial knowledge archive of computer science theory, production software showcases, university syllabi, and engineering ideas.",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/avatar.png", sizes: "any" },
+      { url: "/icon.png", type: "image/png" },
+    ],
+    shortcut: "/avatar.png",
+    apple: "/avatar.png",
   },
 };
 
