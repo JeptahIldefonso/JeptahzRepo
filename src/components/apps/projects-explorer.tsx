@@ -105,7 +105,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
               Projects
             </h1>
             <p className="text-xs sm:text-sm text-black/70 max-w-lg leading-relaxed">
-              Software applications, mobile utilities, and developer tools built with clean architecture.
+              Personal full-stack builds, software applications, mobile utilities, and developer tools.
             </p>
           </div>
 

@@ -23,7 +23,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Projects",
     category: "browse",
     icon: "Box",
-    description: "Software builds, tools, and side projects",
+    description: "Personal full-stack builds, software applications, and developer tools",
   },
   {
     slug: "docs",
@@ -31,7 +31,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Notes & Docs",
     category: "browse",
     icon: "BookOpen",
-    description: "Technical write-ups, architecture notes, and guides",
+    description: "Technical documentation, shared files, images, and written notes",
   },
 
   // Explore
@@ -41,7 +41,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Courses",
     category: "explore",
     icon: "GraduationCap",
-    description: "Course notes and learning roadmaps",
+    description: "Course information, academic roadmaps, and study materials",
   },
 
   // More
@@ -51,7 +51,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Ideas & Logs",
     category: "more",
     icon: "Lightbulb",
-    description: "Thoughts, experiments, and dev logs",
+    description: "Raw thoughts, project concepts, blueprints, and real-time logs",
   },
   {
     slug: "resources",
@@ -59,7 +59,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Helpful Links",
     category: "more",
     icon: "Link2",
-    description: "Tools, references, and bookmarks worth sharing",
+    description: "Curated collection of developer resources, technical references, and tools",
   },
 
   // Info
@@ -69,7 +69,7 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     label: "Portfolio & About",
     category: "info",
     icon: "User",
-    description: "Personal portfolio, background, and archive overview",
+    description: "Personal portfolio, developer profile, and project archive",
   },
   {
     slug: "contact",

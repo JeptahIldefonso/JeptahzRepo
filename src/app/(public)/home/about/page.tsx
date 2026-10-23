@@ -30,7 +30,7 @@ export default async function AboutPage() {
           Portfolio & About
         </h1>
         <p className="mt-1 text-sm text-fg-muted max-w-xl">
-          Personal portfolio, public developer profile, and the open repository archive.
+          Personal portfolio, developer profile, and project archive.
         </p>
       </div>
 

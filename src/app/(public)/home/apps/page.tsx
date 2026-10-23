@@ -4,7 +4,7 @@ import { ProjectsExplorer } from "@/components/apps/projects-explorer";
 
 export const metadata = {
   title: "Projects — JeptahzRepo",
-  description: "Software applications, utilities, and developer tools.",
+  description: "Personal full-stack builds, software applications, mobile utilities, and developer tools.",
 };
 
 export default async function AppsShowcasePage() {

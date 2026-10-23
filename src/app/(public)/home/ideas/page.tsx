@@ -18,8 +18,7 @@ export default async function IdeasPage() {
               Raw Ideas & Devlogs
             </h1>
             <p className="mt-1 text-sm text-fg-muted max-w-xl">
-              Unfiltered thoughts, thesis concepts, hackathon blueprints, and conceptual architecture
-              diagrams captured in real time.
+              Raw thoughts, project concepts, architecture blueprints, and real-time development logs.
             </p>
           </div>
           <div className="font-mono text-xs text-fg-subtle border border-border bg-bg-raised px-3 py-1.5 rounded-[2px] self-start sm:self-auto">

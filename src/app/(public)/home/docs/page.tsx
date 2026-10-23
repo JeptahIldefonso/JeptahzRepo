@@ -4,7 +4,7 @@ import { DocsFeed } from "@/components/docs/docs-feed";
 
 export const metadata = {
   title: "Notes & Docs — Community Stream",
-  description: "Technical breakdowns, architecture notes, and CS announcements with full-resolution diagrams and media.",
+  description: "Technical documentation, shared files, image captures, and written notes.",
 };
 
 export default async function DocsTheoryPage() {
@@ -20,7 +20,7 @@ export default async function DocsTheoryPage() {
               Notes & Docs
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-black/70 leading-relaxed">
-              Technical breakdowns, architecture write-ups, and announcements with full-resolution media.
+              Technical documentation, shared files, image captures, and written notes.
             </p>
           </div>
         </div>
