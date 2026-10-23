@@ -65,7 +65,7 @@ export function IntroHero() {
 
           {/* Fine Print Note Below Button */}
           <p className="text-[10px] text-fg-subtle text-center font-mono">
-            Free and open access &bull; Offline resilient &bull; Zero tracking
+            Free and open access
           </p>
         </div>
       </main>
