@@ -391,7 +391,7 @@
         "category": "Bookmarks"
       },
       "tags": ["Bookmarks", "Tools", "Learning"],
-      "is_pinned": false,
+      "is_pinned": true,
       "is_published": true,
       "view_count": 145,
       "created_at": "2026-10-10T11:20:00Z"

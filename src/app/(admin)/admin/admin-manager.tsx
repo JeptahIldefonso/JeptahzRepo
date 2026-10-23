@@ -619,6 +619,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       summary: "",
       content: "",
       tags: [],
+      is_pinned: false,
       is_published: true,
     });
     setResourceCombinedText("");
@@ -663,6 +664,7 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
       external_url: editingResource?.external_url || null,
       summary: parsed.summary || editingResource?.summary || "",
       content: parsed.summary || editingResource?.content || "",
+      is_pinned: Boolean(editingResource?.is_pinned),
       is_published: editingResource?.is_published !== false,
       tags: parsed.tags.length > 0 ? parsed.tags : editingResource?.tags || [],
     };
@@ -1378,6 +1380,12 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
               >
                 <div className="space-y-1.5 flex-1 min-w-0">
                   <div className="flex items-center space-x-2 flex-wrap">
+                    {resItem.is_pinned && (
+                      <span className="inline-flex items-center space-x-1 px-2 py-0.5 rounded-[4px] bg-neutral-900 text-white text-[10px] font-mono font-medium shadow-2xs">
+                        <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
+                        <span>Pinned</span>
+                      </span>
+                    )}
                     <span className="font-medium text-sm text-fg tracking-tight">
                       {resItem.title}
                     </span>
@@ -2360,6 +2368,27 @@ export function AdminManager({ initialApps, initialEntries }: AdminManagerProps)
                   )}
                 </div>
               )}
+
+              {/* Pin this link toggle */}
+              <div className="flex items-center justify-between p-2.5 bg-neutral-50 border border-neutral-200 rounded-[6px] text-xs font-mono">
+                <label className="flex items-center space-x-2 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(editingResource.is_pinned)}
+                    onChange={(e) =>
+                      setEditingResource({ ...editingResource, is_pinned: e.target.checked })
+                    }
+                    className="rounded accent-black cursor-pointer"
+                  />
+                  <span className="text-fg font-medium">Pin link to top (noticeable shining gray)</span>
+                </label>
+                {editingResource.is_pinned && (
+                  <span className="inline-flex items-center space-x-1 text-[10px] font-mono text-white bg-neutral-900 px-1.5 py-0.5 rounded-[4px]">
+                    <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
+                    <span>Pinned</span>
+                  </span>
+                )}
+              </div>
 
               <div className="border-t border-border pt-4 flex justify-end space-x-2">
                 <Button

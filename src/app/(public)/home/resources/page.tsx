@@ -1,5 +1,5 @@
 import React from "react";
-import { Link2, ExternalLink } from "lucide-react";
+import { Link2, ExternalLink, Pin } from "lucide-react";
 import { getEntries } from "@/db/data-provider";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,13 @@ import { formatDate } from "@/lib/utils";
 
 export default async function ResourcesPage() {
   const entries = await getEntries({ topicSlug: "resources" });
+
+  // Pinned links first, then newest
+  const sortedEntries = [...entries].sort((a, b) => {
+    if (a.is_pinned && !b.is_pinned) return -1;
+    if (!a.is_pinned && b.is_pinned) return 1;
+    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+  });
 
   return (
     <div className="space-y-8">
@@ -34,7 +41,7 @@ export default async function ResourcesPage() {
       </div>
 
       {/* List of Resource Links */}
-      {entries.length === 0 ? (
+      {sortedEntries.length === 0 ? (
         <EmptyState
           title="No Resources Found"
           description="There are currently no external resources or bookmarks listed."
@@ -42,14 +49,25 @@ export default async function ResourcesPage() {
         />
       ) : (
         <div className="space-y-3">
-          {entries.map((entry) => (
+          {sortedEntries.map((entry) => (
             <div
               key={entry.id}
-              className="border border-border bg-bg-raised p-5 rounded-[2px] hover:border-fg/40 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              className={`p-5 rounded-[8px] transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                entry.is_pinned
+                  ? "border-2 border-neutral-300 hover:border-black bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 shadow-sm hover:shadow-md ring-1 ring-black/5"
+                  : "border border-border bg-bg-raised hover:border-fg/40"
+              }`}
             >
               <div className="space-y-1.5 max-w-2xl">
                 <div className="flex items-center space-x-2">
-                  <Badge variant="subtle">LINK</Badge>
+                  {entry.is_pinned ? (
+                    <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-[4px] bg-neutral-900 text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
+                      <Pin className="w-2.5 h-2.5 fill-white rotate-45" />
+                      <span>PINNED LINK</span>
+                    </span>
+                  ) : (
+                    <Badge variant="subtle">LINK</Badge>
+                  )}
                   <span className="font-mono text-[10px] text-fg-subtle">
                     {formatDate(entry.created_at)}
                   </span>
@@ -78,7 +96,11 @@ export default async function ResourcesPage() {
                   href={entry.external_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="shrink-0 inline-flex items-center space-x-1.5 font-mono text-xs bg-bg border border-border px-3 py-2 rounded-[2px] hover:border-fg/40 hover:text-fg text-fg-subtle transition-colors"
+                  className={`shrink-0 inline-flex items-center space-x-1.5 font-mono text-xs px-3 py-2 rounded-[4px] transition-all ${
+                    entry.is_pinned
+                      ? "bg-white border border-neutral-300 text-black font-semibold shadow-2xs hover:bg-neutral-900 hover:text-white hover:border-neutral-900"
+                      : "bg-bg border border-border hover:border-fg/40 hover:text-fg text-fg-subtle"
+                  }`}
                 >
                   <span>Visit Portal</span>
                   <ExternalLink className="w-3.5 h-3.5" />
