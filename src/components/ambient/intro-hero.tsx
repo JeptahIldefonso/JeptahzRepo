@@ -72,13 +72,10 @@ export function IntroHero() {
             <span className="font-mono text-xs font-bold tracking-widest">JR</span>
           </div>
 
-          <div className="relative z-10 space-y-1">
+          <div className="relative z-10">
             <div className="font-editorial italic text-xl text-[#041a24] font-normal leading-tight">
-              Knowledge Repository
+              Blog Repo
             </div>
-            <p className="font-mono text-[11px] text-[#041a24]/75 tracking-wider uppercase">
-              Curated Theories &amp; Code
-            </p>
           </div>
 
           {/* Full-Width Action Button */}
