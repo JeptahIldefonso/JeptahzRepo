@@ -24,7 +24,7 @@ export default function NotFound() {
           <Link href="/home">
             <Button variant="default" size="sm">
               <ArrowLeft className="w-3.5 h-3.5 mr-1.5" />
-              <span>Return to Community Hub</span>
+              <span>Return to Blog Archive</span>
             </Button>
           </Link>
         </div>

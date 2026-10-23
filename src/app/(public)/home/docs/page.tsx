@@ -3,7 +3,7 @@ import { getEntries } from "@/db/data-provider";
 import { DocsFeed } from "@/components/docs/docs-feed";
 
 export const metadata = {
-  title: "Notes & Docs — Community Stream",
+  title: "Notes & Docs — Blog Archive",
   description: "Technical documentation, shared files, image captures, and written notes.",
 };
 
@@ -26,7 +26,7 @@ export default async function DocsTheoryPage() {
         </div>
       </div>
 
-      {/* ── Social Community Feed Stream ── */}
+      {/* ── Social Blog Feed Stream ── */}
       <DocsFeed initialEntries={entries} />
     </div>
   );

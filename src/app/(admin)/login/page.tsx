@@ -57,7 +57,7 @@ export default function AdminLoginPage() {
           className="inline-flex items-center space-x-1.5 font-mono text-xs text-fg-subtle hover:text-fg transition-colors mb-2"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Return to Community Archive</span>
+          <span>Return to Blog Archive</span>
         </Link>
 
         <div className="border border-border bg-bg-raised p-8 rounded-[2px] shadow-sm space-y-6">

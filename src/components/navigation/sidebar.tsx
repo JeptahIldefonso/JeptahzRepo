@@ -95,7 +95,7 @@ export function Sidebar({
                 JeptahzRepo
               </div>
               <div className="font-mono text-[10px] tracking-widest text-fg-subtle uppercase mt-0.5">
-                Community Archive
+                Blog Archive
               </div>
             </Link>
 

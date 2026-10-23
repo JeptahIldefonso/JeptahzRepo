@@ -59,7 +59,7 @@ export function IntroHero() {
               className="w-full h-11 bg-fg text-bg-raised hover:bg-fg/90 rounded-[6px] text-xs font-mono uppercase tracking-[0.14em] flex items-center justify-center space-x-2 shadow-xs cursor-pointer"
             >
               <FolderGit2 className="w-4 h-4 stroke-[1.5]" />
-              <span>Enter Community Archive</span>
+              <span>Enter Blog Archive</span>
             </Button>
           </Link>
 
