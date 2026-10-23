@@ -51,22 +51,34 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
         items={searchItems}
       />
 
-      {/* Main Content Area: Centered with symmetric gutters so it NEVER overlaps the floating sidebar */}
+      {/* Main Content Area */}
       <main
         className={`flex flex-col min-h-screen w-full transition-all duration-300 ${
           sidebarCollapsed
             ? "px-4 sm:px-8"
-            : "px-4 sm:px-6 xl:pl-[284px] xl:pr-[284px]"
+            : "px-4 sm:px-6 lg:pl-64"
         }`}
       >
         <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto flex flex-col">
           {children}
         </div>
 
-        {/* Global Hub Footer */}
-        <footer className="border-t border-border px-4 py-6 max-w-[940px] w-full mx-auto font-mono text-[11px] text-fg-subtle flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div><span className="font-editorial italic text-sm text-fg tracking-normal">JeptahzRepo</span> &bull; BLOG ARCHIVE</div>
-          <div>EST. 2026 &bull; ALL RIGHTS RESERVED</div>
+        {/* Global Hub Footer (Styled in requested #041a24 color) */}
+        <footer className="w-full mt-auto bg-[#041a24] text-white/80 border-t border-[#041a24]">
+          <div className="max-w-[940px] mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center space-x-2.5">
+              <span className="font-editorial italic text-base text-white font-normal">
+                JeptahzRepo
+              </span>
+              <span className="text-white/30">&bull;</span>
+              <span className="text-[10px] uppercase tracking-wider text-white/70 font-sans font-medium">
+                Blog Archive
+              </span>
+            </div>
+            <div className="text-[10px] text-white/50 tracking-wider">
+              EST. 2026 &bull; ALL RIGHTS RESERVED
+            </div>
+          </div>
         </footer>
       </main>
     </div>

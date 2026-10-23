@@ -71,8 +71,8 @@ export function IntroHero() {
       </main>
 
       {/* Subtle Footer Spacing */}
-      <footer className="relative z-10 p-4 text-center font-mono text-[10px] text-fg-subtle">
-        <span className="font-editorial italic text-xs tracking-normal">JeptahzRepo</span> &bull; 2026
+      <footer className="relative z-10 p-4 text-center font-mono text-[10px] text-[#041a24]/70">
+        <span className="font-editorial italic text-xs tracking-normal text-[#041a24]">JeptahzRepo</span> &bull; 2026
       </footer>
     </div>
   );
