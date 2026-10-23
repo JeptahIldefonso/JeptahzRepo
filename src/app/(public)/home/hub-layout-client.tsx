@@ -62,7 +62,7 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
 
       {/* Main Content Area - Fully Untouched & Independent (Phase 57 Architecture) */}
       <main
-        className={`flex flex-col min-h-screen w-full transition-all duration-300 ${
+        className={`flex flex-col min-h-screen w-full transition-all duration-300 relative ${
           sidebarCollapsed
             ? "pl-0 pr-0"
             : "lg:pl-56 pr-0"
@@ -93,14 +93,14 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
             </div>
           </div>
         </footer>
-      </main>
 
-      {/* Completely Unbound Right Floating Log Rail (GitHub Style in #c3cdd6) */}
-      {!isExcluded && (
-        <div className="hidden xl:block fixed right-4 lg:right-6 2xl:right-8 top-8 w-[270px] z-30 pointer-events-auto">
-          <RightFloatingPanel />
-        </div>
-      )}
+        {/* In-Page Right Side Changelog Rail (Not fully floating, stays on side, moves on scroll) */}
+        {!isExcluded && (
+          <div className="hidden xl:block absolute right-4 lg:right-6 2xl:right-8 top-8 sm:top-10 md:top-12 w-[270px] pointer-events-auto">
+            <RightFloatingPanel />
+          </div>
+        )}
+      </main>
     </div>
   );
 }
