@@ -91,12 +91,12 @@ export function Sidebar({
               className="group block"
               onClick={() => setMobileOpen(false)}
             >
-              <div className="font-mono text-[11px] tracking-widest text-fg-subtle uppercase">
+              <div className="font-editorial italic text-2xl font-normal tracking-tight text-fg group-hover:text-fg/80 transition-colors">
                 JeptahzRepo
               </div>
-              <h2 className="font-editorial text-2xl font-normal tracking-tight text-fg group-hover:text-fg/80 transition-colors">
+              <div className="font-mono text-[10px] tracking-widest text-fg-subtle uppercase mt-0.5">
                 Community Archive
-              </h2>
+              </div>
             </Link>
 
             {/* Desktop Collapse Button */}
@@ -202,7 +202,7 @@ export function Sidebar({
       {/* Mobile Top Header */}
       <div className="lg:hidden sticky top-0 z-40 flex items-center justify-between border-b border-border bg-bg-raised/95 px-4 py-3 backdrop-blur-md">
         <Link href="/home" className="flex items-center space-x-2">
-          <span className="font-editorial text-lg text-fg font-normal">JeptahzRepo</span>
+          <span className="font-editorial italic text-xl text-fg font-normal">JeptahzRepo</span>
         </Link>
         <button
           onClick={() => setMobileOpen(!mobileOpen)}

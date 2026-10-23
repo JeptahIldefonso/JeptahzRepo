@@ -17,7 +17,7 @@ export function IntroHero() {
             <span className="font-mono text-[10px] font-bold tracking-tight">JR</span>
           </div>
           <div className="flex flex-col text-left">
-            <span className="font-sans font-semibold text-sm sm:text-base text-fg tracking-tight leading-tight">
+            <span className="font-editorial italic text-lg sm:text-xl text-fg tracking-tight leading-tight">
               JeptahzRepo
             </span>
             <span className="font-mono text-[11px] text-fg-subtle tracking-wide leading-tight">
@@ -95,7 +95,7 @@ export function IntroHero() {
 
       {/* Subtle Footer Spacing */}
       <footer className="relative z-10 p-4 text-center font-mono text-[10px] text-fg-subtle">
-        J E P T A H Z R E P O &bull; 2 0 2 6
+        <span className="font-editorial italic text-xs tracking-normal">JeptahzRepo</span> &bull; 2026
       </footer>
     </div>
   );

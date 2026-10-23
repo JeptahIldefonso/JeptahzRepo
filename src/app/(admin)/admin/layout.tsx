@@ -16,7 +16,7 @@ export default function AdminLayout({
             <span className="h-2 w-2 rounded-full bg-fg" />
             <Link
               href="/admin"
-              className="font-sans font-bold text-base sm:text-lg text-fg tracking-tight hover:opacity-80 transition-opacity"
+              className="font-editorial italic font-normal text-xl sm:text-2xl text-fg tracking-tight hover:opacity-80 transition-opacity"
             >
               JeptahzRepo
             </Link>

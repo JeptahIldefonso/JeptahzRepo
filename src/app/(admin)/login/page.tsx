@@ -72,7 +72,7 @@ export default function AdminLoginPage() {
               Admin Gateway
             </h1>
             <p className="text-xs text-fg-muted">
-              Enter your credentials to access the JeptahzRepo curation studio.
+              Enter your credentials to access the <span className="font-editorial italic text-sm text-fg font-normal">JeptahzRepo</span> curation studio.
             </p>
           </div>
 

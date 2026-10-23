@@ -65,7 +65,7 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
 
         {/* Global Hub Footer */}
         <footer className="border-t border-border px-4 py-6 max-w-[940px] w-full mx-auto font-mono text-[11px] text-fg-subtle flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div>JEPTAHZREPO &bull; COMMUNITY ARCHIVE</div>
+          <div><span className="font-editorial italic text-sm text-fg tracking-normal">JeptahzRepo</span> &bull; COMMUNITY ARCHIVE</div>
           <div>EST. 2026 &bull; ALL RIGHTS RESERVED</div>
         </footer>
       </main>

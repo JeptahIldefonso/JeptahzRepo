@@ -123,7 +123,7 @@ export default async function AboutPage() {
             I build practical applications, study system architecture, and document everything I learn along the way.
           </p>
           <p className="mt-3 text-sm text-fg-muted leading-relaxed">
-            <strong className="text-fg font-medium">JeptahzRepo</strong> is my open intellectual vault and personal knowledge repository.
+            <span className="font-editorial italic text-base text-fg font-normal">JeptahzRepo</span> is my open intellectual vault and personal knowledge repository.
             While my main portfolio showcases featured applications, this archive serves as the in-depth companion where all notes,
             source repositories, course materials, and technical dev logs are organized for public access.
           </p>
