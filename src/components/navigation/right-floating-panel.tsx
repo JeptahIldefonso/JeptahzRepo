@@ -108,11 +108,11 @@ export function RightFloatingPanel({
         <div className="relative rounded-[10px] border border-white/10 bg-[#041a24] text-white overflow-hidden shadow-lg transition-all hover:border-white/25 group">
           {/* Banner Image */}
           {banner.image_url ? (
-            <div className="relative w-full h-[90px] bg-[#062432] overflow-hidden">
+            <div className="relative w-full h-[135px] bg-[#062432] overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={banner.image_url}
-                alt={banner.title}
+                alt="Changelog Announcement"
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               {/* Dismiss Button Overlay on top-right of image */}
@@ -142,13 +142,7 @@ export function RightFloatingPanel({
           )}
 
           {/* Banner Body */}
-          <div className="p-3.5 space-y-2.5">
-            <div className="flex items-center justify-between">
-              <h4 className="font-sans font-black text-sm tracking-tight text-white leading-tight">
-                {banner.title}
-              </h4>
-            </div>
-
+          <div className="p-3 space-y-2">
             {banner.subtitle && (
               <p className="text-xs text-white/75 font-sans leading-relaxed line-clamp-2">
                 {banner.subtitle}
@@ -196,7 +190,7 @@ export function RightFloatingPanel({
         {/* Timeline Stream */}
         <div className="p-4 space-y-4 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           <div className="relative pl-3 space-y-4 before:absolute before:left-1 before:top-2 before:bottom-2 before:w-[1px] before:bg-white/15">
-            {items.map((item) => {
+            {items.slice(0, 3).map((item) => {
               const categoryBadge =
                 CATEGORY_COLORS[item.category] || CATEGORY_COLORS.feature;
 

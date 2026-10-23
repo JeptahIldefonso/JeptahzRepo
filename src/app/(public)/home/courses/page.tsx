@@ -4,7 +4,7 @@ import { CoursesFeed } from "@/components/courses/courses-feed";
 
 export const metadata = {
   title: "Courses — Academic Repository",
-  description: "Course information, academic curriculum roadmaps, lecture notes, and study materials.",
+  description: "Material, Course Information and Roadmaps.",
 };
 
 export default async function CoursesPage() {
@@ -20,7 +20,7 @@ export default async function CoursesPage() {
               Courses
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-black/70 leading-relaxed">
-              Course information, academic curriculum roadmaps, lecture notes, and study materials.
+              Material, Course Information and Roadmaps.
             </p>
           </div>
         </div>

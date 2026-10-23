@@ -14,7 +14,7 @@ export default async function ContactPage() {
           Contact & Network
         </h1>
         <p className="mt-1 text-sm text-fg-muted">
-          Direct channels for computer science academic discourse, software inquiries, and research collaborations.
+          For research collaboration and inquiries.
         </p>
       </div>
 

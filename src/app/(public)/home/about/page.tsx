@@ -12,7 +12,6 @@ import {
   Lightbulb,
   Github,
   Mail,
-  Sparkles,
   Pin,
 } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
@@ -30,17 +29,13 @@ export default async function AboutPage() {
           Portfolio & About
         </h1>
         <p className="mt-1 text-sm text-fg-muted max-w-xl">
-          Personal portfolio, developer profile, and project archive.
+          Personal portfolio, Dev profile.
         </p>
       </div>
 
       {/* Featured Pinned Portfolio Link Card (Noticeable Shining Gray) */}
       <section className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-mono text-xs uppercase tracking-wider text-fg font-medium flex items-center space-x-2">
-            <Sparkles className="w-3.5 h-3.5 text-fg-subtle" />
-            <span>Featured Developer Portfolio</span>
-          </h2>
+        <div className="flex items-center justify-end">
           <span className="inline-flex items-center space-x-1.5 font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Verified Live</span>

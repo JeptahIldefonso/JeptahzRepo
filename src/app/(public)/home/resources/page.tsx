@@ -4,7 +4,7 @@ import { ResourcesFeed } from "@/components/resources/resources-feed";
 
 export const metadata = {
   title: "Resources & Links — JeptahzRepo",
-  description: "Curated collection of developer resources, technical documentation, references, and tools.",
+  description: "Resources, references, and tools.",
 };
 
 export default async function ResourcesPage() {
@@ -18,7 +18,7 @@ export default async function ResourcesPage() {
           Resources &amp; Links
         </h1>
         <p className="mt-1 text-sm text-fg-muted max-w-xl leading-relaxed">
-          Curated collection of developer resources, technical documentation, references, and tools.
+          Resources, references, and tools.
         </p>
       </div>
 

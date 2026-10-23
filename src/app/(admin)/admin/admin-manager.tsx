@@ -1894,32 +1894,17 @@ export function AdminManager({
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-mono font-semibold text-fg mb-1">
-                      Banner Headline / Title
-                    </label>
-                    <input
-                      type="text"
-                      value={banner.title}
-                      onChange={(e) => setBanner((prev) => ({ ...prev, title: e.target.value }))}
-                      placeholder="e.g. DEV LOGS 2026"
-                      className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans font-semibold"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-mono font-semibold text-fg mb-1">
-                      CTA Button Text
-                    </label>
-                    <input
-                      type="text"
-                      value={banner.cta_text}
-                      onChange={(e) => setBanner((prev) => ({ ...prev, cta_text: e.target.value }))}
-                      placeholder="e.g. Save your seat / Explore"
-                      className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans"
-                    />
-                  </div>
+                <div>
+                  <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                    CTA Button Text
+                  </label>
+                  <input
+                    type="text"
+                    value={banner.cta_text}
+                    onChange={(e) => setBanner((prev) => ({ ...prev, cta_text: e.target.value }))}
+                    placeholder="e.g. Save your seat / Explore"
+                    className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans"
+                  />
                 </div>
 
                 <div>
@@ -1980,31 +1965,29 @@ export function AdminManager({
                 {/* The preview card styled in #041a24 */}
                 <div className="rounded-[10px] border border-white/10 bg-[#041a24] text-white overflow-hidden shadow-md max-w-[270px] mx-auto select-none">
                   {banner.image_url ? (
-                    <div className="relative w-full h-[85px] bg-[#062432] overflow-hidden">
+                    <div className="relative w-full h-[130px] bg-[#062432] overflow-hidden">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={banner.image_url}
-                        alt={banner.title}
+                        alt="Banner Preview"
                         className="w-full h-full object-cover"
                       />
+                      <span className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white/70 text-[10px] leading-none">
+                        ✕
+                      </span>
                     </div>
                   ) : (
-                    <div className="w-full h-[85px] bg-gradient-to-tr from-[#021017] to-[#0a3547] flex items-center justify-center text-[10px] font-mono text-white/40">
+                    <div className="w-full h-[130px] bg-gradient-to-tr from-[#021017] to-[#0a3547] flex items-center justify-center text-[10px] font-mono text-white/40">
                       No image set
                     </div>
                   )}
 
-                  <div className="p-3.5 space-y-2.5">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-sans font-black text-sm tracking-tight text-white truncate">
-                        {banner.title || "BANNER TITLE"}
-                      </h4>
-                      <span className="text-white/40 text-xs p-0.5">✕</span>
-                    </div>
-
-                    <p className="text-[11px] text-white/75 font-sans leading-snug line-clamp-2">
-                      {banner.subtitle || "Banner description appears here..."}
-                    </p>
+                  <div className="p-3 space-y-2">
+                    {banner.subtitle && (
+                      <p className="text-[11px] text-white/75 font-sans leading-snug line-clamp-2">
+                        {banner.subtitle}
+                      </p>
+                    )}
 
                     <button
                       type="button"
