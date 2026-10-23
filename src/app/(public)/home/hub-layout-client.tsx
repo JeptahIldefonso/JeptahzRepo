@@ -55,11 +55,11 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
       <main
         className={`flex flex-col min-h-screen w-full transition-all duration-300 ${
           sidebarCollapsed
-            ? "px-4 sm:px-8"
-            : "px-4 sm:px-6 lg:pl-64"
+            ? "pl-0 pr-0"
+            : "lg:pl-64 pr-0"
         }`}
       >
-        <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto flex flex-col">
+        <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto px-4 sm:px-6 flex flex-col">
           {children}
         </div>
 
