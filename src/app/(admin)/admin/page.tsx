@@ -1,12 +1,18 @@
 import React from "react";
-import { getApps, getEntries, getChangelogItems } from "@/db/data-provider";
+import {
+  getApps,
+  getEntries,
+  getChangelogItems,
+  getChangelogBanner,
+} from "@/db/data-provider";
 import { AdminManager } from "./admin-manager";
 
 export default async function AdminPage() {
-  const [apps, entries, changelog] = await Promise.all([
+  const [apps, entries, changelog, banner] = await Promise.all([
     getApps(),
     getEntries({ includeUnpublished: true }),
     getChangelogItems(),
+    getChangelogBanner(),
   ]);
 
   return (
@@ -24,6 +30,7 @@ export default async function AdminPage() {
         initialApps={apps}
         initialEntries={entries}
         initialChangelog={changelog}
+        initialBanner={banner}
       />
     </div>
   );

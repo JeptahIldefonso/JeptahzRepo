@@ -2,14 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { GitCommit, ArrowUpRight } from "lucide-react";
+import { GitCommit, ArrowUpRight, X } from "lucide-react";
 import {
   INITIAL_CHANGELOG_DATA,
+  INITIAL_CHANGELOG_BANNER,
   ChangelogItem,
+  ChangelogBannerConfig,
 } from "@/lib/floating-panel-data";
 
 interface RightFloatingPanelProps {
   initialItems?: ChangelogItem[];
+  initialBanner?: ChangelogBannerConfig;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -20,55 +23,157 @@ const CATEGORY_COLORS: Record<string, string> = {
   system: "bg-neutral-500/20 text-neutral-300 border-neutral-500/25",
 };
 
-export function RightFloatingPanel({ initialItems }: RightFloatingPanelProps) {
+export function RightFloatingPanel({
+  initialItems,
+  initialBanner,
+}: RightFloatingPanelProps) {
   const [items, setItems] = useState<ChangelogItem[]>(
     initialItems && initialItems.length > 0
       ? initialItems
       : INITIAL_CHANGELOG_DATA.items
   );
-  const [loading, setLoading] = useState(false);
+  const [banner, setBanner] = useState<ChangelogBannerConfig>(
+    initialBanner || INITIAL_CHANGELOG_BANNER
+  );
+  const [bannerDismissed, setBannerDismissed] = useState(false);
 
-  // Sync with /api/changelog on mount and listen to admin mutation broadcast
+  // Sync with /api/changelog and /api/changelog-banner on mount
   useEffect(() => {
     let isMounted = true;
 
-    async function fetchLatestChangelog() {
+    async function fetchLatestData() {
       try {
-        const res = await fetch("/api/changelog", { cache: "no-store" });
-        if (res.ok) {
-          const json = await res.json();
+        const [changelogRes, bannerRes] = await Promise.all([
+          fetch("/api/changelog", { cache: "no-store" }),
+          fetch("/api/changelog-banner", { cache: "no-store" }),
+        ]);
+
+        if (changelogRes.ok) {
+          const json = await changelogRes.json();
           if (isMounted && json.data && Array.isArray(json.data)) {
             setItems(json.data);
           }
         }
+
+        if (bannerRes.ok) {
+          const json = await bannerRes.json();
+          if (isMounted && json.data) {
+            setBanner(json.data);
+            try {
+              const dismissKey = `dismissed_changelog_banner_${json.data.title || "default"}`;
+              if (localStorage.getItem(dismissKey) === "true") {
+                setBannerDismissed(true);
+              }
+            } catch {}
+          }
+        }
       } catch {
-        // Fallback to static seed
+        // Fallback to initial seeds
       }
     }
 
-    fetchLatestChangelog();
+    fetchLatestData();
 
-    function handleChangelogUpdate() {
-      fetchLatestChangelog();
+    function handleUpdates() {
+      fetchLatestData();
     }
 
-    window.addEventListener("changelog_updated", handleChangelogUpdate);
-    window.addEventListener("storage", handleChangelogUpdate);
+    window.addEventListener("changelog_updated", handleUpdates);
+    window.addEventListener("changelog_banner_updated", handleUpdates);
+    window.addEventListener("storage", handleUpdates);
 
     return () => {
       isMounted = false;
-      window.removeEventListener("changelog_updated", handleChangelogUpdate);
-      window.removeEventListener("storage", handleChangelogUpdate);
+      window.removeEventListener("changelog_updated", handleUpdates);
+      window.removeEventListener("changelog_banner_updated", handleUpdates);
+      window.removeEventListener("storage", handleUpdates);
     };
   }, []);
 
+  function handleDismissBanner() {
+    setBannerDismissed(true);
+    try {
+      const dismissKey = `dismissed_changelog_banner_${banner?.title || "default"}`;
+      localStorage.setItem(dismissKey, "true");
+    } catch {}
+  }
+
   return (
     <aside
-      aria-label="Repository Changelog"
-      className="w-full select-none animate-in fade-in duration-300"
+      aria-label="Announcements and Changelog"
+      className="w-full space-y-3.5 select-none animate-in fade-in duration-300"
     >
+      {/* ── 1. Top Customizable Promotional Banner Card (GitHub Universe Style) ── */}
+      {banner && banner.is_active && !bannerDismissed && (
+        <div className="relative rounded-[10px] border border-white/10 bg-[#041a24] text-white overflow-hidden shadow-lg transition-all hover:border-white/25 group">
+          {/* Banner Image */}
+          {banner.image_url ? (
+            <div className="relative w-full h-[90px] bg-[#062432] overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={banner.image_url}
+                alt={banner.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+              {/* Dismiss Button Overlay on top-right of image */}
+              <button
+                onClick={handleDismissBanner}
+                className="absolute top-2 right-2 p-1 rounded-full bg-black/60 text-white/70 hover:text-white hover:bg-black/90 transition-colors cursor-pointer z-10"
+                title="Dismiss banner"
+                aria-label="Dismiss banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ) : (
+            <div className="relative w-full h-[60px] bg-gradient-to-tr from-[#021017] to-[#0a3547] flex items-center justify-between px-3">
+              <span className="font-mono text-[9px] uppercase tracking-wider text-white/50">
+                Featured Event
+              </span>
+              <button
+                onClick={handleDismissBanner}
+                className="p-1 rounded-full text-white/60 hover:text-white transition-colors cursor-pointer"
+                title="Dismiss banner"
+                aria-label="Dismiss banner"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
+
+          {/* Banner Body */}
+          <div className="p-3.5 space-y-2.5">
+            <div className="flex items-center justify-between">
+              <h4 className="font-sans font-black text-sm tracking-tight text-white leading-tight">
+                {banner.title}
+              </h4>
+            </div>
+
+            {banner.subtitle && (
+              <p className="text-xs text-white/75 font-sans leading-relaxed line-clamp-2">
+                {banner.subtitle}
+              </p>
+            )}
+
+            {banner.cta_text && (
+              <Link
+                href={banner.link_url || "/home/apps"}
+                className="block w-full text-center"
+                target={banner.link_url?.startsWith("http") ? "_blank" : undefined}
+                rel={banner.link_url?.startsWith("http") ? "noopener noreferrer" : undefined}
+              >
+                <button className="w-full h-8 rounded-md bg-white text-[#041a24] font-semibold text-xs hover:bg-neutral-100 active:scale-[0.99] transition-all cursor-pointer flex items-center justify-center space-x-1 shadow-xs">
+                  <span>{banner.cta_text}</span>
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── 2. Formal Repository Changelog Stream ── */}
       <div className="rounded-[10px] border border-white/10 bg-[#041a24] text-white shadow-lg overflow-hidden transition-all hover:border-white/20">
-        {/* ── Masthead Header (Styled matching Left Sidebar Formality) ── */}
+        {/* Masthead Header */}
         <div className="p-4 border-b border-white/10 flex items-start justify-between bg-[#041a24]">
           <div className="space-y-0.5">
             <div className="flex items-center space-x-1.5">
@@ -88,8 +193,8 @@ export function RightFloatingPanel({ initialItems }: RightFloatingPanelProps) {
           </div>
         </div>
 
-        {/* ── Formal Timeline Stream ── */}
-        <div className="p-4 space-y-4 max-h-[540px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        {/* Timeline Stream */}
+        <div className="p-4 space-y-4 max-h-[500px] overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
           <div className="relative pl-3 space-y-4 before:absolute before:left-1 before:top-2 before:bottom-2 before:w-[1px] before:bg-white/15">
             {items.map((item) => {
               const categoryBadge =
@@ -141,7 +246,7 @@ export function RightFloatingPanel({ initialItems }: RightFloatingPanelProps) {
           </div>
         </div>
 
-        {/* ── Card Footer ── */}
+        {/* Card Footer */}
         <div className="px-4 py-3 bg-[#03141c] border-t border-white/10 flex items-center justify-between font-mono text-[10px]">
           <span className="text-white/40 flex items-center space-x-1">
             <GitCommit className="w-3 h-3 text-sky-400" />

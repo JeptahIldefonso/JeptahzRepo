@@ -17,13 +17,33 @@ export interface ChangelogItem {
   created_at: string;
 }
 
+export interface ChangelogBannerConfig {
+  image_url: string;
+  title: string;
+  subtitle: string;
+  link_url: string;
+  cta_text: string;
+  is_active: boolean;
+}
+
 export interface ChangelogPanelConfig {
   title: string;
   subtitle: string;
   viewAllText: string;
   viewAllHref: string;
   items: ChangelogItem[];
+  banner?: ChangelogBannerConfig;
 }
+
+export const INITIAL_CHANGELOG_BANNER: ChangelogBannerConfig = {
+  image_url:
+    "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+  title: "DEV LOGS 2026",
+  subtitle: "Explore student software builds & open-source tools.",
+  link_url: "/home/apps",
+  cta_text: "Explore Projects",
+  is_active: true,
+};
 
 export const INITIAL_CHANGELOG_DATA: ChangelogPanelConfig = {
   title: "System Changelog",

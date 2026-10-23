@@ -81,6 +81,12 @@ export const siteSettings = pgTable("site_settings", {
   aboutMarkdown: text("about_markdown"),
   contactEmail: text("contact_email"),
   socialLinks: jsonb("social_links").default({}),
+  changelogBannerImageUrl: text("changelog_banner_image_url"),
+  changelogBannerTitle: text("changelog_banner_title"),
+  changelogBannerSubtitle: text("changelog_banner_subtitle"),
+  changelogBannerLinkUrl: text("changelog_banner_link_url"),
+  changelogBannerCtaText: text("changelog_banner_cta_text"),
+  changelogBannerIsActive: boolean("changelog_banner_is_active").default(true).notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 

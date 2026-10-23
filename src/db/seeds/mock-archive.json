@@ -447,7 +447,13 @@
       "twitter": "https://twitter.com/jeptah",
       "linkedin": "https://linkedin.com/in/jeptah",
       "gdrive": "https://drive.google.com/drive"
-    }
+    },
+    "changelog_banner_image_url": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    "changelog_banner_title": "DEV LOGS 2026",
+    "changelog_banner_subtitle": "Explore student software builds & open-source tools.",
+    "changelog_banner_link_url": "/home/apps",
+    "changelog_banner_cta_text": "Explore Projects",
+    "changelog_banner_is_active": true
   },
   "changelog_items": [
     {

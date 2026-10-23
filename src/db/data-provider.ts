@@ -103,6 +103,21 @@ export interface SiteSettingsType {
   about_markdown: string;
   contact_email: string;
   social_links: Record<string, string>;
+  changelog_banner_image_url?: string | null;
+  changelog_banner_title?: string | null;
+  changelog_banner_subtitle?: string | null;
+  changelog_banner_link_url?: string | null;
+  changelog_banner_cta_text?: string | null;
+  changelog_banner_is_active?: boolean;
+}
+
+export interface ChangelogBannerType {
+  image_url: string;
+  title: string;
+  subtitle: string;
+  link_url: string;
+  cta_text: string;
+  is_active: boolean;
 }
 
 export interface ChangelogItem {
@@ -151,6 +166,30 @@ export async function getSiteSettings(): Promise<SiteSettingsType> {
           about_markdown: data.about_markdown || cachedArchive.site_settings.about_markdown,
           contact_email: data.contact_email || cachedArchive.site_settings.contact_email,
           social_links: data.social_links || cachedArchive.site_settings.social_links,
+          changelog_banner_image_url:
+            data.changelog_banner_image_url !== undefined
+              ? data.changelog_banner_image_url
+              : cachedArchive.site_settings.changelog_banner_image_url,
+          changelog_banner_title:
+            data.changelog_banner_title !== undefined
+              ? data.changelog_banner_title
+              : cachedArchive.site_settings.changelog_banner_title,
+          changelog_banner_subtitle:
+            data.changelog_banner_subtitle !== undefined
+              ? data.changelog_banner_subtitle
+              : cachedArchive.site_settings.changelog_banner_subtitle,
+          changelog_banner_link_url:
+            data.changelog_banner_link_url !== undefined
+              ? data.changelog_banner_link_url
+              : cachedArchive.site_settings.changelog_banner_link_url,
+          changelog_banner_cta_text:
+            data.changelog_banner_cta_text !== undefined
+              ? data.changelog_banner_cta_text
+              : cachedArchive.site_settings.changelog_banner_cta_text,
+          changelog_banner_is_active:
+            data.changelog_banner_is_active !== undefined
+              ? data.changelog_banner_is_active
+              : cachedArchive.site_settings.changelog_banner_is_active,
         };
       }
     } catch {
@@ -158,6 +197,65 @@ export async function getSiteSettings(): Promise<SiteSettingsType> {
     }
   }
   return cachedArchive.site_settings;
+}
+
+export async function getChangelogBanner(): Promise<ChangelogBannerType> {
+  const settings = await getSiteSettings();
+  return {
+    image_url:
+      settings.changelog_banner_image_url ||
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    title: settings.changelog_banner_title || "DEV LOGS 2026",
+    subtitle:
+      settings.changelog_banner_subtitle ||
+      "Explore student software builds & open-source tools.",
+    link_url: settings.changelog_banner_link_url || "/home/apps",
+    cta_text: settings.changelog_banner_cta_text || "Explore Projects",
+    is_active: settings.changelog_banner_is_active !== false,
+  };
+}
+
+export async function updateChangelogBanner(
+  updates: Partial<ChangelogBannerType>
+): Promise<ChangelogBannerType> {
+  const current = await getChangelogBanner();
+  const next: ChangelogBannerType = {
+    image_url: updates.image_url !== undefined ? updates.image_url : current.image_url,
+    title: updates.title !== undefined ? updates.title : current.title,
+    subtitle: updates.subtitle !== undefined ? updates.subtitle : current.subtitle,
+    link_url: updates.link_url !== undefined ? updates.link_url : current.link_url,
+    cta_text: updates.cta_text !== undefined ? updates.cta_text : current.cta_text,
+    is_active: updates.is_active !== undefined ? updates.is_active : current.is_active,
+  };
+
+  const dbUpdates = {
+    changelog_banner_image_url: next.image_url,
+    changelog_banner_title: next.title,
+    changelog_banner_subtitle: next.subtitle,
+    changelog_banner_link_url: next.link_url,
+    changelog_banner_cta_text: next.cta_text,
+    changelog_banner_is_active: next.is_active,
+  };
+
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      await supabase
+        .from("site_settings")
+        .update(dbUpdates)
+        .eq("id", "global");
+    } catch {
+      // Fallback
+    }
+  }
+
+  cachedArchive.site_settings = {
+    ...cachedArchive.site_settings,
+    ...dbUpdates,
+  };
+  persistCachedArchive();
+
+  return next;
 }
 
 export async function getTopics(): Promise<TopicType[]> {

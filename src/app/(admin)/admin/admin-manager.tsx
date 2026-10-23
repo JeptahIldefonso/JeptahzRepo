@@ -37,6 +37,7 @@ import {
   EntryMediaItem,
   EntryAttachedFile,
   ChangelogItem,
+  ChangelogBannerType,
 } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +48,7 @@ interface AdminManagerProps {
   initialApps: AppType[];
   initialEntries: EntryType[];
   initialChangelog?: ChangelogItem[];
+  initialBanner?: ChangelogBannerType;
 }
 
 type TabType = "docs" | "apps" | "ideas" | "resources" | "courses" | "changelog";
@@ -173,10 +175,29 @@ function parseAppSingleBox(text: string) {
   };
 }
 
-export function AdminManager({ initialApps, initialEntries, initialChangelog }: AdminManagerProps) {
+export function AdminManager({
+  initialApps,
+  initialEntries,
+  initialChangelog,
+  initialBanner,
+}: AdminManagerProps) {
   const [apps, setApps] = useState<AppType[]>(initialApps);
   const [entries, setEntries] = useState<EntryType[]>(initialEntries);
   const [changelog, setChangelog] = useState<ChangelogItem[]>(initialChangelog || []);
+  const [banner, setBanner] = useState<ChangelogBannerType>(
+    initialBanner || {
+      image_url:
+        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+      title: "DEV LOGS 2026",
+      subtitle: "Explore student software builds & open-source tools.",
+      link_url: "/home/apps",
+      cta_text: "Explore Projects",
+      is_active: true,
+    }
+  );
+  const [bannerSaving, setBannerSaving] = useState(false);
+  const [bannerUploading, setBannerUploading] = useState(false);
+  const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<TabType>("docs");
   const [searchQuery, setSearchQuery] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -918,6 +939,60 @@ export function AdminManager({ initialApps, initialEntries, initialChangelog }: 
       try {
         localStorage.setItem("changelog_last_updated", String(Date.now()));
       } catch {}
+    }
+  };
+
+  // -------------------------
+  // Banner Card Management Handlers
+  // -------------------------
+  const handleBannerImageUpload = async (file: File) => {
+    if (!file) return;
+    setBannerUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.success && data.url) {
+        setBanner((prev) => ({ ...prev, image_url: data.url }));
+        showNotification("Banner image uploaded successfully");
+      } else {
+        showNotification(data.error || "Failed to upload banner image");
+      }
+    } catch {
+      showNotification("Upload failed");
+    } finally {
+      setBannerUploading(false);
+    }
+  };
+
+  const handleSaveBanner = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setBannerSaving(true);
+    try {
+      const res = await fetch("/api/changelog-banner", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(banner),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setBanner(data.data);
+        showNotification("Saved changelog banner settings");
+        window.dispatchEvent(new CustomEvent("changelog_banner_updated"));
+        try {
+          localStorage.setItem("changelog_banner_last_updated", String(Date.now()));
+        } catch {}
+      } else {
+        showNotification(data.error || "Failed to save banner settings");
+      }
+    } catch {
+      showNotification("Failed to save banner settings");
+    } finally {
+      setBannerSaving(false);
     }
   };
 
@@ -1735,6 +1810,219 @@ export function AdminManager({ initialApps, initialEntries, initialChangelog }: 
               <span>Preview Live Rail</span>
               <ExternalLink className="w-3 h-3" />
             </Link>
+          </div>
+
+          {/* ── Banner Card Editor (GitHub Universe Style) ── */}
+          <div className="border border-border bg-bg-raised rounded-[10px] p-5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h3 className="font-semibold text-sm text-fg tracking-tight">
+                    Promotional Banner Card
+                  </h3>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-200 text-neutral-700 font-semibold">
+                    GitHub Style
+                  </span>
+                </div>
+                <p className="text-xs text-fg-muted mt-0.5">
+                  Customizable event/announcement card displayed above the changelog stream.
+                </p>
+              </div>
+
+              {/* Active Toggle Switch */}
+              <div className="flex items-center space-x-2 self-start sm:self-auto">
+                <span className="text-xs font-mono text-fg-subtle">
+                  {banner.is_active ? "Banner Active" : "Banner Hidden"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setBanner((prev) => ({ ...prev, is_active: !prev.is_active }))}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ease-in-out ${
+                    banner.is_active ? "bg-emerald-500" : "bg-neutral-300"
+                  }`}
+                  title="Toggle banner display"
+                >
+                  <div
+                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform duration-200 ease-in-out ${
+                      banner.is_active ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+              {/* Form Inputs (7 cols on lg) */}
+              <div className="lg:col-span-7 space-y-3.5">
+                {/* Image Upload / Input */}
+                <div>
+                  <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                    Banner Image (Upload or Paste URL)
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={banner.image_url}
+                      onChange={(e) => setBanner((prev) => ({ ...prev, image_url: e.target.value }))}
+                      placeholder="https://... or upload an image"
+                      className="flex-1 px-3 py-1.5 text-xs font-mono border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => bannerFileInputRef.current?.click()}
+                      disabled={bannerUploading}
+                      className="px-3 py-1.5 text-xs font-medium rounded-[6px] border border-border hover:bg-neutral-100 flex items-center space-x-1 cursor-pointer transition-colors shrink-0"
+                    >
+                      {bannerUploading ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Upload className="w-3.5 h-3.5" />
+                      )}
+                      <span>Upload</span>
+                    </button>
+                    <input
+                      ref={bannerFileInputRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleBannerImageUpload(file);
+                        e.target.value = "";
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                      Banner Headline / Title
+                    </label>
+                    <input
+                      type="text"
+                      value={banner.title}
+                      onChange={(e) => setBanner((prev) => ({ ...prev, title: e.target.value }))}
+                      placeholder="e.g. DEV LOGS 2026"
+                      className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans font-semibold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                      CTA Button Text
+                    </label>
+                    <input
+                      type="text"
+                      value={banner.cta_text}
+                      onChange={(e) => setBanner((prev) => ({ ...prev, cta_text: e.target.value }))}
+                      placeholder="e.g. Save your seat / Explore"
+                      className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                    Subtitle / Description Text
+                  </label>
+                  <textarea
+                    rows={2}
+                    value={banner.subtitle}
+                    onChange={(e) => setBanner((prev) => ({ ...prev, subtitle: e.target.value }))}
+                    placeholder="Short event announcement or callout..."
+                    className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-sans resize-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-mono font-semibold text-fg mb-1">
+                    Click-through Destination URL
+                  </label>
+                  <input
+                    type="text"
+                    value={banner.link_url}
+                    onChange={(e) => setBanner((prev) => ({ ...prev, link_url: e.target.value }))}
+                    placeholder="e.g. /home/apps or https://github.com/..."
+                    className="w-full px-3 py-1.5 text-xs border border-border rounded-[6px] bg-bg focus:outline-none focus:border-black font-mono"
+                  />
+                </div>
+
+                <div className="pt-1 flex items-center justify-end">
+                  <Button
+                    type="button"
+                    onClick={() => handleSaveBanner()}
+                    disabled={bannerSaving}
+                    className="h-9 px-4 text-xs font-semibold bg-[#041a24] hover:bg-[#062432] text-white shadow-xs cursor-pointer"
+                  >
+                    {bannerSaving ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin mr-1.5" />
+                        <span>Saving Changes...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-3.5 h-3.5 mr-1.5" />
+                        <span>Save Banner Settings</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Live Preview Card (5 cols on lg) */}
+              <div className="lg:col-span-5 space-y-2">
+                <div className="text-[11px] font-mono font-semibold text-fg-subtle flex items-center justify-between">
+                  <span>Live Rail Preview</span>
+                  <span className="text-[10px] text-neutral-400">#041a24 Card</span>
+                </div>
+
+                {/* The preview card styled in #041a24 */}
+                <div className="rounded-[10px] border border-white/10 bg-[#041a24] text-white overflow-hidden shadow-md max-w-[270px] mx-auto select-none">
+                  {banner.image_url ? (
+                    <div className="relative w-full h-[85px] bg-[#062432] overflow-hidden">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={banner.image_url}
+                        alt={banner.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-[85px] bg-gradient-to-tr from-[#021017] to-[#0a3547] flex items-center justify-center text-[10px] font-mono text-white/40">
+                      No image set
+                    </div>
+                  )}
+
+                  <div className="p-3.5 space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-sans font-black text-sm tracking-tight text-white truncate">
+                        {banner.title || "BANNER TITLE"}
+                      </h4>
+                      <span className="text-white/40 text-xs p-0.5">✕</span>
+                    </div>
+
+                    <p className="text-[11px] text-white/75 font-sans leading-snug line-clamp-2">
+                      {banner.subtitle || "Banner description appears here..."}
+                    </p>
+
+                    <button
+                      type="button"
+                      className="w-full h-8 rounded-md bg-white text-[#041a24] font-semibold text-xs flex items-center justify-center space-x-1 shadow-xs cursor-pointer"
+                    >
+                      <span>{banner.cta_text || "Learn More"}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Section Divider & Milestones Header */}
+          <div className="pt-2 flex items-center justify-between">
+            <h4 className="text-xs font-mono uppercase text-fg-subtle font-semibold tracking-wider">
+              Changelog Milestone Entries ({filteredChangelog.length})
+            </h4>
           </div>
 
           {filteredChangelog.length === 0 ? (
