@@ -58,19 +58,19 @@ export function Sidebar({
   }
 
   const renderNav = (isDesktop = false) => (
-    <div className="flex h-full flex-col justify-between p-6 sm:p-7 select-none">
+    <div className="flex h-full flex-col justify-between p-5 select-none">
       <div>
         {/* Brand & Masthead */}
-        <div className="flex items-start justify-between pb-6 border-b border-neutral-100">
+        <div className="flex items-start justify-between pb-5 border-b border-neutral-100">
           <Link
             href="/home"
             className="group block"
             onClick={() => setMobileOpen(false)}
           >
-            <div className="font-editorial italic text-2xl font-normal tracking-tight text-black group-hover:text-black/70 transition-colors">
+            <div className="font-editorial italic text-[25px] font-normal tracking-tight text-black group-hover:text-black/70 transition-colors leading-none">
               JeptahzRepo
             </div>
-            <div className="font-mono text-[9px] tracking-widest text-neutral-400 uppercase mt-0.5">
+            <div className="font-mono text-[10px] tracking-widest text-neutral-400 uppercase mt-1">
               Blog Archive
             </div>
           </Link>
@@ -90,7 +90,7 @@ export function Sidebar({
         {onSearchOpen && (
           <button
             onClick={onSearchOpen}
-            className="mt-4 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-[#041a24] px-3 py-1.5 text-xs text-neutral-500 hover:text-black transition-colors rounded-[6px] cursor-pointer"
+            className="mt-4 flex w-full items-center justify-between border border-neutral-200/80 bg-neutral-50/70 hover:bg-white hover:border-[#041a24] px-3 py-1.5 text-[13px] text-neutral-500 hover:text-black transition-colors rounded-[6px] cursor-pointer"
           >
             <div className="flex items-center space-x-2">
               <Search className="h-3.5 w-3.5 stroke-[1.5]" />
@@ -103,7 +103,7 @@ export function Sidebar({
         )}
 
         {/* Minimalist Flat Vertical Navigation Stream (Matches X / Clean Reference) */}
-        <nav className="mt-6 space-y-1">
+        <nav className="mt-5 space-y-0.5">
           {NAVIGATION_ITEMS.map((item) => {
             const isActive =
               pathname === item.href ||
@@ -116,10 +116,10 @@ export function Sidebar({
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
                 className={cn(
-                  "group flex items-center justify-between py-2 px-1 text-sm font-sans transition-colors cursor-pointer",
+                  "group flex items-center justify-between py-2 px-1 text-[15px] font-sans transition-colors cursor-pointer",
                   isActive
                     ? "font-bold text-black"
-                    : "text-neutral-500 hover:text-black font-normal"
+                    : "text-neutral-600 hover:text-black font-medium"
                 )}
               >
                 <span className="tracking-tight">{item.label}</span>
@@ -128,7 +128,7 @@ export function Sidebar({
                     className={cn(
                       "w-3.5 h-3.5 transition-colors stroke-[1.5]",
                       isActive
-                        ? "text-black"
+                        ? "text-black stroke-[2]"
                         : "text-neutral-300 group-hover:text-neutral-500"
                     )}
                   />
@@ -142,15 +142,15 @@ export function Sidebar({
       {/* Footer Profile & Discreet Admin Touchpoint (Matches Bottom-Left Reference Badge) */}
       <div className="pt-4 border-t border-neutral-100 mt-auto flex items-center justify-between">
         <div className="flex items-center space-x-2.5">
-          <div className="w-7 h-7 rounded-[4px] bg-black text-white flex items-center justify-center font-mono text-[10px] font-bold">
+          <div className="w-7 h-7 rounded-[4px] bg-black text-white flex items-center justify-center font-mono text-[10px] font-bold shrink-0">
             JR
           </div>
-          <div className="flex flex-col text-left">
-            <span className="font-editorial italic text-sm text-black leading-tight flex items-center space-x-1">
+          <div className="flex flex-col text-left min-w-0">
+            <span className="font-editorial italic text-[15px] text-black leading-tight flex items-center space-x-1 truncate">
               <span>JeptahzRepo</span>
-              <CheckCircle2 className="w-3 h-3 text-sky-500 fill-sky-500/20" />
+              <CheckCircle2 className="w-3.5 h-3.5 text-sky-500 fill-sky-500/20 shrink-0" />
             </span>
-            <span className="text-[11px] text-neutral-400 font-sans leading-tight">
+            <span className="text-xs text-neutral-400 font-sans leading-tight truncate">
               @websiteBlog
             </span>
           </div>
@@ -158,7 +158,7 @@ export function Sidebar({
 
         <Link
           href="/admin"
-          className="p-1.5 text-neutral-400 hover:text-black rounded-[4px] transition-colors cursor-pointer"
+          className="p-1.5 text-neutral-400 hover:text-black rounded-[4px] transition-colors cursor-pointer shrink-0"
           title="Admin Management"
           onClick={() => setMobileOpen(false)}
         >
@@ -187,7 +187,7 @@ export function Sidebar({
       {/* Mobile Off-Canvas Drawer */}
       {mobileOpen && (
         <div className="lg:hidden fixed inset-0 z-50 bg-black/40 backdrop-blur-xs">
-          <div className="fixed inset-y-0 left-0 w-72 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
+          <div className="fixed inset-y-0 left-0 w-60 bg-white border-r border-neutral-200 shadow-2xl flex flex-col justify-between">
             {renderNav(false)}
           </div>
         </div>
@@ -208,7 +208,7 @@ export function Sidebar({
       {/* Desktop Side Panel (Clean vertical column matching reference) */}
       <aside
         className={cn(
-          "hidden lg:flex fixed left-0 top-0 bottom-0 w-72 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
+          "hidden lg:flex fixed left-0 top-0 bottom-0 w-56 flex-col bg-white border-r border-neutral-200/80 z-40 transition-all duration-300",
           isCollapsed
             ? "-translate-x-full opacity-0 pointer-events-none"
             : "translate-x-0 opacity-100"
