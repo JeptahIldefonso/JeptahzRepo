@@ -52,63 +52,60 @@ export default async function AboutPage() {
           </span>
         </div>
 
-        {/* Facebook-Style Link Card - Shining Gray Metallic Finish with Dark Shiny Gray Hover */}
+        {/* Facebook-Style Link Card - Shining Gray Metallic Finish with Legit Simple Hover */}
         <a
           href={portfolioUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="group block relative rounded-[10px] border-2 border-neutral-300 hover:border-neutral-600 bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 p-5 sm:p-6 space-y-4 shadow-sm hover:shadow-xl hover:shadow-black/15 ring-1 ring-black/5 hover:-translate-y-0.5 transition-all duration-300 overflow-hidden cursor-pointer"
+          className="group block relative rounded-[10px] border-2 border-neutral-300 hover:border-neutral-500 bg-gradient-to-br from-neutral-100 via-white to-neutral-200/90 hover:from-neutral-200/90 hover:via-neutral-100 hover:to-neutral-300/90 p-5 sm:p-6 space-y-4 shadow-sm hover:shadow-md ring-1 ring-black/5 hover:-translate-y-0.5 transition-all duration-200 overflow-hidden cursor-pointer"
           aria-label="Visit Jeptah's official developer portfolio at jeptahportfolio.vercel.app"
         >
-          {/* Default Specular Top Shine Bar */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-neutral-300 via-white to-neutral-300 opacity-90 transition-opacity duration-300 group-hover:opacity-0" />
+          {/* Specular Top Shine Bar */}
+          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-neutral-300 via-white to-neutral-300 opacity-90" />
 
-          {/* Clean Hovering Dark Shiny Gray Background Layer */}
-          <div className="absolute inset-0 bg-gradient-to-br from-neutral-950 via-[#1f1f23] to-neutral-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-          {/* Dark Shiny Gray Specular Top Shine Bar on Hover */}
-          <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-neutral-700 via-neutral-300 to-neutral-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+          {/* Subtle slightly darker gray hover tint */}
+          <div className="absolute inset-0 bg-black/[0.035] opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
 
           {/* Pinned Pill & Domain Header Row */}
-          <div className="relative z-10 flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-neutral-200/80 group-hover:border-neutral-700/80 transition-colors duration-300">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-neutral-900 text-white group-hover:bg-white group-hover:text-black font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs transition-colors duration-300">
-              <Pin className="w-3 h-3 fill-current rotate-45" />
+          <div className="relative z-10 flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-neutral-200/80">
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-[4px] bg-neutral-900 text-white font-mono text-[10px] font-semibold tracking-wider uppercase shadow-xs">
+              <Pin className="w-3 h-3 fill-white rotate-45" />
               <span>PINNED LINK</span>
             </div>
 
-            <div className="inline-flex items-center space-x-1.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 group-hover:bg-emerald-500/20 group-hover:border-emerald-500/40 group-hover:text-emerald-400 px-2.5 py-0.5 rounded-[4px] text-xs font-mono font-medium shadow-2xs transition-colors duration-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 group-hover:text-emerald-400" />
+            <div className="inline-flex items-center space-x-1.5 bg-emerald-500/10 border border-emerald-500/25 text-emerald-700 px-2.5 py-0.5 rounded-[4px] text-xs font-mono font-medium shadow-2xs">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
               <span>Verified Official Site</span>
             </div>
           </div>
 
           {/* Domain Pill */}
           <div className="relative z-10 flex items-center justify-between flex-wrap gap-2">
-            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[4px] bg-white border border-neutral-300 text-neutral-800 group-hover:bg-neutral-800/90 group-hover:border-neutral-700 group-hover:text-neutral-200 font-mono text-xs font-semibold shadow-2xs transition-colors duration-300">
-              <Globe className="w-3.5 h-3.5 text-neutral-600 group-hover:text-neutral-300" />
+            <div className="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-[4px] bg-white border border-neutral-300 group-hover:border-neutral-400 group-hover:bg-neutral-50/80 text-neutral-800 font-mono text-xs font-semibold shadow-2xs transition-colors duration-200">
+              <Globe className="w-3.5 h-3.5 text-neutral-600" />
               <span className="tracking-wide">JEPTAHPORTFOLIO.VERCEL.APP</span>
             </div>
           </div>
 
           {/* Title & Description */}
           <div className="relative z-10 space-y-1.5">
-            <div className="font-display text-lg sm:text-xl font-semibold text-black group-hover:text-white flex items-center justify-between transition-colors duration-300">
+            <div className="font-display text-lg sm:text-xl font-semibold text-black flex items-center justify-between">
               <span>Jeptah Ashley Ildefonso — Portfolio</span>
-              <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-white group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300" />
+              <ArrowUpRight className="w-4 h-4 text-neutral-500 group-hover:text-black group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200" />
             </div>
-            <p className="text-sm text-neutral-700 group-hover:text-neutral-300 leading-relaxed font-sans transition-colors duration-300">
+            <p className="text-sm text-neutral-700 leading-relaxed font-sans">
               Portfolio of Jeptah Ildefonso — projects, writing, work history, and experiments.
               Explore live web builds, mobile applications, and software engineering experience.
             </p>
           </div>
 
           {/* Trust Footer Bar */}
-          <div className="relative z-10 pt-3 border-t border-neutral-200/80 group-hover:border-neutral-700/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs transition-colors duration-300">
-            <div className="flex items-center space-x-1.5 text-neutral-600 group-hover:text-neutral-400 font-mono transition-colors duration-300">
-              <Lock className="w-3.5 h-3.5 text-emerald-600 group-hover:text-emerald-400" />
+          <div className="relative z-10 pt-3 border-t border-neutral-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+            <div className="flex items-center space-x-1.5 text-neutral-600 font-mono">
+              <Lock className="w-3.5 h-3.5 text-emerald-600" />
               <span>Safe external link • Verified HTTPS encryption</span>
             </div>
-            <div className="font-mono text-xs text-black font-semibold inline-flex items-center space-x-1 self-start sm:self-auto bg-white border border-neutral-300 px-3 py-1 rounded-[4px] shadow-2xs group-hover:bg-white group-hover:text-black group-hover:border-white group-hover:shadow-md transition-all duration-300">
+            <div className="font-mono text-xs text-black font-semibold inline-flex items-center space-x-1 self-start sm:self-auto bg-white border border-neutral-300 px-3 py-1 rounded-[4px] shadow-2xs group-hover:bg-neutral-900 group-hover:text-white group-hover:border-neutral-900 transition-all duration-200">
               <span>Open portfolio</span>
               <ExternalLink className="w-3.5 h-3.5 ml-0.5" />
             </div>
