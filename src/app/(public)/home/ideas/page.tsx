@@ -12,11 +12,6 @@ export default async function IdeasPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="border-b border-border pb-6">
-        <div className="flex items-center space-x-2 text-fg-subtle mb-2">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase">
-            Intellectual Vault // Raw Ideas & Devlogs
-          </span>
-        </div>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-medium tracking-tight text-fg">

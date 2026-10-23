@@ -37,7 +37,7 @@ export function InstallModal({
       </ModalTrigger>
       <ModalContent
         className="max-w-lg"
-        title={version ? `Deploy // ${appTitle} [${version}]` : `Deploy // ${appTitle}`}
+        title={version ? `Deploy: ${appTitle} [${version}]` : `Deploy: ${appTitle}`}
         description="Download release packages and view installation steps verified for Windows, macOS, and Linux."
       >
         <div className="space-y-4 py-2">

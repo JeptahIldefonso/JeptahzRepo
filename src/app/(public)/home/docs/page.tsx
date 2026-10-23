@@ -14,11 +14,6 @@ export default async function DocsTheoryPage() {
     <div className="w-full space-y-6 pb-12">
       {/* ── Top Header ── */}
       <div className="border-b border-black/10 pb-5">
-        <div className="flex items-center space-x-2 text-black/40 mb-1.5">
-          <span className="font-mono text-[10px] tracking-[0.25em] uppercase">
-            Browse // Notes & Docs
-          </span>
-        </div>
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <h1 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-black">

@@ -26,11 +26,6 @@ export default async function AboutPage() {
     <div className="max-w-3xl space-y-10">
       {/* Header */}
       <div className="border-b border-border pb-6">
-        <div className="flex items-center space-x-2 text-fg-subtle mb-2">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase">
-            Public Info // Profile & Portfolio
-          </span>
-        </div>
         <h1 className="font-display text-3xl font-medium tracking-tight text-fg">
           Portfolio & About
         </h1>

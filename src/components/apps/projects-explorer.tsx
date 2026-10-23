@@ -101,9 +101,6 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
         <div className="relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div className="space-y-1">
-            <div className="font-mono text-[10px] uppercase tracking-[0.25em] text-black/50">
-              PORTFOLIO // SHOWCASE
-            </div>
             <h1 className="font-sans text-3xl sm:text-4xl font-bold tracking-tight text-black">
               Projects
             </h1>

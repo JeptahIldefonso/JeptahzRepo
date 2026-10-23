@@ -10,11 +10,6 @@ export default async function ContactPage() {
     <div className="max-w-2xl space-y-8">
       {/* Header */}
       <div className="border-b border-border pb-6">
-        <div className="flex items-center space-x-2 text-fg-subtle mb-2">
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase">
-            Archival Info // Communications
-          </span>
-        </div>
         <h1 className="font-display text-3xl font-medium tracking-tight text-fg">
           Contact & Network
         </h1>

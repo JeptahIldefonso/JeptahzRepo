@@ -11,7 +11,7 @@ export default function NotFound() {
           <Compass className="w-8 h-8 stroke-[1.25]" />
         </div>
         <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-fg-subtle">
-          HTTP 404 // Node Missing
+          HTTP 404 • Node Missing
         </div>
         <h2 className="font-display text-2xl font-medium text-fg">
           Archival Record Unreachable
