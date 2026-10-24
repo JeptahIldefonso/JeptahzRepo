@@ -27,15 +27,17 @@ export const TOPO_CONFIG = {
   // Speed of gentle undulating terrain drift (lower = slower and calmer)
   animationSpeed: 0.030,
 
-  // 3. MOUSE HOVER SHADOW (LIGHT GRAY & AMORPHOUS UNNOTICEABLE SHAPE)
-  // Radius of the soft, unnoticeable light-gray shadow mist (0.25 - 0.40)
-  mouseShadowRadius: 0.32,
-  // Opacity of the light-gray shadow directly under cursor (0.18 - 0.30 for subtle mist, no glare)
-  mouseShadowOpacity: 0.24,
-  // Lerp tracking speed for mouse position (0.07 - 0.12 = smooth fluid lag without jitter)
-  mouseLerp: 0.09,
-  // Fade speed when cursor enters or leaves the window
-  mouseFadeSpeed: 0.06,
+  // 3. CELESTIAL MOUSE STARBURST (JWST DIFFRACTION SPIKE STAR)
+  // Length of the primary 4 cardinal diffraction spikes (+ cross: 0.06 - 0.12)
+  starSpikeLength: 0.085,
+  // Length of the 4 diagonal diffraction spikes (x cross: 0.04 - 0.08)
+  starDiagSpikeLength: 0.055,
+  // Overall star brightness / luminosity (0.6 - 1.2)
+  starBrightness: 0.90,
+  // Cursor tracking smoothness (0.08 - 0.14 = responsive, fluid tracking)
+  mouseLerp: 0.10,
+  // Fade transition speed when cursor enters or leaves the window
+  mouseFadeSpeed: 0.07,
 
   // 4. FILM GRAIN
   // Micro tactile grain to eliminate digital banding without sparkliness (0.006 - 0.010)
@@ -49,7 +51,11 @@ export const TOPO_CONFIG = {
     earthyMoss: [0.082, 0.243, 0.176],       // Intermediate terrain tone (#153e2d)
     contourSage: [0.161, 0.357, 0.271],      // Standard contour lines (#295b45)
     indexHighlight: [0.243, 0.467, 0.369],   // Index contour lines (#3e775e, soft sage)
-    lightGray: [0.70, 0.74, 0.73],           // Soft mineral light gray shadow tint (#b3bdbb)
+    // JWST Astronomical Starburst Colors (matching your reference screenshot)
+    starNucleus: [1.0, 0.98, 0.95],          // Brilliant diamond white nucleus (#fffaf2)
+    starHalo: [0.96, 0.82, 0.58],             // Warm golden celestial halo (#f5d194)
+    starSpike: [0.94, 0.84, 0.64],            // Primary cardinal diffraction spikes (#f0d6a3)
+    starDiag: [0.80, 0.87, 0.95],             // Diagonal diffraction spikes (#ccddee)
   },
 };
 
@@ -154,7 +160,12 @@ void main() {
   vec3 c_moss      = vec3(${TOPO_CONFIG.colors.earthyMoss.join(", ")});
   vec3 c_sage      = vec3(${TOPO_CONFIG.colors.contourSage.join(", ")});
   vec3 c_hi        = vec3(${TOPO_CONFIG.colors.indexHighlight.join(", ")});
-  vec3 c_light_gray= vec3(${TOPO_CONFIG.colors.lightGray.join(", ")});
+
+  // Star colors matching JWST astronomical reference
+  vec3 c_star_nucleus = vec3(${TOPO_CONFIG.colors.starNucleus.join(", ")});
+  vec3 c_star_halo    = vec3(${TOPO_CONFIG.colors.starHalo.join(", ")});
+  vec3 c_star_spike   = vec3(${TOPO_CONFIG.colors.starSpike.join(", ")});
+  vec3 c_star_diag    = vec3(${TOPO_CONFIG.colors.starDiag.join(", ")});
 
   // Base terrain elevation gradient (deep muted green background)
   vec3 col = mix(c_bg_dark, c_bg_forest, smoothstep(0.15, 0.75, elevation));
@@ -166,27 +177,47 @@ void main() {
   // Render crisp index contours
   col = mix(col, c_hi, indexLine * ${TOPO_CONFIG.indexLineOpacity.toFixed(2)});
 
-  // Soft, unnoticeable organic light-gray shadow (amorphous cloud shape, not a circular dot)
+  // Celestial diffraction spike starburst tracking cursor (JWST / astronomical star)
   vec2 toMouse = uv - mouse;
-  float tDrift = u_time * 0.04;
+  float r = length(toMouse);
 
-  // Align shape elongation with the natural cartographic terrain angle
-  vec2 rotMouse = rot * toMouse;
-  float baseDist = length(vec2(rotMouse.x * 0.90, rotMouse.y * 1.25));
+  // 1. Central pinpoint nucleus & warm starlight halo
+  float nucleus = exp(-r * 320.0);
+  float halo = exp(-r * 55.0) * 0.42;
 
-  // Multi-frequency organic simplex noise creates an amorphous, fluid perimeter (no dot circle)
-  float noiseLobe1 = snoise(toMouse * 2.8 + vec2(tDrift, -tDrift * 0.7));
-  float noiseLobe2 = snoise(uv * 4.2 - vec2(tDrift * 0.5, tDrift * 0.3));
-  float irregularDist = baseDist + (noiseLobe1 * 0.075 + noiseLobe2 * 0.035);
+  // 2. Primary cardinal diffraction spikes (+ cross: horizontal & vertical)
+  float spikeLen = ${TOPO_CONFIG.starSpikeLength.toFixed(4)};
+  float taperH = pow(max(0.0, 1.0 - abs(toMouse.x) / spikeLen), 2.2);
+  float profileH = exp(-abs(toMouse.y) * 450.0) * 0.82 + exp(-abs(toMouse.y) * 85.0) * 0.18;
+  float spikeH = taperH * profileH;
 
-  // Asymptotic Gaussian decay — completely dissolves outward with zero hard perimeter or dot edge
-  float shadowRadius = ${TOPO_CONFIG.mouseShadowRadius.toFixed(3)};
-  float normDist = max(irregularDist, 0.0) / max(shadowRadius, 0.01);
-  float shadowAura = exp(-normDist * normDist * 1.8);
+  float taperV = pow(max(0.0, 1.0 - abs(toMouse.y) / spikeLen), 2.2);
+  float profileV = exp(-abs(toMouse.x) * 450.0) * 0.82 + exp(-abs(toMouse.x) * 85.0) * 0.18;
+  float spikeV = taperV * profileV;
 
-  // Soft light-gray tinting (gentle ambient presence, completely calm and unnoticeable)
-  float shadowIntensity = shadowAura * ${TOPO_CONFIG.mouseShadowOpacity.toFixed(3)} * u_mouse_intensity;
-  col = mix(col, c_light_gray, shadowIntensity);
+  // 3. Secondary diagonal diffraction spikes (x cross: 45° and 135°)
+  vec2 diagMouse = mat2(0.7071, -0.7071, 0.7071, 0.7071) * toMouse;
+  float diagLen = ${TOPO_CONFIG.starDiagSpikeLength.toFixed(4)};
+
+  float taperD1 = pow(max(0.0, 1.0 - abs(diagMouse.x) / diagLen), 2.4);
+  float profileD1 = exp(-abs(diagMouse.y) * 500.0) * 0.85 + exp(-abs(diagMouse.y) * 110.0) * 0.15;
+  float spikeD1 = taperD1 * profileD1;
+
+  float taperD2 = pow(max(0.0, 1.0 - abs(diagMouse.y) / diagLen), 2.4);
+  float profileD2 = exp(-abs(diagMouse.x) * 500.0) * 0.85 + exp(-abs(diagMouse.x) * 110.0) * 0.15;
+  float spikeD2 = taperD2 * profileD2;
+
+  // 4. Subtle celestial twinkle
+  float twinkle = 0.94 + 0.06 * sin(u_time * 2.8);
+
+  // 5. Combine diffraction starlight rays
+  vec3 starCol = c_star_nucleus * nucleus * 1.15
+               + c_star_halo * halo * 0.65
+               + c_star_spike * (spikeH + spikeV) * 0.85
+               + c_star_diag * (spikeD1 + spikeD2) * 0.60;
+
+  // Add luminous celestial starburst to canvas
+  col += starCol * (${TOPO_CONFIG.starBrightness.toFixed(2)} * u_mouse_intensity * twinkle);
 
   // Cinematic edge vignette
   float vig = 1.0 - smoothstep(0.50, 1.40, length(st - 0.5) * 1.25);
