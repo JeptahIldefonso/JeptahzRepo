@@ -27,11 +27,11 @@ export const TOPO_CONFIG = {
   // Speed of gentle undulating terrain drift (lower = slower and calmer)
   animationSpeed: 0.030,
 
-  // 3. MOUSE HOVER SHADOW (NO DISTORTION)
-  // Radius of the soft mouse shadow under the cursor (in screen aspect units: 0.18 - 0.32)
-  mouseShadowRadius: 0.25,
-  // Darkness of the shadow directly beneath the cursor (0.35 to 0.60; 0.50 = 50% darkening)
-  mouseShadowDarkness: 0.50,
+  // 3. MOUSE HOVER SHADOW (LIGHT GRAY & AMORPHOUS UNNOTICEABLE SHAPE)
+  // Radius of the soft, unnoticeable light-gray shadow mist (0.25 - 0.40)
+  mouseShadowRadius: 0.32,
+  // Opacity of the light-gray shadow directly under cursor (0.18 - 0.30 for subtle mist, no glare)
+  mouseShadowOpacity: 0.24,
   // Lerp tracking speed for mouse position (0.07 - 0.12 = smooth fluid lag without jitter)
   mouseLerp: 0.09,
   // Fade speed when cursor enters or leaves the window
@@ -49,6 +49,7 @@ export const TOPO_CONFIG = {
     earthyMoss: [0.082, 0.243, 0.176],       // Intermediate terrain tone (#153e2d)
     contourSage: [0.161, 0.357, 0.271],      // Standard contour lines (#295b45)
     indexHighlight: [0.243, 0.467, 0.369],   // Index contour lines (#3e775e, soft sage)
+    lightGray: [0.70, 0.74, 0.73],           // Soft mineral light gray shadow tint (#b3bdbb)
   },
 };
 
@@ -153,6 +154,7 @@ void main() {
   vec3 c_moss      = vec3(${TOPO_CONFIG.colors.earthyMoss.join(", ")});
   vec3 c_sage      = vec3(${TOPO_CONFIG.colors.contourSage.join(", ")});
   vec3 c_hi        = vec3(${TOPO_CONFIG.colors.indexHighlight.join(", ")});
+  vec3 c_light_gray= vec3(${TOPO_CONFIG.colors.lightGray.join(", ")});
 
   // Base terrain elevation gradient (deep muted green background)
   vec3 col = mix(c_bg_dark, c_bg_forest, smoothstep(0.15, 0.75, elevation));
@@ -164,13 +166,27 @@ void main() {
   // Render crisp index contours
   col = mix(col, c_hi, indexLine * ${TOPO_CONFIG.indexLineOpacity.toFixed(2)});
 
-  // Soft mouse shadow: smooth ambient drop shadow tracking the cursor (no distortion)
+  // Soft, unnoticeable organic light-gray shadow (amorphous cloud shape, not a circular dot)
   vec2 toMouse = uv - mouse;
-  float dist = length(toMouse);
+  float tDrift = u_time * 0.04;
+
+  // Align shape elongation with the natural cartographic terrain angle
+  vec2 rotMouse = rot * toMouse;
+  float baseDist = length(vec2(rotMouse.x * 0.90, rotMouse.y * 1.25));
+
+  // Multi-frequency organic simplex noise creates an amorphous, fluid perimeter (no dot circle)
+  float noiseLobe1 = snoise(toMouse * 2.8 + vec2(tDrift, -tDrift * 0.7));
+  float noiseLobe2 = snoise(uv * 4.2 - vec2(tDrift * 0.5, tDrift * 0.3));
+  float irregularDist = baseDist + (noiseLobe1 * 0.075 + noiseLobe2 * 0.035);
+
+  // Asymptotic Gaussian decay — completely dissolves outward with zero hard perimeter or dot edge
   float shadowRadius = ${TOPO_CONFIG.mouseShadowRadius.toFixed(3)};
-  float shadowFactor = smoothstep(shadowRadius, 0.0, dist);
-  float shadowIntensity = pow(shadowFactor, 1.4) * ${TOPO_CONFIG.mouseShadowDarkness.toFixed(3)} * u_mouse_intensity;
-  col *= (1.0 - shadowIntensity);
+  float normDist = max(irregularDist, 0.0) / max(shadowRadius, 0.01);
+  float shadowAura = exp(-normDist * normDist * 1.8);
+
+  // Soft light-gray tinting (gentle ambient presence, completely calm and unnoticeable)
+  float shadowIntensity = shadowAura * ${TOPO_CONFIG.mouseShadowOpacity.toFixed(3)} * u_mouse_intensity;
+  col = mix(col, c_light_gray, shadowIntensity);
 
   // Cinematic edge vignette
   float vig = 1.0 - smoothstep(0.50, 1.40, length(st - 0.5) * 1.25);
