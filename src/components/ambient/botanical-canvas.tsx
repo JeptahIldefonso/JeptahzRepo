@@ -4,34 +4,42 @@ import React, { useEffect, useRef } from "react";
 
 // ============================================================================
 // TOPOGRAPHIC AMBIENT CONFIGURATION
-// Tweak these values easily to adjust line density, motion, and colors
+// Tweak these values easily to adjust line density, motion, shadow, and colors
 // ============================================================================
 export const TOPO_CONFIG = {
-  // 1. TOPOGRAPHIC CONTOUR APPEARANCE
+  // 1. CRISP TOPOGRAPHIC CONTOURS (NO BLUR)
   // Density of contour elevation rings across the screen (16 - 26)
-  lineDensity: 20.0,
-  // Hairline thickness of contour lines (0.04 - 0.08 for crisp, delicate lines)
-  lineWidth: 0.055,
-  // Optional blur (keep "0px" for crisp architectural lines, or "1px" for soft print look)
+  lineDensity: 22.0,
+  // Standard contour line width in physical screen pixels (1.0 - 1.5 for crisp vector cartography)
+  lineWidthPixels: 1.20,
+  // Index contour line width in physical screen pixels (every 5th line is slightly bolder)
+  indexLineWidthPixels: 2.10,
+  // Standard contour line visibility (0.50 - 0.85; crisp sage against deep teal)
+  lineOpacity: 0.75,
+  // Index contour line visibility (0.70 - 0.95; soft sage highlight)
+  indexLineOpacity: 0.90,
+  // Optional CSS blur (keep "0px" for razor-sharp vector lines)
   blurAmount: "0px",
   // Opacity of dark radial vignette overlay protecting center card readability
   vignetteOpacity: 0.70,
 
-  // 2. IDLE ANIMATION & DRIFT
+  // 2. IDLE ANIMATION & DRIFT (CALM & NATURAL)
   // Speed of gentle undulating terrain drift (lower = slower and calmer)
-  animationSpeed: 0.035,
+  animationSpeed: 0.030,
 
-  // 3. MOUSE HOVER INTERACTION
-  // Elevation bump strength when hovering (causes contour rings to bend smoothly around cursor)
-  mouseElevationStrength: 0.20,
-  // Lerp easing coefficient for mouse position (lower = more floaty lag; 0.02 - 0.05)
-  mouseLerp: 0.040,
-  // Fade-out speed for hover influence when cursor stops moving
-  mouseIntensityDecay: 0.025,
+  // 3. MOUSE HOVER SHADOW (NO DISTORTION)
+  // Radius of the soft mouse shadow under the cursor (in screen aspect units: 0.18 - 0.32)
+  mouseShadowRadius: 0.25,
+  // Darkness of the shadow directly beneath the cursor (0.35 to 0.60; 0.50 = 50% darkening)
+  mouseShadowDarkness: 0.50,
+  // Lerp tracking speed for mouse position (0.07 - 0.12 = smooth fluid lag without jitter)
+  mouseLerp: 0.09,
+  // Fade speed when cursor enters or leaves the window
+  mouseFadeSpeed: 0.06,
 
   // 4. FILM GRAIN
-  // Whisper-quiet tactile grain to eliminate digital banding (0.008 - 0.012)
-  grainStrength: 0.010,
+  // Micro tactile grain to eliminate digital banding without sparkliness (0.006 - 0.010)
+  grainStrength: 0.008,
 
   // 5. COLOR PALETTE (Normalized RGB: 0.0 to 1.0)
   // Preserves your current deep green & dark teal tones — no white, no flashy mint
@@ -100,14 +108,6 @@ void main() {
   vec2 mouse = u_mouse;
   mouse.x *= aspect;
 
-  // Normalized mouse distance for gentle terrain elevation
-  vec2 toMouse = uv - mouse;
-  float dist = length(toMouse);
-
-  // Soft Gaussian-like influence radius around cursor
-  float mouseRadius = 0.55;
-  float mouseInfluence = smoothstep(mouseRadius, 0.0, dist) * u_mouse_intensity;
-
   // Cartographic diagonal rotation (~26 degree slope)
   float angle = -0.45;
   mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
@@ -120,21 +120,32 @@ void main() {
   float n2 = snoise(p * 2.30 - vec2(t * 0.16, n1 * 0.45));
   float n3 = snoise(p * 4.20 + vec2(n2 * 0.35, t * 0.11));
 
-  // Base elevation heightmap [0.0, 1.0]
+  // Pure natural elevation heightmap — zero terrain distortion on hover
   float elevation = (n1 * 0.52 + n2 * 0.32 + n3 * 0.16) * 0.5 + 0.5;
-
-  // Interactive elevation bump: cursor smoothly lifts/deflects the contour lines
-  elevation += mouseInfluence * ${TOPO_CONFIG.mouseElevationStrength.toFixed(4)};
 
   // Topographic contour calculation
   float contourCoord = elevation * ${TOPO_CONFIG.lineDensity.toFixed(1)};
   float distFromCenter = abs(fract(contourCoord) - 0.5);
-  float line = smoothstep(${TOPO_CONFIG.lineWidth.toFixed(4)}, 0.0, distFromCenter);
 
   // Index contour (every 5th line is slightly bolder, just like real topographical maps)
   float indexCoord = contourCoord / 5.0;
   float indexDist = abs(fract(indexCoord) - 0.5);
-  float indexLine = smoothstep(${TOPO_CONFIG.lineWidth.toFixed(4)} * 1.4, 0.0, indexDist);
+
+  // Crisp, sharp contour lines anti-aliased over screen pixels (zero blur)
+  #ifdef HAS_DERIVATIVES
+    float fw = length(vec2(dFdx(contourCoord), dFdy(contourCoord)));
+    float distInPixels = distFromCenter / max(fw, 0.0008);
+    float halfLine = ${(TOPO_CONFIG.lineWidthPixels * 0.5).toFixed(2)};
+    float line = 1.0 - smoothstep(max(halfLine - 0.5, 0.0), halfLine + 0.5, distInPixels);
+
+    float indexFw = length(vec2(dFdx(indexCoord), dFdy(indexCoord)));
+    float indexDistInPixels = indexDist / max(indexFw, 0.0004);
+    float halfIndex = ${(TOPO_CONFIG.indexLineWidthPixels * 0.5).toFixed(2)};
+    float indexLine = 1.0 - smoothstep(max(halfIndex - 0.5, 0.0), halfIndex + 0.5, indexDistInPixels);
+  #else
+    float line = 1.0 - smoothstep(0.002, 0.010, distFromCenter);
+    float indexLine = 1.0 - smoothstep(0.003, 0.016, indexDist);
+  #endif
 
   // Colors
   vec3 c_bg_dark   = vec3(${TOPO_CONFIG.colors.darkTeal.join(", ")});
@@ -147,20 +158,25 @@ void main() {
   vec3 col = mix(c_bg_dark, c_bg_forest, smoothstep(0.15, 0.75, elevation));
   col = mix(col, c_moss, smoothstep(0.40, 0.85, elevation) * 0.35);
 
-  // Render contour elevation lines with soft blending
-  col = mix(col, c_sage, line * 0.45);
+  // Render crisp contour elevation lines
+  col = mix(col, c_sage, line * ${TOPO_CONFIG.lineOpacity.toFixed(2)});
 
-  // Render index contours (stronger definition, soft sage)
-  col = mix(col, c_hi, indexLine * 0.65);
+  // Render crisp index contours
+  col = mix(col, c_hi, indexLine * ${TOPO_CONFIG.indexLineOpacity.toFixed(2)});
 
-  // Gentle, calm hover luster (barely perceptible soft bloom around cursor)
-  col += c_hi * mouseInfluence * 0.04;
+  // Soft mouse shadow: smooth ambient drop shadow tracking the cursor (no distortion)
+  vec2 toMouse = uv - mouse;
+  float dist = length(toMouse);
+  float shadowRadius = ${TOPO_CONFIG.mouseShadowRadius.toFixed(3)};
+  float shadowFactor = smoothstep(shadowRadius, 0.0, dist);
+  float shadowIntensity = pow(shadowFactor, 1.4) * ${TOPO_CONFIG.mouseShadowDarkness.toFixed(3)} * u_mouse_intensity;
+  col *= (1.0 - shadowIntensity);
 
   // Cinematic edge vignette
   float vig = 1.0 - smoothstep(0.50, 1.40, length(st - 0.5) * 1.25);
   col *= mix(0.72, 1.0, vig);
 
-  // Tactile film grain
+  // Micro tactile film grain to eliminate digital banding
   float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * ${TOPO_CONFIG.grainStrength.toFixed(4)};
   col += vec3(grain);
 
@@ -224,8 +240,18 @@ export function BotanicalCanvas() {
       return shader;
     }
 
+    // Enable standard derivatives extension for subpixel crisp contour lines
+    const ext = gl.getExtension("OES_standard_derivatives");
+    const prefix = ext
+      ? "#define HAS_DERIVATIVES\n#extension GL_OES_standard_derivatives : enable\n"
+      : "";
+
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SHADER_SOURCE);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, FRAGMENT_SHADER_SOURCE);
+    const fragmentShader = createShader(
+      gl,
+      gl.FRAGMENT_SHADER,
+      prefix + FRAGMENT_SHADER_SOURCE
+    );
     if (!vertexShader || !fragmentShader) return;
 
     const program = gl.createProgram();
@@ -281,7 +307,7 @@ export function BotanicalCanvas() {
 
     const handleResize = () => {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
       const width = Math.floor(window.innerWidth * dpr);
       const height = Math.floor(window.innerHeight * dpr);
       canvas.width = width;
@@ -301,9 +327,15 @@ export function BotanicalCanvas() {
       mouse.targetIntensity = 0.0;
     };
 
+    const handleMouseEnter = () => {
+      if (isReducedMotion) return;
+      mouse.targetIntensity = 1.0;
+    };
+
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
     handleResize();
 
     const render = (now: number) => {
@@ -314,12 +346,12 @@ export function BotanicalCanvas() {
         accumulatedTime += Math.min(delta, 0.1);
         lastTime = now;
 
-        // Smooth spring interpolation with natural floaty lag
+        // Smooth spring interpolation with natural fluid tracking
         mouse.x += (mouse.targetX - mouse.x) * TOPO_CONFIG.mouseLerp;
         mouse.y += (mouse.targetY - mouse.y) * TOPO_CONFIG.mouseLerp;
         mouse.intensity +=
           (mouse.targetIntensity - mouse.intensity) *
-          TOPO_CONFIG.mouseIntensityDecay;
+          TOPO_CONFIG.mouseFadeSpeed;
       } else {
         accumulatedTime = 0.5;
         mouse.intensity = 0;
@@ -341,6 +373,7 @@ export function BotanicalCanvas() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
       mediaQuery.removeEventListener("change", handleMotionChange);
       cancelAnimationFrame(animationFrameId);
       if (gl) {
