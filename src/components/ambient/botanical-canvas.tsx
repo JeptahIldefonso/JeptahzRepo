@@ -2,6 +2,44 @@
 
 import React, { useEffect, useRef } from "react";
 
+// ============================================================================
+// CALM BOTANICAL AMBIENT CONFIGURATION
+// Tweak these values easily to customize the mood, softness, and responsiveness
+// ============================================================================
+export const AMBIENT_CONFIG = {
+  // 1. BLUR & COZINESS
+  // Heavy CSS blur applied to melt shader waves into an out-of-focus gradient ("60px" - "120px")
+  blurAmount: "90px",
+  // Opacity of the center-protecting dark vignette (0.0 = transparent, 1.0 = solid dark)
+  vignetteOpacity: 0.65,
+
+  // 2. SPEED & MOTION
+  // Idle drift animation speed (lower = slower, more serene; e.g. 0.03 = glacial, 0.05 = gentle drift)
+  animationSpeed: 0.045,
+
+  // 3. MOUSE REACTION (20-30% of original, gentle organic lag)
+  // Displacement wave push strength on mouse hover (keep <= 0.02 for subtle fluid disturbance)
+  mouseStrength: 0.015,
+  // Lerp easing coefficient for mouse position (lower = more lag / floaty delay; 0.02 - 0.05)
+  mouseLerp: 0.035,
+  // Decay speed for mouse hover intensity (smooth fade-out over ~800ms)
+  mouseIntensityDecay: 0.025,
+
+  // 4. FILM GRAIN
+  // Tactile film grain strength (subtle & non-sparkly; 0.008 - 0.012)
+  grainStrength: 0.010,
+
+  // 5. COLOR PALETTE (Normalized RGB: 0.0 to 1.0)
+  // Deep, muted, low-contrast tones: dark teal, forest pine, rich moss, soft sage highlight (NO white/mint)
+  colors: {
+    darkTeal: [0.016, 0.102, 0.141],         // Base brand midnight cyan (#041a24)
+    forestPine: [0.035, 0.145, 0.105],       // Deep muted forest (#09251b)
+    earthyMoss: [0.065, 0.205, 0.145],       // Rich moss green (#113425)
+    mutedSage: [0.115, 0.285, 0.210],        // Soft muted pine-sage (#1d4936)
+    softSageHighlight: [0.185, 0.380, 0.285], // Brightest highlight is soft sage (#2f6149), NEVER white
+  },
+};
+
 const VERTEX_SHADER_SOURCE = `
 attribute vec2 position;
 void main() {
@@ -59,71 +97,61 @@ void main() {
   vec2 mouse = u_mouse;
   mouse.x *= aspect;
 
-  // Mouse distance & interactive displacement wave
+  // Soft, wide mouse interaction radius
   vec2 toMouse = uv - mouse;
   float dist = length(toMouse);
-  float mouseRadius = 0.55;
+  float mouseRadius = 0.65;
   float mousePush = smoothstep(mouseRadius, 0.0, dist) * u_mouse_intensity;
 
-  // Rotation for sweeping diagonal waves (as in the reference image)
-  float angle = -0.58; // ~33 degree diagonal slope
+  // Gentle diagonal wave rotation (~30 degree slope)
+  float angle = -0.52;
   mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
   vec2 p = rot * uv;
 
-  // Displace along wave normal with mouse hover (calmed, subtle fluid disturbance)
-  p += rot * (normalize(toMouse + 0.0001) * mousePush * 0.05);
+  // Gentle fluid displacement (reduced to ~20-30% strength for calm disturbance)
+  p += rot * (normalize(toMouse + 0.0001) * mousePush * ${AMBIENT_CONFIG.mouseStrength.toFixed(4)});
 
-  float t = u_time * 0.2;
+  float t = u_time * ${AMBIENT_CONFIG.animationSpeed.toFixed(4)};
 
-  // Multi-frequency wave synthesis with domain warping
-  float n1 = snoise(p * 1.6 + vec2(t * 0.35, t * 0.15));
-  float n2 = snoise(p * 3.0 - vec2(t * 0.25, n1 * 0.75));
-  float n3 = snoise(p * 5.5 + vec2(n2 * 0.65, t * 0.2));
+  // Multi-frequency low-contrast wave synthesis with domain warping
+  float n1 = snoise(p * 1.2 + vec2(t * 0.25, t * 0.10));
+  float n2 = snoise(p * 2.2 - vec2(t * 0.18, n1 * 0.5));
+  float n3 = snoise(p * 4.0 + vec2(n2 * 0.45, t * 0.12));
 
-  // Primary wave curve with organic undulating folds
-  float wave = sin(p.y * 3.8 + n1 * 1.5 + n2 * 0.75 + t * 0.55);
-  wave += sin(p.y * 7.8 + n2 * 1.1 + n3 * 0.45 - t * 0.35) * 0.52;
-  wave += sin(p.x * 2.0 + p.y * 4.5 + n3 * 0.75 + t * 0.28) * 0.32;
+  // Organic wave folds with smooth undulating curves
+  float wave = sin(p.y * 3.0 + n1 * 1.2 + n2 * 0.6 + t * 0.4);
+  wave += sin(p.y * 6.0 + n2 * 0.8 + n3 * 0.3 - t * 0.25) * 0.4;
+  wave += sin(p.x * 1.5 + p.y * 3.5 + n3 * 0.5 + t * 0.18) * 0.25;
 
-  // Normalize wave to [0, 1]
-  float pattern = wave * 0.32 + 0.5;
-  pattern = clamp(pattern, 0.0, 1.0);
+  // Soft pattern normalization [0.0, 1.0]
+  float pattern = clamp(wave * 0.26 + 0.5, 0.0, 1.0);
 
-  // Soft silk sheen contrast curve
-  float highlight = pow(smoothstep(0.46, 0.86, pattern), 2.1);
+  // Soft highlight curve (soft sage, no harsh thresholding)
+  float highlight = pow(smoothstep(0.48, 0.88, pattern), 1.8);
 
-  // Palette stops:
-  // 1. Deep Midnight Brand Cyan & Dark Forest Pine
-  vec3 c_deep = vec3(0.016, 0.102, 0.141); // #041a24
-  vec3 c_pine = vec3(0.02, 0.16, 0.08);
+  // Muted, low-contrast palette
+  vec3 c_darkTeal = vec3(${AMBIENT_CONFIG.colors.darkTeal.join(", ")});
+  vec3 c_forest   = vec3(${AMBIENT_CONFIG.colors.forestPine.join(", ")});
+  vec3 c_moss     = vec3(${AMBIENT_CONFIG.colors.earthyMoss.join(", ")});
+  vec3 c_sage     = vec3(${AMBIENT_CONFIG.colors.mutedSage.join(", ")});
+  vec3 c_hi       = vec3(${AMBIENT_CONFIG.colors.softSageHighlight.join(", ")});
 
-  // 2. Rich Lush Emerald Green
-  vec3 c_emerald = vec3(0.04, 0.36, 0.17);
-  vec3 c_leaf = vec3(0.10, 0.56, 0.26);
+  // Seamless gradient melt with low contrast (no white/mint glare)
+  vec3 col = mix(c_darkTeal, c_forest, smoothstep(0.0, 0.35, pattern));
+  col = mix(col, c_moss, smoothstep(0.20, 0.60, pattern));
+  col = mix(col, c_sage, smoothstep(0.40, 0.80, pattern));
+  col = mix(col, c_hi, highlight * 0.35);
 
-  // 3. Vibrant Sunlit Jade Highlights
-  vec3 c_bright = vec3(0.32, 0.80, 0.46);
+  // Whisper-quiet hover luster (soft ambient bloom, zero glare)
+  float mouseSheen = smoothstep(0.70, 0.0, dist) * u_mouse_intensity;
+  col += c_hi * mouseSheen * 0.025;
 
-  // 4. Silky Cream / White Ivory Streaks (matching reference)
-  vec3 c_ivory = vec3(0.92, 0.96, 0.93);
+  // Cinematic edge vignette
+  float vig = 1.0 - smoothstep(0.50, 1.40, length(st - 0.5) * 1.25);
+  col *= mix(0.70, 1.0, vig);
 
-  // Interpolate botanical gradient
-  vec3 col = mix(c_deep, c_pine, smoothstep(0.0, 0.32, pattern));
-  col = mix(col, c_emerald, smoothstep(0.22, 0.58, pattern));
-  col = mix(col, c_leaf, smoothstep(0.42, 0.76, pattern));
-  col = mix(col, c_bright, highlight * 0.82);
-  col = mix(col, c_ivory, pow(highlight, 2.0) * 0.95);
-
-  // Calmed, subtle ambient luster (eliminating flashy white glare & ivory washout)
-  float mouseSheen = smoothstep(0.65, 0.0, dist) * u_mouse_intensity;
-  col += c_bright * mouseSheen * 0.08;
-
-  // Subtle vignette along edges for cinematic focus
-  float vig = 1.0 - smoothstep(0.55, 1.45, length(st - 0.5) * 1.3);
-  col *= mix(0.78, 1.0, vig);
-
-  // Tactile film grain matching photographic texture in reference
-  float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * 0.035;
+  // Subtle non-sparkly film grain
+  float grain = (fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453) - 0.5) * ${AMBIENT_CONFIG.grainStrength.toFixed(4)};
   col += vec3(grain);
 
   gl_FragColor = vec4(col, 1.0);
@@ -137,9 +165,25 @@ export function BotanicalCanvas() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
+    // Accessibility: Respect prefers-reduced-motion
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let isReducedMotion = mediaQuery.matches;
+
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      isReducedMotion = e.matches;
+      if (isReducedMotion) {
+        mouse.intensity = 0;
+        mouse.targetIntensity = 0;
+      }
+    };
+    mediaQuery.addEventListener("change", handleMotionChange);
+
     let gl = canvas.getContext("webgl", { alpha: false, antialias: false });
     if (!gl) {
-      gl = canvas.getContext("experimental-webgl", { alpha: false, antialias: false }) as WebGLRenderingContext | null;
+      gl = canvas.getContext("experimental-webgl", {
+        alpha: false,
+        antialias: false,
+      }) as WebGLRenderingContext | null;
     }
 
     // 2D Fallback if WebGL is unavailable
@@ -150,8 +194,8 @@ export function BotanicalCanvas() {
       canvas.height = window.innerHeight;
       const grad = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
       grad.addColorStop(0, "#041a24");
-      grad.addColorStop(0.5, "#064e3b");
-      grad.addColorStop(1, "#10b981");
+      grad.addColorStop(0.5, "#0b281f");
+      grad.addColorStop(1, "#183e2e");
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       return;
@@ -214,14 +258,22 @@ export function BotanicalCanvas() {
     const uTime = gl.getUniformLocation(program, "u_time");
     const uMouseIntensity = gl.getUniformLocation(program, "u_mouse_intensity");
 
-    let mouse = { x: 0.5, y: 0.5, targetX: 0.5, targetY: 0.5, intensity: 0, targetIntensity: 0 };
+    let mouse = {
+      x: 0.5,
+      y: 0.5,
+      targetX: 0.5,
+      targetY: 0.5,
+      intensity: 0,
+      targetIntensity: 0,
+    };
     let animationFrameId: number;
-    let startTime = performance.now();
+    let lastTime = 0;
+    let accumulatedTime = 0;
 
     const handleResize = () => {
       if (!canvas) return;
-      // High-performance resolution scaling (max 1920x1080 internal buffer for buttery 60fps)
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      // High-performance resolution scaling (smooth 60fps)
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       const width = Math.floor(window.innerWidth * dpr);
       const height = Math.floor(window.innerHeight * dpr);
       canvas.width = width;
@@ -230,6 +282,7 @@ export function BotanicalCanvas() {
     };
 
     const handleMouseMove = (e: MouseEvent) => {
+      if (isReducedMotion) return;
       mouse.targetX = e.clientX / window.innerWidth;
       // Invert Y for WebGL screen coordinates (0 at bottom, 1 at top)
       mouse.targetY = 1.0 - e.clientY / window.innerHeight;
@@ -241,23 +294,34 @@ export function BotanicalCanvas() {
     };
 
     window.addEventListener("resize", handleResize);
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
     handleResize();
 
     const render = (now: number) => {
       if (!gl) return;
 
-      const elapsed = (now - startTime) * 0.001;
+      if (!isReducedMotion) {
+        // Delta time progression for consistent pacing
+        const delta = lastTime ? (now - lastTime) * 0.001 : 0.016;
+        accumulatedTime += Math.min(delta, 0.1);
+        lastTime = now;
 
-      // Smooth mouse spring interpolation (buttery 60fps easing without abrupt pops)
-      mouse.x += (mouse.targetX - mouse.x) * 0.06;
-      mouse.y += (mouse.targetY - mouse.y) * 0.06;
-      mouse.intensity += (mouse.targetIntensity - mouse.intensity) * 0.04;
+        // Smooth spring interpolation with floaty lag
+        mouse.x += (mouse.targetX - mouse.x) * AMBIENT_CONFIG.mouseLerp;
+        mouse.y += (mouse.targetY - mouse.y) * AMBIENT_CONFIG.mouseLerp;
+        mouse.intensity +=
+          (mouse.targetIntensity - mouse.intensity) *
+          AMBIENT_CONFIG.mouseIntensityDecay;
+      } else {
+        // Reduced motion: freeze at calm, static composition
+        accumulatedTime = 0.5;
+        mouse.intensity = 0;
+      }
 
       gl.uniform2f(uResolution, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouse.x, mouse.y);
-      gl.uniform1f(uTime, elapsed);
+      gl.uniform1f(uTime, accumulatedTime);
       gl.uniform1f(uMouseIntensity, mouse.intensity);
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -271,6 +335,7 @@ export function BotanicalCanvas() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      mediaQuery.removeEventListener("change", handleMotionChange);
       cancelAnimationFrame(animationFrameId);
       if (gl) {
         gl.deleteProgram(program);
@@ -282,9 +347,29 @@ export function BotanicalCanvas() {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full select-none"
-    />
+    <div
+      className="pointer-events-none fixed inset-0 z-0 h-full w-full overflow-hidden select-none"
+      aria-hidden="true"
+    >
+      {/* Heavy-blurred WebGL Canvas - scaled slightly (1.12x) to eliminate border vignette clipping */}
+      <canvas
+        ref={canvasRef}
+        className="h-full w-full scale-112 transform-gpu transition-[filter] duration-700 ease-out"
+        style={{
+          filter: `blur(${AMBIENT_CONFIG.blurAmount})`,
+        }}
+      />
+
+      {/* Subtle radial dark vignette overlay to ensure center card readability */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `radial-gradient(ellipse at center, transparent 25%, rgba(4, 26, 36, ${AMBIENT_CONFIG.vignetteOpacity}) 85%)`,
+        }}
+      />
+
+      {/* Soft uniform dark tint overlay */}
+      <div className="pointer-events-none absolute inset-0 bg-[#041a24]/15" />
+    </div>
   );
 }
