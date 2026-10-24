@@ -58,25 +58,10 @@ export function IntroHero() {
           Welcome to <span className="italic font-normal">JeptahzRepo</span>
         </h1>
 
-        {/* Center Pixelated Translucent Square Box Panel Card */}
-        <div className="relative w-full max-w-[360px] sm:max-w-[380px] bg-white/60 hover:bg-white/70 backdrop-blur-xl border border-white/60 shadow-2xl rounded-[2px] p-7 sm:p-8 flex flex-col items-center justify-center space-y-5 transition-all duration-300">
-          {/* 4 Corner Pixel Markers */}
-          <span className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-white border border-[#041a24]/40 shadow-xs pointer-events-none" />
-          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white border border-[#041a24]/40 shadow-xs pointer-events-none" />
-          <span className="absolute -bottom-1 -left-1 w-2.5 h-2.5 bg-white border border-[#041a24]/40 shadow-xs pointer-events-none" />
-          <span className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-white border border-[#041a24]/40 shadow-xs pointer-events-none" />
-
-          {/* Micro Pixel Dot Grid Overlay */}
-          <div
-            className="absolute inset-0 pointer-events-none opacity-35 rounded-[2px]"
-            style={{
-              backgroundImage: "radial-gradient(rgba(4, 26, 36, 0.22) 1px, transparent 1px)",
-              backgroundSize: "6px 6px",
-            }}
-          />
-
-          {/* Center Profile Avatar (Classic Circular) */}
-          <div className="relative z-10 w-16 h-16 rounded-full overflow-hidden shadow-md ring-2 ring-white/90 shrink-0">
+        {/* Center Formal Obsidian Glass Card */}
+        <div className="relative w-full max-w-[360px] sm:max-w-[380px] bg-[#041a24]/80 hover:bg-[#041a24]/90 backdrop-blur-2xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.5)] rounded-[6px] p-7 sm:p-8 flex flex-col items-center justify-center space-y-5 transition-all duration-300 before:absolute before:inset-x-0 before:top-0 before:h-[1px] before:bg-gradient-to-r before:from-transparent before:via-white/25 before:to-transparent overflow-hidden">
+          {/* Center Profile Avatar */}
+          <div className="relative z-10 w-16 h-16 rounded-full overflow-hidden shadow-md ring-1 ring-white/20 shrink-0">
             <Image
               src="/avatar.png"
               alt="JeptahzRepo"
@@ -87,26 +72,30 @@ export function IntroHero() {
             />
           </div>
 
-          <div className="relative z-10">
-            <div className="font-editorial italic text-xl text-[#041a24] font-normal leading-tight">
-              Blog Repo
+          {/* Title & Identity */}
+          <div className="relative z-10 text-center space-y-1">
+            <div className="font-editorial italic text-2xl sm:text-3xl text-white font-normal leading-tight">
+              JeptahzRepo
+            </div>
+            <div className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/55">
+              Personal Archive &amp; Devlogs
             </div>
           </div>
 
-          {/* Full-Width Action Button */}
+          {/* Full-Width High-Contrast Action Button */}
           <Link href="/home" className="relative z-10 block w-full">
             <Button
               size="lg"
-              className="w-full h-11 bg-[#041a24] text-white hover:bg-[#041a24]/90 rounded-[2px] text-xs font-mono uppercase tracking-[0.14em] flex items-center justify-center space-x-2 shadow-md cursor-pointer transition-transform active:scale-[0.98] border border-white/20"
+              className="w-full h-11 bg-white text-[#041a24] hover:bg-neutral-100 font-mono text-xs uppercase tracking-[0.15em] font-semibold rounded-[3px] shadow-sm flex items-center justify-center space-x-2 cursor-pointer transition-transform active:scale-[0.98]"
             >
-              <FolderGit2 className="w-4 h-4 stroke-[1.5]" />
+              <FolderGit2 className="w-4 h-4 stroke-[1.75]" />
               <span>Enter Blog Archive</span>
             </Button>
           </Link>
 
-          {/* Fine Print Note Below Button */}
-          <p className="relative z-10 text-[10px] text-[#041a24]/65 text-center font-mono">
-            Free and open access
+          {/* Footer Meta */}
+          <p className="relative z-10 text-[10px] text-white/40 text-center font-mono">
+            Open Access &bull; Notes &amp; Systems &bull; Devlogs
           </p>
         </div>
       </main>

@@ -70,8 +70,8 @@ void main() {
   mat2 rot = mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
   vec2 p = rot * uv;
 
-  // Displace along wave normal with mouse hover
-  p += rot * (normalize(toMouse + 0.0001) * mousePush * 0.22);
+  // Displace along wave normal with mouse hover (calmed, subtle fluid disturbance)
+  p += rot * (normalize(toMouse + 0.0001) * mousePush * 0.05);
 
   float t = u_time * 0.2;
 
@@ -114,10 +114,9 @@ void main() {
   col = mix(col, c_bright, highlight * 0.82);
   col = mix(col, c_ivory, pow(highlight, 2.0) * 0.95);
 
-  // Interactive mouse illumination & specular ripple
-  float mouseSheen = smoothstep(0.42, 0.0, dist) * u_mouse_intensity;
-  col += c_bright * mouseSheen * 0.42;
-  col = mix(col, c_ivory, pow(mouseSheen, 2.0) * 0.35);
+  // Calmed, subtle ambient luster (eliminating flashy white glare & ivory washout)
+  float mouseSheen = smoothstep(0.65, 0.0, dist) * u_mouse_intensity;
+  col += c_bright * mouseSheen * 0.08;
 
   // Subtle vignette along edges for cinematic focus
   float vig = 1.0 - smoothstep(0.55, 1.45, length(st - 0.5) * 1.3);
@@ -251,10 +250,10 @@ export function BotanicalCanvas() {
 
       const elapsed = (now - startTime) * 0.001;
 
-      // Smooth mouse spring interpolation
-      mouse.x += (mouse.targetX - mouse.x) * 0.08;
-      mouse.y += (mouse.targetY - mouse.y) * 0.08;
-      mouse.intensity += (mouse.targetIntensity - mouse.intensity) * 0.05;
+      // Smooth mouse spring interpolation (buttery 60fps easing without abrupt pops)
+      mouse.x += (mouse.targetX - mouse.x) * 0.06;
+      mouse.y += (mouse.targetY - mouse.y) * 0.06;
+      mouse.intensity += (mouse.targetIntensity - mouse.intensity) * 0.04;
 
       gl.uniform2f(uResolution, canvas.width, canvas.height);
       gl.uniform2f(uMouse, mouse.x, mouse.y);
