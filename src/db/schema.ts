@@ -90,9 +90,23 @@ export const siteSettings = pgTable("site_settings", {
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
+export const changelogItems = pgTable("changelog_items", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  versionTag: text("version_tag"),
+  category: text("category").notNull(), // 'feature' | 'release' | 'fix' | 'doc' | 'system'
+  title: text("title").notNull(),
+  description: text("description").notNull(),
+  timestamp: text("timestamp").notNull(),
+  href: text("href"),
+  sortOrder: integer("sort_order").default(0).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+});
+
 export type Entry = typeof entries.$inferSelect;
 export type NewEntry = typeof entries.$inferInsert;
 export type AppItem = typeof apps.$inferSelect;
 export type NewAppItem = typeof apps.$inferInsert;
 export type Topic = typeof topics.$inferSelect;
 export type SiteSettings = typeof siteSettings.$inferSelect;
+export type ChangelogItemDb = typeof changelogItems.$inferSelect;
+export type NewChangelogItemDb = typeof changelogItems.$inferInsert;
