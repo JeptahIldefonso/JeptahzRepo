@@ -1,11 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/navigation/sidebar";
-import { CommandMenu } from "@/components/navigation/command-menu";
 import { RightFloatingPanel } from "@/components/navigation/right-floating-panel";
 import type { ChangelogItem, ChangelogBannerConfig } from "@/lib/floating-panel-data";
+
+const CommandMenu = dynamic(
+  () =>
+    import("@/components/navigation/command-menu").then(
+      (mod) => mod.CommandMenu
+    ),
+  { ssr: false }
+);
 
 interface HubLayoutClientProps {
   children: React.ReactNode;
@@ -45,6 +53,18 @@ export function HubLayoutClient({
     } catch {}
   }, []);
 
+  // Keyboard shortcut listener to mount and toggle command palette on demand
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   function handleToggleSidebar(collapsed: boolean) {
     setSidebarCollapsed(collapsed);
     try {
@@ -61,12 +81,14 @@ export function HubLayoutClient({
         onToggleCollapse={handleToggleSidebar}
       />
 
-      {/* Global Command Palette */}
-      <CommandMenu
-        open={searchOpen}
-        onOpenChange={setSearchOpen}
-        items={searchItems}
-      />
+      {/* Global Command Palette (Lazy loaded on demand) */}
+      {searchOpen && (
+        <CommandMenu
+          open={searchOpen}
+          onOpenChange={setSearchOpen}
+          items={searchItems}
+        />
+      )}
 
       {/* Main Content Area - Fully Untouched & Independent (Phase 57 Architecture) */}
       <main
