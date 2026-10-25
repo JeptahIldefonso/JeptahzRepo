@@ -242,15 +242,6 @@ export function BotanicalCanvas() {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     let isReducedMotion = mediaQuery.matches;
 
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      isReducedMotion = e.matches;
-      if (isReducedMotion) {
-        mouse.intensity = 0;
-        mouse.targetIntensity = 0;
-      }
-    };
-    mediaQuery.addEventListener("change", handleMotionChange);
-
     let gl = canvas.getContext("webgl", { alpha: false, antialias: false });
     if (!gl) {
       gl = canvas.getContext("experimental-webgl", {
@@ -348,18 +339,56 @@ export function BotanicalCanvas() {
       intensity: 0,
       targetIntensity: 0,
     };
-    let animationFrameId: number;
+    let animationFrameId = 0;
     let lastTime = 0;
     let accumulatedTime = 0;
+    let isPaused = false;
+    let isVisible = !document.hidden;
+
+    const stopLoop = () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = 0;
+      }
+    };
+
+    const startLoop = () => {
+      if (isReducedMotion) {
+        // Draw one single frame and don't schedule animation frames
+        render(performance.now());
+        return;
+      }
+      if (!animationFrameId && isVisible && !isPaused) {
+        lastTime = performance.now();
+        animationFrameId = requestAnimationFrame(render);
+      }
+    };
+
+    const handleMotionChange = (e: MediaQueryListEvent) => {
+      isReducedMotion = e.matches;
+      if (isReducedMotion) {
+        mouse.intensity = 0;
+        mouse.targetIntensity = 0;
+        stopLoop();
+        render(performance.now());
+      } else {
+        startLoop();
+      }
+    };
+    mediaQuery.addEventListener("change", handleMotionChange);
 
     const handleResize = () => {
       if (!canvas) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2.0);
+      // Cap DPR at 1.5 to reduce fill-rate by 44% on Retina screens while keeping lines sharp
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       const width = Math.floor(window.innerWidth * dpr);
       const height = Math.floor(window.innerHeight * dpr);
       canvas.width = width;
       canvas.height = height;
       gl?.viewport(0, 0, width, height);
+      if (isReducedMotion) {
+        render(performance.now());
+      }
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -379,10 +408,42 @@ export function BotanicalCanvas() {
       mouse.targetIntensity = 1.0;
     };
 
+    // Pause rendering when browser tab is hidden to save 100% of GPU/CPU in background tabs
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        isVisible = false;
+        stopLoop();
+      } else {
+        isVisible = true;
+        startLoop();
+      }
+    };
+
+    // Pause rendering if the canvas element is off-screen
+    let observer: IntersectionObserver | null = null;
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const entry = entries[0];
+          if (!entry) return;
+          if (entry.isIntersecting) {
+            isPaused = false;
+            startLoop();
+          } else {
+            isPaused = true;
+            stopLoop();
+          }
+        },
+        { threshold: 0.01 }
+      );
+      observer.observe(canvas);
+    }
+
     window.addEventListener("resize", handleResize);
     window.addEventListener("mousemove", handleMouseMove, { passive: true });
     document.addEventListener("mouseleave", handleMouseLeave);
     document.addEventListener("mouseenter", handleMouseEnter);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     handleResize();
 
     const render = (now: number) => {
@@ -411,23 +472,32 @@ export function BotanicalCanvas() {
 
       gl.drawArrays(gl.TRIANGLES, 0, 6);
 
-      animationFrameId = requestAnimationFrame(render);
+      if (!isReducedMotion && isVisible && !isPaused) {
+        animationFrameId = requestAnimationFrame(render);
+      }
     };
 
-    animationFrameId = requestAnimationFrame(render);
+    startLoop();
 
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
       document.removeEventListener("mouseenter", handleMouseEnter);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       mediaQuery.removeEventListener("change", handleMotionChange);
-      cancelAnimationFrame(animationFrameId);
+      observer?.disconnect();
+      stopLoop();
+
       if (gl) {
         gl.deleteProgram(program);
         gl.deleteShader(vertexShader);
         gl.deleteShader(fragmentShader);
         gl.deleteBuffer(positionBuffer);
+        const loseContext = gl.getExtension("WEBGL_lose_context");
+        if (loseContext) {
+          loseContext.loseContext();
+        }
       }
     };
   }, []);

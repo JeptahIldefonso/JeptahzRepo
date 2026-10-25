@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Lock, ArrowLeft, Eye, EyeOff, ShieldAlert, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ADMIN_SESSION_STORAGE_KEY } from "@/components/admin/admin-session-guard";
-import { BotanicalCanvas } from "@/components/ambient/botanical-canvas";
+import { AmbientBackground } from "@/components/ambient/ambient-background";
 
 function LoginForm() {
   const router = useRouter();
@@ -157,7 +157,7 @@ export default function AdminLoginPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#041a24] text-white flex flex-col justify-center items-center px-4 py-12 selection:bg-white/20 selection:text-white">
       {/* 60fps Ambient Botanical Drift Canvas (Same as Intro) */}
-      <BotanicalCanvas />
+      <AmbientBackground />
 
       <Suspense fallback={<div className="font-mono text-xs text-white/50">Loading Gateway...</div>}>
         <LoginForm />
