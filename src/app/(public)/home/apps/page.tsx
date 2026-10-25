@@ -3,7 +3,7 @@ import { getApps } from "@/db/data-provider";
 import { ProjectsExplorer } from "@/components/apps/projects-explorer";
 
 export const metadata = {
-  title: "Projects — JeptahzRepo",
+  title: "Projects",
   description: "Personal full-stack builds, software applications, mobile utilities, and developer tools.",
 };
 

@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { PostMediaMosaic } from "@/components/docs/post-media-mosaic";
 import { PostVideoPlayer } from "@/components/docs/post-video-player";
+import type { Metadata } from "next";
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 
@@ -29,6 +30,30 @@ export async function generateStaticParams() {
 
 interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: CourseDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const entry = await getEntryBySlug(slug);
+  if (!entry) return { title: "Course Not Found" };
+
+  return {
+    title: entry.title,
+    description:
+      entry.summary ||
+      entry.content?.slice(0, 160) ||
+      `Explore course syllabus for ${entry.title}`,
+    openGraph: {
+      title: `${entry.title} | JeptahzRepo`,
+      description:
+        entry.summary ||
+        entry.content?.slice(0, 160) ||
+        `Explore course syllabus for ${entry.title}`,
+      images: entry.cover_image_url ? [{ url: entry.cover_image_url }] : undefined,
+    },
+  };
 }
 
 export default async function CourseDetailPage({ params }: CourseDetailPageProps) {

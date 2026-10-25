@@ -10,6 +10,7 @@ import { InstallModal } from "@/components/apps/install-modal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
+import type { Metadata } from "next";
 
 interface AppDetailPageProps {
   params: Promise<{ slug: string }>;
@@ -20,6 +21,28 @@ export const revalidate = 3600; // Revalidate every hour (ISR)
 export async function generateStaticParams() {
   const apps = await getApps();
   return apps.map((app) => ({ slug: app.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: AppDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const app = await getAppBySlug(slug);
+  if (!app) return { title: "Project Not Found" };
+
+  return {
+    title: app.title,
+    description:
+      app.description || app.tagline || `Explore ${app.title} on JeptahzRepo`,
+    openGraph: {
+      title: `${app.title} | JeptahzRepo`,
+      description:
+        app.description || app.tagline || `Explore ${app.title} on JeptahzRepo`,
+      images: app.carousel_images?.[0]?.url
+        ? [{ url: app.carousel_images[0].url }]
+        : undefined,
+    },
+  };
 }
 
 export default async function AppDetailPage({ params }: AppDetailPageProps) {

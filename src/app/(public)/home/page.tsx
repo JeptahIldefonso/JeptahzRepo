@@ -6,6 +6,13 @@ import { getApps, getEntries, getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Archive Hub",
+  description:
+    "Curated technical documentation, computer science curriculum guides, production software showcases, and architectural devlogs.",
+};
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 

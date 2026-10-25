@@ -3,8 +3,8 @@ import { getEntries } from "@/db/data-provider";
 import { ResourcesFeed } from "@/components/resources/resources-feed";
 
 export const metadata = {
-  title: "Resources & Links — JeptahzRepo",
-  description: "Resources, references, and tools.",
+  title: "Resources & Links",
+  description: "Curated developer resources, academic papers, documentation references, and toolkits.",
 };
 
 export const revalidate = 3600; // Revalidate every hour (ISR)

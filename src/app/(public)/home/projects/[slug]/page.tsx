@@ -8,6 +8,7 @@ import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatBytes } from "@/lib/utils";
+import type { Metadata } from "next";
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 
@@ -20,6 +21,30 @@ export async function generateStaticParams() {
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ProjectDetailPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const entry = await getEntryBySlug(slug);
+  if (!entry) return { title: "Project Not Found" };
+
+  return {
+    title: entry.title,
+    description:
+      entry.summary ||
+      entry.content?.slice(0, 160) ||
+      `Explore ${entry.title} codebase on JeptahzRepo`,
+    openGraph: {
+      title: `${entry.title} | JeptahzRepo`,
+      description:
+        entry.summary ||
+        entry.content?.slice(0, 160) ||
+        `Explore ${entry.title} codebase on JeptahzRepo`,
+      images: entry.cover_image_url ? [{ url: entry.cover_image_url }] : undefined,
+    },
+  };
 }
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {

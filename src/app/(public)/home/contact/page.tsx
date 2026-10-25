@@ -2,6 +2,13 @@ import React from "react";
 import { Send, Github, Twitter, Linkedin, HardDrive, Mail } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Connect with Jeptah for research collaboration, engineering inquiries, and systems development.",
+};
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 

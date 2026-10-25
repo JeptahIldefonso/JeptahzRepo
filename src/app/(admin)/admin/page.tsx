@@ -6,6 +6,15 @@ import {
   getChangelogBanner,
 } from "@/db/data-provider";
 import { AdminManager } from "./admin-manager";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Admin Studio",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default async function AdminPage() {
   const [apps, entries, changelog, banner] = await Promise.all([

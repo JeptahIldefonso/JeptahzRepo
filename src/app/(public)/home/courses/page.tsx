@@ -3,7 +3,7 @@ import { getEntries } from "@/db/data-provider";
 import { CoursesFeed } from "@/components/courses/courses-feed";
 
 export const metadata = {
-  title: "Courses — Academic Repository",
+  title: "Courses",
   description: "Material, Course Information and Roadmaps.",
 };
 

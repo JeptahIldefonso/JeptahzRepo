@@ -3,7 +3,7 @@ import { getEntries } from "@/db/data-provider";
 import { DocsFeed } from "@/components/docs/docs-feed";
 
 export const metadata = {
-  title: "Notes & Docs — Blog Archive",
+  title: "Notes & Docs",
   description: "Technical documentation, shared files, image captures, and written notes.",
 };
 

@@ -4,6 +4,13 @@ import { getEntries } from "@/db/data-provider";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Ideas & Devlogs",
+  description:
+    "Raw project concepts, engineering ideas, and software development progress logs.",
+};
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 

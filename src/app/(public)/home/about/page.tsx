@@ -15,6 +15,13 @@ import {
   Pin,
 } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "About Jeptah Ildefonso, the JeptahzRepo archive philosophy, and open-source systems engineering.",
+};
 
 export const revalidate = 3600; // Revalidate every hour (ISR)
 
