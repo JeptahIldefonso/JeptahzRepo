@@ -11,7 +11,15 @@ import { BotanicalCanvas } from "@/components/ambient/botanical-canvas";
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get("from") || "/admin";
+  const rawFrom = searchParams.get("from");
+  // Validate relative path to prevent open redirect vulnerabilities
+  const from =
+    rawFrom &&
+    rawFrom.startsWith("/") &&
+    !rawFrom.startsWith("//") &&
+    !rawFrom.startsWith("/\\")
+      ? rawFrom
+      : "/admin";
   const reason = searchParams.get("reason");
 
   const [passphrase, setPassphrase] = useState("");

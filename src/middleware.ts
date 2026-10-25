@@ -11,43 +11,66 @@ export async function middleware(request: NextRequest) {
     if (!isValid) {
       const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", pathname);
-      return NextResponse.redirect(loginUrl);
+      const redirectResponse = NextResponse.redirect(loginUrl);
+      redirectResponse.headers.set("X-Robots-Tag", "noindex, nofollow");
+      return redirectResponse;
     }
-    return NextResponse.next();
   }
 
-  // 2. Guard Mutating API endpoints (POST, PUT, DELETE, PATCH)
+  // 2. Default-Deny on All Mutating API Endpoints (POST, PUT, DELETE, PATCH)
   if (pathname.startsWith("/api/")) {
     const isMutatingMethod = ["POST", "PUT", "DELETE", "PATCH"].includes(
       request.method.toUpperCase()
     );
 
-    // Skip auth check for auth routes themselves (/api/auth/*)
-    if (pathname.startsWith("/api/auth/")) {
-      return NextResponse.next();
-    }
+    // Skip auth check only for public auth entry points:
+    const isPublicAuthRoute = pathname === "/api/auth/login";
 
-    if (isMutatingMethod && !isValid) {
-      return NextResponse.json(
-        {
-          error: "Unauthorized: Administrator authentication required",
-          code: "ADMIN_AUTH_REQUIRED",
-        },
-        { status: 401 }
-      );
+    if (isMutatingMethod && !isPublicAuthRoute) {
+      // CSRF Protection: Check Origin header for browser requests
+      const origin = request.headers.get("origin");
+      if (origin) {
+        const expectedOrigin = request.nextUrl.origin;
+        if (origin !== expectedOrigin) {
+          return NextResponse.json(
+            { error: "Forbidden: Cross-site request rejected", code: "CSRF_DETECTED" },
+            { status: 403 }
+          );
+        }
+      }
+
+      if (!isValid) {
+        return NextResponse.json(
+          {
+            error: "Unauthorized: Administrator authentication required",
+            code: "ADMIN_AUTH_REQUIRED",
+          },
+          { status: 401 }
+        );
+      }
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+
+  // 3. Security Headers
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+
+  // Prevent search engine indexing of private admin and login routes
+  if (pathname.startsWith("/admin") || pathname === "/login") {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+
+  return response;
 }
 
 export const config = {
+  // Capture /admin, /login, and all /api routes while excluding static assets
   matcher: [
     "/admin/:path*",
-    "/api/entries/:path*",
-    "/api/apps/:path*",
-    "/api/changelog/:path*",
-    "/api/changelog-banner/:path*",
-    "/api/upload/:path*",
+    "/login",
+    "/api/:path*",
   ],
 };
