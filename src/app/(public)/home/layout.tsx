@@ -1,6 +1,11 @@
 import React from "react";
 import { Sidebar } from "@/components/navigation/sidebar";
-import { getApps, getEntries } from "@/db/data-provider";
+import {
+  getApps,
+  getEntries,
+  getChangelogItems,
+  getChangelogBanner,
+} from "@/db/data-provider";
 import { HubLayoutClient } from "./hub-layout-client";
 
 export default async function HubLayout({
@@ -8,7 +13,12 @@ export default async function HubLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const [apps, entries] = await Promise.all([getApps(), getEntries()]);
+  const [apps, entries, changelog, banner] = await Promise.all([
+    getApps(),
+    getEntries(),
+    getChangelogItems(),
+    getChangelogBanner(),
+  ]);
 
   const searchItems = [
     ...apps.map((a) => ({
@@ -28,7 +38,11 @@ export default async function HubLayout({
   ];
 
   return (
-    <HubLayoutClient searchItems={searchItems}>
+    <HubLayoutClient
+      searchItems={searchItems}
+      initialChangelog={changelog}
+      initialBanner={banner}
+    >
       {children}
     </HubLayoutClient>
   );

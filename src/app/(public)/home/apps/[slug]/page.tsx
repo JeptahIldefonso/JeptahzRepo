@@ -15,6 +15,8 @@ interface AppDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export async function generateStaticParams() {
   const apps = await getApps();
   return apps.map((app) => ({ slug: app.slug }));

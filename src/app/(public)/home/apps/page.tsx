@@ -7,6 +7,8 @@ export const metadata = {
   description: "Personal full-stack builds, software applications, mobile utilities, and developer tools.",
 };
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function AppsShowcasePage() {
   const apps = await getApps();
 

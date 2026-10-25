@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getChangelogBanner, updateChangelogBanner } from "@/db/data-provider";
 
 export async function GET() {
@@ -25,6 +26,8 @@ export async function PUT(request: Request) {
       cta_text: body.cta_text !== undefined ? String(body.cta_text) : undefined,
       is_active: body.is_active !== undefined ? Boolean(body.is_active) : undefined,
     });
+
+    revalidatePath("/home");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {

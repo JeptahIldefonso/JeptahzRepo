@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateEntry, deleteEntry, getEntries } from "@/db/data-provider";
 
 export async function GET(
@@ -29,6 +30,18 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Entry not found" }, { status: 404 });
     }
 
+    revalidatePath("/home");
+    revalidatePath("/home/docs");
+    revalidatePath("/home/courses");
+    revalidatePath("/home/projects");
+    revalidatePath("/home/ideas");
+    revalidatePath("/home/resources");
+    if (updated.slug) {
+      revalidatePath(`/home/docs/${updated.slug}`);
+      revalidatePath(`/home/courses/${updated.slug}`);
+      revalidatePath(`/home/projects/${updated.slug}`);
+    }
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json(
@@ -49,6 +62,13 @@ export async function DELETE(
     if (!deleted) {
       return NextResponse.json({ success: false, error: "Entry not found" }, { status: 404 });
     }
+
+    revalidatePath("/home");
+    revalidatePath("/home/docs");
+    revalidatePath("/home/courses");
+    revalidatePath("/home/projects");
+    revalidatePath("/home/ideas");
+    revalidatePath("/home/resources");
 
     return NextResponse.json({ success: true, message: "Entry successfully deleted" });
   } catch (error: any) {

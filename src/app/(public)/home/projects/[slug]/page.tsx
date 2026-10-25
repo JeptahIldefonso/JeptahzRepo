@@ -4,10 +4,19 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Code2, ExternalLink, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getEntryBySlug } from "@/db/data-provider";
+import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatBytes } from "@/lib/utils";
+
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
+export async function generateStaticParams() {
+  const entries = await getEntries();
+  return entries
+    .filter((e) => e.topic_slug === "projects")
+    .map((e) => ({ slug: e.slug }));
+}
 
 interface ProjectDetailPageProps {
   params: Promise<{ slug: string }>;

@@ -7,6 +7,8 @@ export const metadata = {
   description: "Material, Course Information and Roadmaps.",
 };
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function CoursesPage() {
   const entries = await getEntries({ topicSlug: "courses" });
 

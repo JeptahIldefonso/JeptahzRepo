@@ -23,6 +23,18 @@ const CATEGORY_COLORS: Record<string, string> = {
   system: "bg-neutral-500/20 text-neutral-300 border-neutral-500/25",
 };
 
+function formatTimelineTimestamp(item: ChangelogItem): string {
+  if (item.created_at) {
+    try {
+      const d = new Date(item.created_at);
+      if (!isNaN(d.getTime())) {
+        return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+      }
+    } catch {}
+  }
+  return item.timestamp || "Recent";
+}
+
 export function RightFloatingPanel({
   initialItems,
   initialBanner,
@@ -72,7 +84,10 @@ export function RightFloatingPanel({
       }
     }
 
-    fetchLatestData();
+    // Only fetch over the wire on mount if server didn't supply initial data
+    if (!initialItems || initialItems.length === 0 || !initialBanner) {
+      fetchLatestData();
+    }
 
     function handleUpdates() {
       fetchLatestData();
@@ -216,7 +231,7 @@ export function RightFloatingPanel({
                       )}
                     </div>
                     <span className="text-white/45 font-mono text-[10px] whitespace-nowrap">
-                      {item.timestamp}
+                      {formatTimelineTimestamp(item)}
                     </span>
                   </div>
 

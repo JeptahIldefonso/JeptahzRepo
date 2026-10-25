@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateApp, deleteApp, getApps } from "@/db/data-provider";
 
 export async function GET(
@@ -29,6 +30,12 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "App not found" }, { status: 404 });
     }
 
+    revalidatePath("/home");
+    revalidatePath("/home/apps");
+    if (updated.slug) {
+      revalidatePath(`/home/apps/${updated.slug}`);
+    }
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json(
@@ -49,6 +56,9 @@ export async function DELETE(
     if (!deleted) {
       return NextResponse.json({ success: false, error: "App not found" }, { status: 404 });
     }
+
+    revalidatePath("/home");
+    revalidatePath("/home/apps");
 
     return NextResponse.json({ success: true, message: "Application successfully deleted" });
   } catch (error: any) {

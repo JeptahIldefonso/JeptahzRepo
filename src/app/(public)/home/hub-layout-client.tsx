@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/navigation/sidebar";
 import { CommandMenu } from "@/components/navigation/command-menu";
 import { RightFloatingPanel } from "@/components/navigation/right-floating-panel";
+import type { ChangelogItem, ChangelogBannerConfig } from "@/lib/floating-panel-data";
 
 interface HubLayoutClientProps {
   children: React.ReactNode;
@@ -15,9 +16,16 @@ interface HubLayoutClientProps {
     slug: string;
     href: string;
   }>;
+  initialChangelog?: ChangelogItem[];
+  initialBanner?: ChangelogBannerConfig;
 }
 
-export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps) {
+export function HubLayoutClient({
+  children,
+  searchItems,
+  initialChangelog,
+  initialBanner,
+}: HubLayoutClientProps) {
   const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
@@ -97,7 +105,10 @@ export function HubLayoutClient({ children, searchItems }: HubLayoutClientProps)
         {/* In-Page Right Side Changelog Rail (Not fully floating, stays on side, moves on scroll) */}
         {!isExcluded && (
           <div className="hidden xl:block absolute right-4 lg:right-6 2xl:right-8 top-8 sm:top-10 md:top-12 w-[270px] pointer-events-auto">
-            <RightFloatingPanel />
+            <RightFloatingPanel
+              initialItems={initialChangelog}
+              initialBanner={initialBanner}
+            />
           </div>
         )}
       </main>

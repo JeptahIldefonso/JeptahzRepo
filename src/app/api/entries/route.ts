@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getEntries, createEntry } from "@/db/data-provider";
 
 export async function GET(request: Request) {
@@ -43,6 +44,19 @@ export async function POST(request: Request) {
       is_pinned: Boolean(body.is_pinned),
       is_published: body.is_published !== false,
     });
+
+    // Revalidate public caches immediately
+    revalidatePath("/home");
+    revalidatePath("/home/docs");
+    revalidatePath("/home/courses");
+    revalidatePath("/home/projects");
+    revalidatePath("/home/ideas");
+    revalidatePath("/home/resources");
+    if (newEntry.slug) {
+      revalidatePath(`/home/docs/${newEntry.slug}`);
+      revalidatePath(`/home/courses/${newEntry.slug}`);
+      revalidatePath(`/home/projects/${newEntry.slug}`);
+    }
 
     return NextResponse.json({ success: true, data: newEntry }, { status: 201 });
   } catch (error: any) {

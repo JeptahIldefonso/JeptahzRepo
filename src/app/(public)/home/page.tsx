@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function HubOverviewPage() {
   const [apps, entries, settings] = await Promise.all([
     getApps({ featuredOnly: true }),

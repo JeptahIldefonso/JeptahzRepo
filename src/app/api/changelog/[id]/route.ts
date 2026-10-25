@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { updateChangelogItem, deleteChangelogItem, getChangelogItems } from "@/db/data-provider";
 
 export async function GET(
@@ -29,6 +30,8 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Changelog entry not found" }, { status: 404 });
     }
 
+    revalidatePath("/home");
+
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
     return NextResponse.json(
@@ -49,6 +52,8 @@ export async function DELETE(
     if (!deleted) {
       return NextResponse.json({ success: false, error: "Changelog entry not found" }, { status: 404 });
     }
+
+    revalidatePath("/home");
 
     return NextResponse.json({ success: true, message: "Changelog entry successfully deleted" });
   } catch (error: any) {

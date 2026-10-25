@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getApps, createApp } from "@/db/data-provider";
 
 export async function GET() {
@@ -33,6 +34,12 @@ export async function POST(request: Request) {
       sort_order: body.sort_order || 0,
       is_featured: Boolean(body.is_featured),
     });
+
+    revalidatePath("/home");
+    revalidatePath("/home/apps");
+    if (newApp.slug) {
+      revalidatePath(`/home/apps/${newApp.slug}`);
+    }
 
     return NextResponse.json({ success: true, data: newApp }, { status: 201 });
   } catch (error: any) {

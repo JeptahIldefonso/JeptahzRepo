@@ -3,6 +3,8 @@ import { Send, Github, Twitter, Linkedin, HardDrive, Mail } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function ContactPage() {
   const settings = await getSiteSettings();
 

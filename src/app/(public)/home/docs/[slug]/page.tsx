@@ -2,10 +2,19 @@ import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, Clock, Eye, Share2 } from "lucide-react";
-import { getEntryBySlug } from "@/db/data-provider";
+import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { DocContent } from "@/components/docs/doc-content";
+
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
+export async function generateStaticParams() {
+  const entries = await getEntries();
+  return entries
+    .filter((e) => e.topic_slug === "docs" || !e.topic_slug)
+    .map((e) => ({ slug: e.slug }));
+}
 
 interface DocDetailPageProps {
   params: Promise<{ slug: string }>;

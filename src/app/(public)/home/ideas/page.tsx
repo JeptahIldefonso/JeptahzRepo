@@ -5,6 +5,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function IdeasPage() {
   const entries = await getEntries({ topicSlug: "ideas" });
 

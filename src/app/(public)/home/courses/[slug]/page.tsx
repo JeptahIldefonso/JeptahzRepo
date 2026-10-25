@@ -12,11 +12,20 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { getEntryBySlug } from "@/db/data-provider";
+import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { PostMediaMosaic } from "@/components/docs/post-media-mosaic";
 import { PostVideoPlayer } from "@/components/docs/post-video-player";
+
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
+export async function generateStaticParams() {
+  const entries = await getEntries();
+  return entries
+    .filter((e) => e.type === "course" || e.topic_slug === "courses")
+    .map((e) => ({ slug: e.slug }));
+}
 
 interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;

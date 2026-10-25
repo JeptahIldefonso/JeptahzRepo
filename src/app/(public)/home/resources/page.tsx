@@ -7,6 +7,8 @@ export const metadata = {
   description: "Resources, references, and tools.",
 };
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function ResourcesPage() {
   const entries = await getEntries({ topicSlug: "resources" });
 

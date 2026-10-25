@@ -7,6 +7,8 @@ export const metadata = {
   description: "Technical documentation, shared files, image captures, and written notes.",
 };
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function DocsTheoryPage() {
   const entries = await getEntries({ topicSlug: "docs" });
 

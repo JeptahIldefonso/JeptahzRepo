@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
 
+export const revalidate = 3600; // Revalidate every hour (ISR)
+
 export default async function AboutPage() {
   const settings = await getSiteSettings();
   const portfolioUrl = "https://jeptahportfolio.vercel.app/";

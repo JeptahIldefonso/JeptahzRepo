@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getChangelogItems, createChangelogItem } from "@/db/data-provider";
 
 export async function GET() {
@@ -32,6 +33,8 @@ export async function POST(request: Request) {
       href: body.href?.trim() || "/home/docs",
       sort_order: typeof body.sort_order === "number" ? body.sort_order : 0,
     });
+
+    revalidatePath("/home");
 
     return NextResponse.json({ success: true, data: newItem }, { status: 201 });
   } catch (error: any) {
