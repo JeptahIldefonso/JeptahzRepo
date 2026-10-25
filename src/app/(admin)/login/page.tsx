@@ -72,7 +72,7 @@ function LoginForm() {
             </span>
           </div>
           <h1 className="font-display text-2xl sm:text-3xl font-medium text-fg tracking-tight">
-            Curator Access
+            Jeptah (adminPanel)
           </h1>
           <p className="text-xs text-fg-muted leading-relaxed">
             Enter the master passkey to unlock the{" "}
@@ -109,34 +109,29 @@ function LoginForm() {
         )}
 
         <form onSubmit={handleLogin} className="space-y-5">
-          <div className="space-y-1.5">
-            <label className="font-mono text-[10px] uppercase tracking-wider text-fg-subtle block">
-              Master Passphrase
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                autoFocus
-                value={passphrase}
-                onChange={(e) => setPassphrase(e.target.value)}
-                placeholder="Enter admin passkey..."
-                className="w-full bg-bg border border-border px-3.5 py-2.5 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px] pr-10 tracking-widest placeholder:tracking-normal placeholder:text-fg-subtle/50"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                tabIndex={-1}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg transition-colors"
-                title={showPassword ? "Hide passkey" : "Reveal passkey"}
-              >
-                {showPassword ? (
-                  <EyeOff className="w-4 h-4" />
-                ) : (
-                  <Eye className="w-4 h-4" />
-                )}
-              </button>
-            </div>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              required
+              autoFocus
+              value={passphrase}
+              onChange={(e) => setPassphrase(e.target.value)}
+              placeholder="Enter admin passkey..."
+              className="w-full bg-bg border border-border px-3.5 py-2.5 text-xs font-mono text-fg focus:outline-none focus:border-fg rounded-[2px] pr-10 tracking-widest placeholder:tracking-normal placeholder:text-fg-subtle/50"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              tabIndex={-1}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg transition-colors"
+              title={showPassword ? "Hide passkey" : "Reveal passkey"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
           </div>
 
           <Button
@@ -148,12 +143,6 @@ function LoginForm() {
             {loading ? "Verifying Passkey..." : "Unlock Studio →"}
           </Button>
         </form>
-
-        <div className="pt-2 border-t border-border/50 text-center">
-          <p className="font-mono text-[9px] text-fg-subtle uppercase tracking-wider">
-            Protected by Session-Only Cryptographic Signature
-          </p>
-        </div>
       </div>
     </div>
   );
