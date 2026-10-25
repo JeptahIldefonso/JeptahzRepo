@@ -1,6 +1,10 @@
 import React from "react";
 import Link from "next/link";
-import { Shield, ExternalLink, LogOut, Layers, Box, FileText } from "lucide-react";
+import { ExternalLink } from "lucide-react";
+import {
+  AdminSessionGuard,
+  AdminExitButton,
+} from "@/components/admin/admin-session-guard";
 
 export default function AdminLayout({
   children,
@@ -9,6 +13,9 @@ export default function AdminLayout({
 }) {
   return (
     <div className="min-h-screen bg-bg text-fg">
+      {/* Tab-close / Window-close Session Guard */}
+      <AdminSessionGuard />
+
       {/* Top Header */}
       <header className="sticky top-0 z-40 border-b border-border bg-bg-raised/95 backdrop-blur-md">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
@@ -21,7 +28,7 @@ export default function AdminLayout({
               JeptahzRepo
             </Link>
             <span className="font-mono text-[10px] text-fg-subtle border border-border px-2 py-0.5 rounded-[4px] bg-bg hidden sm:inline-block">
-              Editing
+              Curator Studio
             </span>
           </div>
 
@@ -35,13 +42,7 @@ export default function AdminLayout({
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
             <span className="text-border">|</span>
-            <Link
-              href="/login"
-              className="flex items-center space-x-1.5 text-fg-subtle hover:text-fg transition-colors"
-            >
-              <LogOut className="w-3.5 h-3.5" />
-              <span>Exit</span>
-            </Link>
+            <AdminExitButton />
           </div>
         </div>
       </header>
