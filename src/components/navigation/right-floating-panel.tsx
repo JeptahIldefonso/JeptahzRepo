@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { GitCommit, ArrowUpRight, X } from "lucide-react";
 import {
   INITIAL_CHANGELOG_DATA,
@@ -124,11 +125,12 @@ export function RightFloatingPanel({
           {/* Banner Image */}
           {banner.image_url ? (
             <div className="relative w-full h-[135px] bg-[#062432] overflow-hidden">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={banner.image_url}
                 alt="Changelog Announcement"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                fill
+                sizes="270px"
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
               {/* Dismiss Button Overlay on top-right of image */}
               <button

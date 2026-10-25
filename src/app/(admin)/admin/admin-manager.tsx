@@ -187,7 +187,7 @@ export function AdminManager({
   const [banner, setBanner] = useState<ChangelogBannerType>(
     initialBanner || {
       image_url:
-        "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+        "/banner.webp",
       title: "DEV LOGS 2026",
       subtitle: "Explore student software builds & open-source tools.",
       link_url: "/home/apps",

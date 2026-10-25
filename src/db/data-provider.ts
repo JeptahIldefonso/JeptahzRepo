@@ -209,7 +209,7 @@ export async function getChangelogBanner(): Promise<ChangelogBannerType> {
   return {
     image_url:
       settings.changelog_banner_image_url ||
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+      "/banner.webp",
     title: settings.changelog_banner_title || "DEV LOGS 2026",
     subtitle:
       settings.changelog_banner_subtitle ||

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
+import Image from "next/image";
 import { X, ZoomIn, ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
 
 export interface CarouselImage {
@@ -108,12 +109,16 @@ export function AppCarousel({ images, title }: AppCarouselProps) {
           className="group relative w-full max-w-5xl rounded-[6px] border border-black/15 bg-white/70 backdrop-blur-md p-3 sm:p-5 shadow-sm hover:border-black/40 transition-all duration-300 cursor-zoom-in"
         >
           <div className="relative flex items-center justify-center w-full min-h-[260px] sm:min-h-[440px] max-h-[620px] overflow-hidden rounded-[4px] bg-black/[0.02]">
-            <img
-              src={currentImg.url}
-              alt={currentImg.caption || `${title} screenshot ${currentIndex + 1}`}
-              className="max-h-[580px] w-auto max-w-full object-contain rounded-[2px] transition-transform duration-300 group-hover:scale-[1.008]"
-              loading="eager"
-            />
+            <div className="relative w-full h-[260px] sm:h-[440px] max-h-[580px]">
+              <Image
+                src={currentImg.url}
+                alt={currentImg.caption || `${title} screenshot ${currentIndex + 1}`}
+                fill
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                className="object-contain rounded-[2px] transition-transform duration-300 group-hover:scale-[1.008]"
+                priority={currentIndex === 0}
+              />
+            </div>
 
             {/* Hover Zoom Pill Indicator */}
             <div className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-xs text-white px-2 py-1 rounded-[2px] font-mono text-[10px] tracking-wider flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">

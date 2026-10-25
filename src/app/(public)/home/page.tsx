@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Box, BookOpen, ExternalLink } from "lucide-react";
 import { getApps, getEntries, getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
@@ -73,10 +74,13 @@ export default async function HubOverviewPage() {
             {/* Featured App Preview Image */}
             {featuredApp.carousel_images[0]?.url && (
               <div className="relative aspect-video sm:aspect-21/9 max-h-[320px] w-full bg-black/[0.02] border border-border overflow-hidden rounded-[2px] p-3 flex items-center justify-center">
-                <img
+                <Image
                   src={featuredApp.carousel_images[0].url}
                   alt={featuredApp.title}
-                  className="max-h-full max-w-full object-contain"
+                  fill
+                  sizes="(max-width: 768px) 100vw, 800px"
+                  className="object-contain p-3"
+                  priority
                 />
               </div>
             )}
