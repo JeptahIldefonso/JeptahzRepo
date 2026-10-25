@@ -1,13 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Code2, ExternalLink, Cpu, CheckCircle2, ShieldCheck, Download } from "lucide-react";
+import { ArrowLeft, Code2, ExternalLink, Cpu, CheckCircle2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getAppBySlug, getApps } from "@/db/data-provider";
 import { AppCarousel } from "@/components/apps/app-carousel";
 import { InstallModal } from "@/components/apps/install-modal";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { formatDate } from "@/lib/utils";
 import type { Metadata } from "next";

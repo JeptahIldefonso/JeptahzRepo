@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, FileText, Box, ArrowRight, CornerDownLeft } from "lucide-react";
+import { Search, FileText, Box, CornerDownLeft } from "lucide-react";
 import { Modal, ModalContent } from "@/components/ui/modal";
 
 interface SearchItem {

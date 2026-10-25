@@ -1,13 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Code2, ExternalLink, Download } from "lucide-react";
+import { ArrowLeft, Code2, ExternalLink, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { formatDate, formatBytes } from "@/lib/utils";
+import { formatBytes } from "@/lib/utils";
 import type { Metadata } from "next";
 
 export const revalidate = 3600; // Revalidate every hour (ISR)

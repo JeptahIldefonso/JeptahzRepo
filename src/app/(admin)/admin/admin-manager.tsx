@@ -8,7 +8,6 @@ import {
   Trash2,
   Edit2,
   Box,
-  FileText,
   ExternalLink,
   Check,
   X,
@@ -23,12 +22,10 @@ import {
   Pin,
   Paperclip,
   Video,
-  Eye,
   EyeOff,
   MoreHorizontal,
   Hash,
   Globe,
-  Sliders,
   GitCommit,
 } from "lucide-react";
 import {

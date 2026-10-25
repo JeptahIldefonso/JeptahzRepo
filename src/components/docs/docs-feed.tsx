@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
-import { Search, X, Hash, Sparkles, Filter } from "lucide-react";
+import { Search, X, Hash } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { FeedPostCard } from "@/components/docs/feed-post-card";
 
@@ -12,15 +12,6 @@ interface DocsFeedProps {
 export function DocsFeed({ initialEntries }: DocsFeedProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-
-  // Extract all unique hashtags
-  const allTags = useMemo(() => {
-    const set = new Set<string>();
-    initialEntries.forEach((entry) => {
-      entry.tags?.forEach((tag) => set.add(tag.replace(/^#/, "")));
-    });
-    return Array.from(set);
-  }, [initialEntries]);
 
   // Sequential Sorting: Pinned posts first, then latest dates first (descending)
   const sortedAndFiltered = useMemo(() => {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Send, Github, Twitter, Linkedin, HardDrive, Mail } from "lucide-react";
+import { Github, Twitter, Linkedin, HardDrive, Mail } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";

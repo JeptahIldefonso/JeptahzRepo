@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, Maximize2, Video, Film, Download } from "lucide-react";
+import React, { useRef } from "react";
+import { Video, Film, Download } from "lucide-react";
 
 interface PostVideoPlayerProps {
   videoUrl: string;
@@ -11,8 +11,6 @@ interface PostVideoPlayerProps {
 
 export function PostVideoPlayer({ videoUrl, caption, fileSizeMb }: PostVideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
 
   // Check if it's a YouTube link
   const youtubeMatch = videoUrl.match(
@@ -43,32 +41,6 @@ export function PostVideoPlayer({ videoUrl, caption, fileSizeMb }: PostVideoPlay
     );
   }
 
-  function togglePlay() {
-    if (!videoRef.current) return;
-    if (isPlaying) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    } else {
-      videoRef.current.play();
-      setIsPlaying(true);
-    }
-  }
-
-  function toggleMute() {
-    if (!videoRef.current) return;
-    videoRef.current.muted = !isMuted;
-    setIsMuted(!isMuted);
-  }
-
-  function toggleFullscreen() {
-    if (!videoRef.current) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      videoRef.current.requestFullscreen();
-    }
-  }
-
   return (
     <div className="w-full space-y-1.5 select-none">
       <div className="group relative w-full aspect-video rounded-[3px] overflow-hidden border border-black/10 bg-black/95">
@@ -77,8 +49,6 @@ export function PostVideoPlayer({ videoUrl, caption, fileSizeMb }: PostVideoPlay
           src={videoUrl}
           playsInline
           controls
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
           className="w-full h-full object-contain"
         />
 

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { X, ZoomIn, ArrowLeft, ArrowRight, ExternalLink } from "lucide-react";
+import { X, ZoomIn, ExternalLink } from "lucide-react";
 
 export interface CarouselImage {
   url: string;

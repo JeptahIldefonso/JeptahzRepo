@@ -3,8 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import { ZoomIn, X, ExternalLink, Download, Maximize2 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { ZoomIn, X, ExternalLink, Maximize2 } from "lucide-react";
 
 interface DocContentProps {
   content: string;

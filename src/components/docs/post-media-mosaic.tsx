@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Download, ZoomIn, X, ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
+import { Download, ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { EntryMediaItem } from "@/db/data-provider";
 
 interface PostMediaMosaicProps {

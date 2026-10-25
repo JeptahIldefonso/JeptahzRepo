@@ -2,9 +2,8 @@
 
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Search, X, ExternalLink, Code2, ArrowRight, Sparkles } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { AppType } from "@/db/data-provider";
-import { Badge } from "@/components/ui/badge";
 
 interface ProjectsExplorerProps {
   initialApps: AppType[];
@@ -239,7 +238,6 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 items-stretch">
           {filteredApps.map((app) => {
             const previewUrl = app.carousel_images[0]?.url || "";
-            const demoUrl = app.demo_url || app.gdrive_url;
             const repoUrl = app.repo_url;
 
             return (

@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Calendar, Clock, Eye, Share2 } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, Eye } from "lucide-react";
 import { getEntryBySlug, getEntries } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";

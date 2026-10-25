@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Box, BookOpen, ExternalLink } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 import { getApps, getEntries, getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
