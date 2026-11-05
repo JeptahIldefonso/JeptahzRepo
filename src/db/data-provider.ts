@@ -360,7 +360,12 @@ export async function getEntries(options?: {
 
       const { data, error } = await q;
       if (!error && data && data.length > 0) {
-        return data as EntryType[];
+        return (data as any[]).map((e) => ({
+          ...e,
+          attached_files: e.attached_files || e.metadata?.attached_files || [],
+          media_items: e.media_items || e.metadata?.media_items || [],
+          video_url: e.video_url || e.metadata?.video_url || null,
+        })) as EntryType[];
       }
     } catch {
       // Fall through to in-memory fallback
@@ -407,7 +412,13 @@ export async function getEntryBySlug(slug: string): Promise<EntryType | null> {
         .maybeSingle();
 
       if (!error && data) {
-        return data as EntryType;
+        const e = data as any;
+        return {
+          ...e,
+          attached_files: e.attached_files || e.metadata?.attached_files || [],
+          media_items: e.media_items || e.metadata?.media_items || [],
+          video_url: e.video_url || e.metadata?.video_url || null,
+        } as EntryType;
       }
     } catch {
       // Fall through to in-memory fallback
@@ -430,14 +441,68 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from("entries").insert([entry]).select().single();
+      const payload: Record<string, any> = {
+        title: entry.title,
+        slug: entry.slug,
+        type: entry.type,
+        topic_slug: entry.topic_slug || "docs",
+        summary: entry.summary || "",
+        content: entry.content || "",
+        file_url: entry.file_url || null,
+        file_name: entry.file_name || null,
+        file_size: entry.file_size ? Number(entry.file_size) : null,
+        external_url: entry.external_url || null,
+        cover_image_url: entry.cover_image_url || null,
+        gallery_images: entry.gallery_images || [],
+        media_items: entry.media_items || [],
+        attached_files: entry.attached_files || [],
+        video_url: entry.video_url || null,
+        tags: entry.tags || [],
+        is_pinned: Boolean(entry.is_pinned),
+        is_published: entry.is_published !== false,
+        metadata: {
+          ...(entry.metadata || {}),
+          attached_files: entry.attached_files || [],
+          media_items: entry.media_items || [],
+          video_url: entry.video_url || null,
+        },
+      };
+
+      const { data, error } = await supabase.from("entries").insert([payload]).select().single();
       if (!error && data) {
-        cachedArchive.entries.unshift(data as EntryType);
+        const item = {
+          ...data,
+          attached_files: (data as any).attached_files || (data as any).metadata?.attached_files || [],
+          media_items: (data as any).media_items || (data as any).metadata?.media_items || [],
+          video_url: (data as any).video_url || (data as any).metadata?.video_url || null,
+        } as EntryType;
+        cachedArchive.entries.unshift(item);
         persistCachedArchive();
-        return data as EntryType;
+        return item;
       }
-    } catch {
-      // Fallback to local
+      if (error) {
+        console.error("[SUPABASE_CREATE_ENTRY_ERROR]", error);
+        // Resilient fallback: strip extra top-level columns if schema is strictly cached
+        if (error.code === "PGRST204") {
+          delete payload.attached_files;
+          delete payload.media_items;
+          delete payload.video_url;
+          const retry = await supabase.from("entries").insert([payload]).select().single();
+          if (!retry.error && retry.data) {
+            const item = {
+              ...retry.data,
+              attached_files: (retry.data as any).metadata?.attached_files || [],
+              media_items: (retry.data as any).metadata?.media_items || [],
+              video_url: (retry.data as any).metadata?.video_url || null,
+            } as EntryType;
+            cachedArchive.entries.unshift(item);
+            persistCachedArchive();
+            return item;
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[SUPABASE_CREATE_ENTRY_EXCEPTION]", err);
     }
   }
 
@@ -450,15 +515,52 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from("entries").update(updates).eq("id", id).select().maybeSingle();
-      if (!error && data) {
-        const idx = cachedArchive.entries.findIndex((e) => e.id === id);
-        if (idx !== -1) cachedArchive.entries[idx] = data as EntryType;
-        persistCachedArchive();
-        return data as EntryType;
+      const dbUpdates: Record<string, any> = { ...updates };
+      if (updates.metadata || updates.attached_files || updates.media_items || updates.video_url) {
+        dbUpdates.metadata = {
+          ...(updates.metadata || {}),
+          ...(updates.attached_files ? { attached_files: updates.attached_files } : {}),
+          ...(updates.media_items ? { media_items: updates.media_items } : {}),
+          ...(updates.video_url !== undefined ? { video_url: updates.video_url } : {}),
+        };
       }
-    } catch {
-      // Fallback
+
+      const { data, error } = await supabase.from("entries").update(dbUpdates).eq("id", id).select().maybeSingle();
+      if (!error && data) {
+        const item = {
+          ...data,
+          attached_files: (data as any).attached_files || (data as any).metadata?.attached_files || [],
+          media_items: (data as any).media_items || (data as any).metadata?.media_items || [],
+          video_url: (data as any).video_url || (data as any).metadata?.video_url || null,
+        } as EntryType;
+        const idx = cachedArchive.entries.findIndex((e) => e.id === id);
+        if (idx !== -1) cachedArchive.entries[idx] = item;
+        persistCachedArchive();
+        return item;
+      }
+      if (error) {
+        console.error("[SUPABASE_UPDATE_ENTRY_ERROR]", error);
+        if (error.code === "PGRST204") {
+          delete dbUpdates.attached_files;
+          delete dbUpdates.media_items;
+          delete dbUpdates.video_url;
+          const retry = await supabase.from("entries").update(dbUpdates).eq("id", id).select().maybeSingle();
+          if (!retry.error && retry.data) {
+            const item = {
+              ...retry.data,
+              attached_files: (retry.data as any).metadata?.attached_files || [],
+              media_items: (retry.data as any).metadata?.media_items || [],
+              video_url: (retry.data as any).metadata?.video_url || null,
+            } as EntryType;
+            const idx = cachedArchive.entries.findIndex((e) => e.id === id);
+            if (idx !== -1) cachedArchive.entries[idx] = item;
+            persistCachedArchive();
+            return item;
+          }
+        }
+      }
+    } catch (err) {
+      console.error("[SUPABASE_UPDATE_ENTRY_EXCEPTION]", err);
     }
   }
 

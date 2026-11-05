@@ -37,6 +37,9 @@ export const entries = pgTable("entries", {
   externalUrl: text("external_url"),
   coverImageUrl: text("cover_image_url"),
   galleryImages: jsonb("gallery_images").default([]),
+  mediaItems: jsonb("media_items").default([]),
+  attachedFiles: jsonb("attached_files").default([]),
+  videoUrl: text("video_url"),
   metadata: jsonb("metadata").default({}),
   tags: text("tags").array().default([]),
   accessLevel: text("access_level").default("public").notNull(), // 'public' | 'community' | 'premium' | 'admin'
@@ -45,6 +48,7 @@ export const entries = pgTable("entries", {
   isPinned: boolean("is_pinned").default(false).notNull(),
   isPublished: boolean("is_published").default(true).notNull(),
   viewCount: integer("view_count").default(0).notNull(),
+  likesCount: integer("likes_count").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
