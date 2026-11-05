@@ -30,16 +30,16 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Entry not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
-    revalidatePath("/home/docs");
-    revalidatePath("/home/courses");
-    revalidatePath("/home/projects");
-    revalidatePath("/home/ideas");
-    revalidatePath("/home/resources");
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/docs", "page");
+    revalidatePath("/home/courses", "page");
+    revalidatePath("/home/projects", "page");
+    revalidatePath("/home/ideas", "page");
+    revalidatePath("/home/resources", "page");
     if (updated.slug) {
-      revalidatePath(`/home/docs/${updated.slug}`);
-      revalidatePath(`/home/courses/${updated.slug}`);
-      revalidatePath(`/home/projects/${updated.slug}`);
+      revalidatePath(`/home/docs/${updated.slug}`, "page");
+      revalidatePath(`/home/courses/${updated.slug}`, "page");
+      revalidatePath(`/home/projects/${updated.slug}`, "page");
     }
 
     return NextResponse.json({ success: true, data: updated });
@@ -63,12 +63,12 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Entry not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
-    revalidatePath("/home/docs");
-    revalidatePath("/home/courses");
-    revalidatePath("/home/projects");
-    revalidatePath("/home/ideas");
-    revalidatePath("/home/resources");
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/docs", "page");
+    revalidatePath("/home/courses", "page");
+    revalidatePath("/home/projects", "page");
+    revalidatePath("/home/ideas", "page");
+    revalidatePath("/home/resources", "page");
 
     return NextResponse.json({ success: true, message: "Entry successfully deleted" });
   } catch (error: any) {

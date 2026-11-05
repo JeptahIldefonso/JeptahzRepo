@@ -12,7 +12,8 @@ export const metadata: Metadata = {
     "Raw project concepts, engineering ideas, and software development progress logs.",
 };
 
-export const revalidate = 3600; // Revalidate every hour (ISR)
+export const dynamic = "force-dynamic";
+export const revalidate = 0; // Fresh real-time data from database on every visit
 
 export default async function IdeasPage() {
   const entries = await getEntries({ topicSlug: "ideas" });

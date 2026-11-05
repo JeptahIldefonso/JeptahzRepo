@@ -30,10 +30,10 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "App not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
-    revalidatePath("/home/apps");
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/apps", "page");
     if (updated.slug) {
-      revalidatePath(`/home/apps/${updated.slug}`);
+      revalidatePath(`/home/apps/${updated.slug}`, "page");
     }
 
     return NextResponse.json({ success: true, data: updated });
@@ -57,8 +57,8 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "App not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
-    revalidatePath("/home/apps");
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/apps", "page");
 
     return NextResponse.json({ success: true, message: "Application successfully deleted" });
   } catch (error: any) {

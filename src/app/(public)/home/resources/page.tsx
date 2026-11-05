@@ -7,7 +7,8 @@ export const metadata = {
   description: "Curated developer resources, academic papers, documentation references, and toolkits.",
 };
 
-export const revalidate = 3600; // Revalidate every hour (ISR)
+export const dynamic = "force-dynamic";
+export const revalidate = 0; // Fresh real-time data from database on every visit
 
 export default async function ResourcesPage() {
   const entries = await getEntries({ topicSlug: "resources" });

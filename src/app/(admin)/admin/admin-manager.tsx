@@ -27,6 +27,7 @@ import {
   Hash,
   Globe,
   GitCommit,
+  Database,
 } from "lucide-react";
 import {
   AppType,
@@ -1524,12 +1525,12 @@ export function AdminManager({
 
                 <div className="flex items-center space-x-2 shrink-0">
                   <Link
-                    href={`/home/docs`}
+                    href={`/home/docs#${item.slug}`}
                     target="_blank"
                     className="flex items-center space-x-1 px-2.5 py-1 text-xs font-mono text-fg-subtle hover:text-fg border border-border hover:border-black/30 rounded-[6px] transition-colors"
                   >
                     <ExternalLink className="w-3 h-3" />
-                    <span>View Feed</span>
+                    <span>View Feed ↗</span>
                   </Link>
                   <button
                     onClick={() => handleOpenEditDoc(item)}
@@ -2552,11 +2553,14 @@ export function AdminManager({
                 >
                   {uploading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Uploading media...</span>
+                      <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                      <span>Publishing to Database & Storage...</span>
                     </>
                   ) : (
-                    <span>{editingDoc.id ? "Save Changes" : "Post Note"}</span>
+                    <>
+                      <Database className="w-4 h-4 mr-1.5 text-emerald-400" />
+                      <span>{editingDoc.id ? "Save & Publish to Database" : "Publish to Database & Public Feed"}</span>
+                    </>
                   )}
                 </button>
               </div>
@@ -2801,8 +2805,9 @@ export function AdminManager({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer">
-                  {editingApp.id ? "Save Changes" : "Add Project"}
+                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer flex items-center space-x-1.5">
+                  <Database className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                  <span>{editingApp.id ? "Save & Publish to Database" : "Publish Project to Database"}</span>
                 </Button>
               </div>
             </form>
@@ -2874,8 +2879,9 @@ export function AdminManager({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer">
-                  {editingIdea.id ? "Save Changes" : "Log Idea"}
+                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer flex items-center space-x-1.5">
+                  <Database className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                  <span>{editingIdea.id ? "Save & Publish to Database" : "Publish Idea to Database"}</span>
                 </Button>
               </div>
             </form>
@@ -3017,8 +3023,9 @@ export function AdminManager({
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer">
-                  {editingResource.id ? "Save Changes" : "Add Link"}
+                <Button type="submit" size="sm" className="rounded-[6px] cursor-pointer flex items-center space-x-1.5">
+                  <Database className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                  <span>{editingResource.id ? "Save & Publish to Database" : "Publish Link to Database"}</span>
                 </Button>
               </div>
             </form>
@@ -3408,11 +3415,14 @@ export function AdminManager({
                 >
                   {uploading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Uploading materials...</span>
+                      <Loader2 className="w-4 h-4 animate-spin mr-1.5" />
+                      <span>Publishing Course to Database...</span>
                     </>
                   ) : (
-                    <span>{editingCourse.id ? "Save Changes" : "Add Course Guide"}</span>
+                    <>
+                      <Database className="w-4 h-4 mr-1.5 text-emerald-400" />
+                      <span>{editingCourse.id ? "Save & Publish to Database" : "Publish Course Guide to Database"}</span>
+                    </>
                   )}
                 </button>
               </div>
@@ -3542,9 +3552,10 @@ export function AdminManager({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-[#041a24] text-white hover:bg-[#062432] transition-colors cursor-pointer shadow-xs"
+                className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-[#041a24] text-white hover:bg-[#062432] transition-colors cursor-pointer shadow-xs flex items-center space-x-1.5"
               >
-                {editingChangelog?.id ? "Save Changes" : "Publish to Changelog"}
+                <Database className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+                <span>{editingChangelog?.id ? "Save & Publish to Database" : "Publish to Changelog & Database"}</span>
               </button>
             </div>
           </form>

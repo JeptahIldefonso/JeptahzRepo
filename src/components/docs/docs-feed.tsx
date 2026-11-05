@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
-import { Search, X, Hash, Loader2 } from "lucide-react";
+import { Search, X, Hash, Loader2, RefreshCw } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { FeedPostCard } from "@/components/docs/feed-post-card";
 
@@ -10,6 +10,8 @@ interface DocsFeedProps {
 }
 
 export function DocsFeed({ initialEntries }: DocsFeedProps) {
+  const [entries, setEntries] = useState(initialEntries);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   // React 19 Concurrent rendering: Decouple typing latency from feed filtering and sorting
   const deferredQuery = useDeferredValue(searchQuery);
@@ -17,6 +19,31 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
 
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync state if initialEntries prop updates from server
+  useEffect(() => {
+    setEntries(initialEntries);
+  }, [initialEntries]);
+
+  // Direct live database synchronization
+  const handleSyncFeed = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch(`/api/entries?topic=docs&t=${Date.now()}`, {
+        cache: "no-store",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data.entries)) {
+          setEntries(data.entries);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to sync live feed", err);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   // Keyboard shortcut: '/' to focus search input
   useEffect(() => {
@@ -38,7 +65,7 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
   const sortedAndFiltered = useMemo(() => {
     const q = deferredQuery.trim().toLowerCase();
 
-    const filtered = initialEntries.filter((entry) => {
+    const filtered = entries.filter((entry) => {
       // Hashtag filter
       if (selectedTag) {
         const hasTag = entry.tags?.some(
@@ -106,9 +133,9 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
           )}
         </div>
 
-        {/* Right Info: Post Count & Active Tag Indicator */}
+        {/* Right Info: Post Count & Active Tag Indicator & Live Sync */}
         <div className="flex items-center space-x-2 font-mono text-xs">
-          {selectedTag ? (
+          {selectedTag && (
             <div className="flex items-center space-x-1.5 bg-[#041a24] text-white px-2.5 py-1 rounded-[2px] shadow-2xs">
               <Hash className="w-3 h-3 text-white/60" />
               <span>#{selectedTag}</span>
@@ -120,11 +147,21 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
                 <X className="w-3 h-3" />
               </button>
             </div>
-          ) : (
-            <span className="text-black/50 text-[11px]">
-              {sortedAndFiltered.length} {sortedAndFiltered.length === 1 ? "post" : "posts"} in feed
-            </span>
           )}
+
+          <span className="text-black/50 text-[11px]">
+            {sortedAndFiltered.length} {sortedAndFiltered.length === 1 ? "post" : "posts"} in feed
+          </span>
+
+          <button
+            onClick={handleSyncFeed}
+            disabled={isSyncing}
+            className="inline-flex items-center space-x-1 text-[11px] font-mono text-black/70 hover:text-black border border-black/15 bg-white/70 hover:bg-white px-2 py-0.5 rounded-[3px] transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
+            title="Fetch latest posts directly from database"
+          >
+            <RefreshCw className={`w-2.5 h-2.5 ${isSyncing ? "animate-spin text-black" : ""}`} />
+            <span>{isSyncing ? "Syncing..." : "Sync Feed"}</span>
+          </button>
         </div>
       </div>
 

@@ -34,7 +34,7 @@ export async function POST(request: Request) {
       sort_order: typeof body.sort_order === "number" ? body.sort_order : 0,
     });
 
-    revalidatePath("/home");
+    revalidatePath("/home", "layout");
 
     return NextResponse.json({ success: true, data: newItem }, { status: 201 });
   } catch (error: any) {

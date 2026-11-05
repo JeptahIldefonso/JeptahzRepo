@@ -35,10 +35,10 @@ export async function POST(request: Request) {
       is_featured: Boolean(body.is_featured),
     });
 
-    revalidatePath("/home");
-    revalidatePath("/home/apps");
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/apps", "page");
     if (newApp.slug) {
-      revalidatePath(`/home/apps/${newApp.slug}`);
+      revalidatePath(`/home/apps/${newApp.slug}`, "page");
     }
 
     return NextResponse.json({ success: true, data: newApp }, { status: 201 });

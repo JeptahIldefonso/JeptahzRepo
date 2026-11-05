@@ -14,7 +14,8 @@ export const metadata: Metadata = {
     "Curated technical documentation, computer science curriculum guides, production software showcases, and architectural devlogs.",
 };
 
-export const revalidate = 3600; // Revalidate every hour (ISR)
+export const dynamic = "force-dynamic";
+export const revalidate = 0; // Fresh real-time data from database on every visit
 
 export default async function HubOverviewPage() {
   const [apps, entries, settings] = await Promise.all([

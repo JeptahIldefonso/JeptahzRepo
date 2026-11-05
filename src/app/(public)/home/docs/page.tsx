@@ -7,7 +7,8 @@ export const metadata = {
   description: "Technical documentation, shared files, image captures, and written notes.",
 };
 
-export const revalidate = 3600; // Revalidate every hour (ISR)
+export const dynamic = "force-dynamic";
+export const revalidate = 0; // Fresh real-time data from database on every visit
 
 export default async function DocsTheoryPage() {
   const entries = await getEntries({ topicSlug: "docs" });

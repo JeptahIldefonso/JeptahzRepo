@@ -30,7 +30,7 @@ export async function PUT(
       return NextResponse.json({ success: false, error: "Changelog entry not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
+    revalidatePath("/home", "layout");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {
@@ -53,7 +53,7 @@ export async function DELETE(
       return NextResponse.json({ success: false, error: "Changelog entry not found" }, { status: 404 });
     }
 
-    revalidatePath("/home");
+    revalidatePath("/home", "layout");
 
     return NextResponse.json({ success: true, message: "Changelog entry successfully deleted" });
   } catch (error: any) {

@@ -27,7 +27,7 @@ export async function PUT(request: Request) {
       is_active: body.is_active !== undefined ? Boolean(body.is_active) : undefined,
     });
 
-    revalidatePath("/home");
+    revalidatePath("/home", "layout");
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error: any) {

@@ -45,17 +45,17 @@ export async function POST(request: Request) {
       is_published: body.is_published !== false,
     });
 
-    // Revalidate public caches immediately
-    revalidatePath("/home");
-    revalidatePath("/home/docs");
-    revalidatePath("/home/courses");
-    revalidatePath("/home/projects");
-    revalidatePath("/home/ideas");
-    revalidatePath("/home/resources");
+    // Revalidate public caches immediately across pages and layouts
+    revalidatePath("/home", "layout");
+    revalidatePath("/home/docs", "page");
+    revalidatePath("/home/courses", "page");
+    revalidatePath("/home/projects", "page");
+    revalidatePath("/home/ideas", "page");
+    revalidatePath("/home/resources", "page");
     if (newEntry.slug) {
-      revalidatePath(`/home/docs/${newEntry.slug}`);
-      revalidatePath(`/home/courses/${newEntry.slug}`);
-      revalidatePath(`/home/projects/${newEntry.slug}`);
+      revalidatePath(`/home/docs/${newEntry.slug}`, "page");
+      revalidatePath(`/home/courses/${newEntry.slug}`, "page");
+      revalidatePath(`/home/projects/${newEntry.slug}`, "page");
     }
 
     return NextResponse.json({ success: true, data: newEntry }, { status: 201 });
