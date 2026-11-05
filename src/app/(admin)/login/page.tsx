@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Lock, ArrowLeft, Eye, EyeOff, ShieldAlert, KeyRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,15 @@ import { ADMIN_SESSION_STORAGE_KEY } from "@/components/admin/admin-session-guar
 import { AmbientBackground } from "@/components/ambient/ambient-background";
 
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const rawFrom = searchParams.get("from");
-  // Validate relative path to prevent open redirect vulnerabilities
+  // Validate relative path to prevent open redirect vulnerabilities and redirect loops
   const from =
     rawFrom &&
     rawFrom.startsWith("/") &&
     !rawFrom.startsWith("//") &&
-    !rawFrom.startsWith("/\\")
+    !rawFrom.startsWith("/\\") &&
+    !rawFrom.startsWith("/login")
       ? rawFrom
       : "/admin";
   const reason = searchParams.get("reason");
@@ -25,10 +25,12 @@ function LoginForm() {
   const [passphrase, setPassphrase] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [redirecting, setRedirecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (loading || redirecting) return;
     setLoading(true);
     setError(null);
 
@@ -50,9 +52,12 @@ function LoginForm() {
       // Initialize tab-scoped session token in sessionStorage
       sessionStorage.setItem(ADMIN_SESSION_STORAGE_KEY, "true");
 
-      // Redirect into the protected admin studio
-      router.push(from);
-      router.refresh();
+      setRedirecting(true);
+
+      // Perform clean full-page navigation to the protected destination.
+      // This ensures the new HttpOnly auth cookie is sent cleanly in the top-level
+      // request, clears stale client router cache, and avoids router.push/refresh race conditions.
+      window.location.replace(from);
     } catch (err: any) {
       setError(err.message || "Failed to reach authentication service.");
       setLoading(false);
@@ -142,10 +147,14 @@ function LoginForm() {
 
           <Button
             type="submit"
-            disabled={loading || !passphrase}
+            disabled={loading || redirecting || !passphrase}
             className="w-full h-11 bg-white text-[#041a24] hover:bg-neutral-100 active:scale-[0.99] font-mono text-xs uppercase tracking-[0.15em] font-semibold rounded-[3px] shadow-sm flex items-center justify-center space-x-2 cursor-pointer transition-all disabled:opacity-50"
           >
-            {loading ? "Verifying Passkey..." : "Unlock Studio →"}
+            {redirecting
+              ? "Authorized • Opening Studio..."
+              : loading
+              ? "Verifying Passkey..."
+              : "Unlock Studio →"}
           </Button>
         </form>
       </div>
