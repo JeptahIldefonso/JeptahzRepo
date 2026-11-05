@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 
 export const ADMIN_SESSION_STORAGE_KEY = "jeptahz_admin_session_active";
@@ -25,17 +24,22 @@ export async function logoutAdminStudio() {
  * sessionStorage is automatically purged by browsers whenever the tab or window is closed.
  */
 export function AdminSessionGuard() {
-  const router = useRouter();
   const [verified, setVerified] = useState(false);
 
   useEffect(() => {
     // Check if the current tab/window has an active session
-    const isActive = sessionStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+    let isActive: string | null = null;
+    try {
+      isActive = sessionStorage.getItem(ADMIN_SESSION_STORAGE_KEY);
+    } catch {
+      // Browser storage restricted or sandboxed
+      isActive = "true";
+    }
 
     if (isActive !== "true") {
       // Tab was opened anew or restored after closure: invalidate server session & redirect
       fetch("/api/auth/logout", { method: "POST" }).finally(() => {
-        router.replace("/login?reason=session_ended");
+        window.location.replace("/login?reason=session_ended");
       });
       return;
     }
@@ -53,7 +57,7 @@ export function AdminSessionGuard() {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
-  }, [router]);
+  }, []);
 
   // While checking tab-scoped session, render nothing to prevent UI flashing
   if (!verified) {
