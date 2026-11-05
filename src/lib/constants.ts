@@ -80,11 +80,3 @@ export const NAVIGATION_ITEMS: NavItem[] = [
     description: "Get in touch",
   },
 ];
-
-export const CATEGORY_LABELS: Record<string, string> = {
-  browse: "Browse",
-  explore: "Explore",
-  more: "More",
-  manage: "Manage",
-  info: "Info",
-};

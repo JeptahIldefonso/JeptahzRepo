@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Search, X, Hash, GraduationCap, Filter } from "lucide-react";
+import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
+import { Search, X, Hash, GraduationCap, Filter, Loader2 } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { CourseGuideCard } from "@/components/courses/course-guide-card";
 
@@ -11,7 +11,28 @@ interface CoursesFeedProps {
 
 export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  // React 19 Concurrent rendering: Decouple typing latency from course curricula filtering
+  const deferredQuery = useDeferredValue(searchQuery);
+  const isPending = searchQuery !== deferredQuery;
+
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: '/' to focus search input
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Extract all unique course tags
   const allTags = useMemo(() => {
@@ -24,7 +45,7 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
 
   // Sorting: Pinned first, then newest dates first (descending)
   const sortedAndFiltered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     const filtered = initialEntries.filter((entry) => {
       // Tag filter
@@ -53,7 +74,7 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
       const dateB = new Date(b.created_at).getTime();
       return dateB - dateA;
     });
-  }, [initialEntries, searchQuery, selectedTag]);
+  }, [initialEntries, deferredQuery, selectedTag]);
 
   return (
     <div className="w-full space-y-6">
@@ -62,22 +83,34 @@ export function CoursesFeed({ initialEntries }: CoursesFeedProps) {
         {/* Compact Search Bar */}
         <div className="relative w-full sm:w-64">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
-            <Search className="w-3.5 h-3.5 stroke-[2]" />
+            {isPending ? (
+              <Loader2 className="w-3.5 h-3.5 stroke-[2] animate-spin text-[#041a24]" />
+            ) : (
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            )}
           </div>
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search curricula, codes, syllabi..."
             className="w-full pl-8 pr-8 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-[#041a24] focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
               onClick={() => setSearchQuery("")}
               className="absolute inset-y-0 right-0 pr-2 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
+              aria-label="Clear search"
             >
               <X className="w-3.5 h-3.5" />
             </button>
+          ) : (
+            <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+              <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1 py-0.5 rounded border border-black/10">
+                /
+              </kbd>
+            </div>
           )}
         </div>
 

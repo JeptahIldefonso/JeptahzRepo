@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
 import Link from "next/link";
 import NextImage from "next/image";
 import {
@@ -39,7 +39,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Modal, ModalContent } from "@/components/ui/modal";
-import { formatDate } from "@/lib/utils";
+import { formatDate, slugify } from "@/lib/utils";
 
 interface AdminManagerProps {
   initialApps: AppType[];
@@ -49,15 +49,6 @@ interface AdminManagerProps {
 }
 
 type TabType = "docs" | "apps" | "ideas" | "resources" | "courses" | "changelog";
-
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .trim()
-    .replace(/[^\w\s-]/g, "")
-    .replace(/[\s_-]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function parseResourceSingleBox(text: string) {
   const trimmed = text.trim();
@@ -197,6 +188,26 @@ export function AdminManager({
   const bannerFileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState<TabType>("docs");
   const [searchQuery, setSearchQuery] = useState("");
+  const deferredSearch = useDeferredValue(searchQuery);
+  const isSearching = searchQuery !== deferredSearch;
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Shortcut: '/' to focus search input
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const [message, setMessage] = useState<string | null>(null);
 
   // Loading state for upload
@@ -1023,65 +1034,88 @@ export function AdminManager({
     }
   };
 
-  // Filter items in active tab based on search query
-  const filteredDocs = docsEntries.filter(
-    (e) =>
-      !searchQuery ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Filter items in active tab based on search query (Optimized with React 19 Concurrent useDeferredValue & activeTab isolation)
+  const filteredDocs = useMemo(() => {
+    if (activeTab !== "docs" && deferredSearch) return docsEntries;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return docsEntries;
+    return docsEntries.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.tags?.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [docsEntries, deferredSearch, activeTab]);
 
-  const filteredApps = apps.filter(
-    (a) =>
-      !searchQuery ||
-      a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (a.category && a.category.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (a.description && a.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      a.tech_stack?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredApps = useMemo(() => {
+    if (activeTab !== "apps" && deferredSearch) return apps;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return apps;
+    return apps.filter(
+      (a) =>
+        a.title.toLowerCase().includes(q) ||
+        (a.category && a.category.toLowerCase().includes(q)) ||
+        (a.description && a.description.toLowerCase().includes(q)) ||
+        a.tech_stack?.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [apps, deferredSearch, activeTab]);
 
-  const filteredIdeas = ideasEntries.filter(
-    (e) =>
-      !searchQuery ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredIdeas = useMemo(() => {
+    if (activeTab !== "ideas" && deferredSearch) return ideasEntries;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return ideasEntries;
+    return ideasEntries.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.tags?.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [ideasEntries, deferredSearch, activeTab]);
 
-  const filteredResources = resourcesEntries.filter((e) => {
-    if (!searchQuery) return true;
-    const q = searchQuery.toLowerCase().trim();
-    if (e.title.toLowerCase().includes(q)) return true;
-    if (e.summary && e.summary.toLowerCase().includes(q)) return true;
-    if (e.tags?.some((t) => t.toLowerCase().includes(q))) return true;
+  const filteredResources = useMemo(() => {
+    if (activeTab !== "resources" && deferredSearch) return resourcesEntries;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return resourcesEntries;
+    return resourcesEntries.filter((e) => {
+      if (e.title.toLowerCase().includes(q)) return true;
+      if (e.summary && e.summary.toLowerCase().includes(q)) return true;
+      if (e.tags?.some((t) => t.toLowerCase().includes(q))) return true;
 
-    // Multi-keyword comma search (e.g. user types "react, web")
-    const searchTerms = q.split(",").map((s) => s.trim()).filter(Boolean);
-    if (searchTerms.length > 1) {
-      return searchTerms.some(
-        (term) =>
-          e.title.toLowerCase().includes(term) ||
-          (e.summary && e.summary.toLowerCase().includes(term)) ||
-          e.tags?.some((t) => t.toLowerCase().includes(term))
-      );
-    }
-    return false;
-  });
+      // Multi-keyword comma search (e.g. user types "react, web")
+      const searchTerms = q.split(",").map((s) => s.trim()).filter(Boolean);
+      if (searchTerms.length > 1) {
+        return searchTerms.some(
+          (term) =>
+            e.title.toLowerCase().includes(term) ||
+            (e.summary && e.summary.toLowerCase().includes(term)) ||
+            e.tags?.some((t) => t.toLowerCase().includes(term))
+        );
+      }
+      return false;
+    });
+  }, [resourcesEntries, deferredSearch, activeTab]);
 
-  const filteredCourses = coursesEntries.filter(
-    (e) =>
-      !searchQuery ||
-      e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      e.tags?.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredCourses = useMemo(() => {
+    if (activeTab !== "courses" && deferredSearch) return coursesEntries;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return coursesEntries;
+    return coursesEntries.filter(
+      (e) =>
+        e.title.toLowerCase().includes(q) ||
+        e.tags?.some((t) => t.toLowerCase().includes(q))
+    );
+  }, [coursesEntries, deferredSearch, activeTab]);
 
-  const filteredChangelog = changelog.filter(
-    (c) =>
-      !searchQuery ||
-      c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (c.description && c.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.version_tag && c.version_tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (c.category && c.category.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredChangelog = useMemo(() => {
+    if (activeTab !== "changelog" && deferredSearch) return changelog;
+    const q = deferredSearch.toLowerCase().trim();
+    if (!q) return changelog;
+    return changelog.filter(
+      (c) =>
+        c.title.toLowerCase().includes(q) ||
+        (c.description && c.description.toLowerCase().includes(q)) ||
+        (c.version_tag && c.version_tag.toLowerCase().includes(q)) ||
+        (c.category && c.category.toLowerCase().includes(q))
+    );
+  }, [changelog, deferredSearch, activeTab]);
 
   return (
     <div className="space-y-6">
@@ -1372,14 +1406,34 @@ export function AdminManager({
       {/* ── Search Toolbar for the Active Tab ── */}
       <div className="flex items-center justify-between gap-4">
         <div className="relative flex-1 max-w-sm">
-          <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle" />
+          {isSearching ? (
+            <Loader2 className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-fg animate-spin" />
+          ) : (
+            <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-fg-subtle" />
+          )}
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Filter ${activeTab}...`}
-            className="w-full bg-bg-raised border border-border pl-8 pr-3 py-1.5 text-xs font-mono text-fg placeholder:text-fg-subtle focus:outline-none focus:border-fg rounded-[6px]"
+            className="w-full bg-bg-raised border border-border pl-8 pr-8 py-1.5 text-xs font-mono text-fg placeholder:text-fg-subtle focus:outline-none focus:border-fg rounded-[6px]"
           />
+          {searchQuery ? (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-fg-subtle hover:text-fg transition-colors cursor-pointer"
+              aria-label="Clear filter"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none">
+              <kbd className="hidden sm:inline-block font-mono text-[9px] text-fg-subtle bg-bg border border-border px-1 py-0.5 rounded">
+                /
+              </kbd>
+            </div>
+          )}
         </div>
         <div className="text-xs font-mono text-fg-subtle">
           Showing{" "}

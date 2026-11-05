@@ -11,7 +11,7 @@
  */
 
 export const ADMIN_COOKIE_NAME = "admin_session";
-export const DEFAULT_SESSION_TTL_SECONDS = 12 * 60 * 60; // 12 hours max lifetime
+const DEFAULT_SESSION_TTL_SECONDS = 12 * 60 * 60; // 12 hours max lifetime
 const RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000; // 15 minutes
 const MAX_LOGIN_ATTEMPTS = 5;
 
@@ -88,7 +88,7 @@ export function isValidRedirectUrl(url: string | null | undefined): boolean {
 /**
  * Retrieves the configured administrator passphrase from environment variables.
  */
-export function getAdminPassphrase(): string {
+function getAdminPassphrase(): string {
   return (
     process.env.ADMIN_PASSPHRASE ||
     process.env.ADMIN_PASSWORD ||
@@ -99,7 +99,7 @@ export function getAdminPassphrase(): string {
 /**
  * Retrieves the dedicated session HMAC secret (decoupled from the passphrase).
  */
-export function getSessionSecret(): string {
+function getSessionSecret(): string {
   return (
     process.env.SESSION_SECRET ||
     "jeptahz-admin-dedicated-session-secret-salt-32bytes-min"

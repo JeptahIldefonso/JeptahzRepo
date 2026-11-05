@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
-import { Search, X, Link2, ExternalLink, Pin, Globe } from "lucide-react";
+import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
+import { Search, X, Link2, ExternalLink, Pin, Globe, Loader2 } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
@@ -12,6 +12,10 @@ interface ResourcesFeedProps {
 
 export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  // React 19 Concurrent rendering: Decouple typing latency from links filtering
+  const deferredQuery = useDeferredValue(searchQuery);
+  const isPending = searchQuery !== deferredQuery;
+
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -42,7 +46,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
 
   // Filter entries in real-time
   const filteredEntries = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     return initialEntries.filter((entry) => {
       // Tag filter
@@ -64,7 +68,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
 
       return titleMatch || summaryMatch || contentMatch || urlMatch || tagsMatch;
     });
-  }, [initialEntries, searchQuery, selectedTag]);
+  }, [initialEntries, deferredQuery, selectedTag]);
 
   // Sort: Pinned first, then newest
   const sortedEntries = useMemo(() => {
@@ -93,7 +97,11 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
         {/* Compact Minimal Search Input */}
         <div className="relative w-full sm:w-64 md:w-72 shrink-0">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-fg-subtle">
-            <Search className="w-3.5 h-3.5 stroke-[2]" />
+            {isPending ? (
+              <Loader2 className="w-3.5 h-3.5 stroke-[2] animate-spin text-fg" />
+            ) : (
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            )}
           </div>
           <input
             ref={searchInputRef}
@@ -113,7 +121,7 @@ export function ResourcesFeed({ initialEntries }: ResourcesFeedProps) {
             </button>
           ) : (
             <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-              <kbd className="hidden sm:inline-block font-mono text-[9px] text-fg-subtle bg-bg px-1 py-0.5 rounded border border-border">
+              <kbd className="hidden sm:inline-block font-mono text-[9px] text-fg-subtle bg-bg border border-border px-1 py-0.5 rounded">
                 /
               </kbd>
             </div>

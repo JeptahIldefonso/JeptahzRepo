@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 
 export const Modal = DialogPrimitive.Root;
 export const ModalTrigger = DialogPrimitive.Trigger;
-export const ModalClose = DialogPrimitive.Close;
 
 export const ModalContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,

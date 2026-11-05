@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useDeferredValue, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { Search, FileText, Box, CornerDownLeft } from "lucide-react";
+import { Search, FileText, Box, CornerDownLeft, Loader2 } from "lucide-react";
 import { Modal, ModalContent } from "@/components/ui/modal";
 
 interface SearchItem {
@@ -22,6 +22,8 @@ interface CommandMenuProps {
 export function CommandMenu({ open, onOpenChange, items = [] }: CommandMenuProps) {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
+  const isPending = query !== deferredQuery;
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -34,13 +36,16 @@ export function CommandMenu({ open, onOpenChange, items = [] }: CommandMenuProps
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [open, onOpenChange]);
 
-  const filtered = query
-    ? items.filter(
-        (i) =>
-          i.title.toLowerCase().includes(query.toLowerCase()) ||
-          i.type.toLowerCase().includes(query.toLowerCase())
-      )
-    : items.slice(0, 8);
+  const filtered = useMemo(() => {
+    const q = deferredQuery.trim().toLowerCase();
+    return q
+      ? items.filter(
+          (i) =>
+            i.title.toLowerCase().includes(q) ||
+            i.type.toLowerCase().includes(q)
+        )
+      : items.slice(0, 8);
+  }, [items, deferredQuery]);
 
   const handleSelect = (href: string) => {
     onOpenChange(false);
@@ -52,7 +57,11 @@ export function CommandMenu({ open, onOpenChange, items = [] }: CommandMenuProps
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalContent className="max-w-lg p-0 overflow-hidden" title="Command Palette">
         <div className="flex items-center border-b border-border px-3 bg-bg">
-          <Search className="h-4 w-4 text-fg-subtle mr-2 stroke-[1.5]" />
+          {isPending ? (
+            <Loader2 className="h-4 w-4 text-fg mr-2 stroke-[1.5] animate-spin" />
+          ) : (
+            <Search className="h-4 w-4 text-fg-subtle mr-2 stroke-[1.5]" />
+          )}
           <input
             type="text"
             placeholder="Search docs, applications, theory, syllabi..."

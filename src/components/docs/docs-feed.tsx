@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { Search, X, Hash } from "lucide-react";
+import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
+import { Search, X, Hash, Loader2 } from "lucide-react";
 import { EntryType } from "@/db/data-provider";
 import { FeedPostCard } from "@/components/docs/feed-post-card";
 
@@ -11,11 +11,32 @@ interface DocsFeedProps {
 
 export function DocsFeed({ initialEntries }: DocsFeedProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  // React 19 Concurrent rendering: Decouple typing latency from feed filtering and sorting
+  const deferredQuery = useDeferredValue(searchQuery);
+  const isPending = searchQuery !== deferredQuery;
+
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: '/' to focus search input
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if (
+        e.key === "/" &&
+        document.activeElement?.tagName !== "INPUT" &&
+        document.activeElement?.tagName !== "TEXTAREA"
+      ) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   // Sequential Sorting: Pinned posts first, then latest dates first (descending)
   const sortedAndFiltered = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
 
     const filtered = initialEntries.filter((entry) => {
       // Hashtag filter
@@ -45,7 +66,7 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
       const dateB = new Date(b.created_at).getTime();
       return dateB - dateA;
     });
-  }, [initialEntries, searchQuery, selectedTag]);
+  }, [initialEntries, deferredQuery, selectedTag]);
 
   return (
     <div className="w-full space-y-6">
@@ -54,22 +75,34 @@ export function DocsFeed({ initialEntries }: DocsFeedProps) {
         {/* Compact Search Bar */}
         <div className="relative w-full sm:w-64">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
-            <Search className="w-3.5 h-3.5 stroke-[2]" />
+            {isPending ? (
+              <Loader2 className="w-3.5 h-3.5 stroke-[2] animate-spin text-[#041a24]" />
+            ) : (
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            )}
           </div>
           <input
+            ref={searchInputRef}
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search notes, tags, ideas..."
             className="w-full pl-8 pr-8 py-1.5 h-8 bg-white/80 border border-black/15 focus:border-[#041a24] focus:bg-white rounded-[3px] text-xs font-mono text-black placeholder:text-black/40 focus:outline-none transition-all shadow-2xs"
           />
-          {searchQuery && (
+          {searchQuery ? (
             <button
               onClick={() => setSearchQuery("")}
               className="absolute inset-y-0 right-0 pr-2 flex items-center text-black/40 hover:text-black transition-colors cursor-pointer"
+              aria-label="Clear search"
             >
               <X className="w-3.5 h-3.5" />
             </button>
+          ) : (
+            <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
+              <kbd className="hidden sm:inline-block font-mono text-[9px] text-black/40 bg-black/5 px-1 py-0.5 rounded border border-black/10">
+                /
+              </kbd>
+            </div>
           )}
         </div>
 

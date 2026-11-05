@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useDeferredValue } from "react";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import Image from "next/image";
+import { Search, X, Loader2 } from "lucide-react";
 import { AppType } from "@/db/data-provider";
 
 interface ProjectsExplorerProps {
@@ -11,6 +12,10 @@ interface ProjectsExplorerProps {
 
 export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  // React 19 Concurrent rendering: Decouple typing latency from heavy list filtering
+  const deferredQuery = useDeferredValue(searchQuery);
+  const isPending = searchQuery !== deferredQuery;
+
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedTech, setSelectedTech] = useState<string>("all");
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -53,7 +58,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
   // Live real-time search filtering with multi-word & punctuation-insensitive matching
   const filteredApps = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
     return initialApps.filter((app) => {
       // Category filter
       if (selectedCategory !== "all" && app.category !== selectedCategory) {
@@ -81,7 +86,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
 
       return tokensMatch || normalizedMatch;
     });
-  }, [initialApps, searchQuery, selectedCategory, selectedTech]);
+  }, [initialApps, deferredQuery, selectedCategory, selectedTech]);
 
   const resetFilters = () => {
     setSearchQuery("");
@@ -119,7 +124,11 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         {/* Compact Minimal Search Input (Positioned on Left) */}
         <div className="relative w-full sm:w-56 md:w-64 shrink-0">
           <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none text-black/40">
-            <Search className="w-3.5 h-3.5 stroke-[2]" />
+            {isPending ? (
+              <Loader2 className="w-3.5 h-3.5 stroke-[2] animate-spin text-[#041a24]" />
+            ) : (
+              <Search className="w-3.5 h-3.5 stroke-[2]" />
+            )}
           </div>
           <input
             ref={searchInputRef}
@@ -236,7 +245,7 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 items-stretch">
-          {filteredApps.map((app) => {
+          {filteredApps.map((app, idx) => {
             const previewUrl = app.carousel_images[0]?.url || "";
             const repoUrl = app.repo_url;
 
@@ -251,11 +260,13 @@ export function ProjectsExplorer({ initialApps }: ProjectsExplorerProps) {
                   className="block relative w-full h-56 sm:h-60 bg-black/[0.02] border-b border-black/10 p-4 overflow-hidden"
                 >
                   {previewUrl ? (
-                    <img
+                    <Image
                       src={previewUrl}
                       alt={app.title}
-                      loading="lazy"
-                      className="w-full h-full object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      priority={idx === 0}
+                      className="object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-[1.03]"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-mono text-xs text-black/40">
