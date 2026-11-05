@@ -14,9 +14,19 @@
 # production
 /build
 
-# misc
+# misc & OS
 .DS_Store
+Thumbs.db
 *.pem
+*.log
+
+# local databases
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
 
 # debug
 npm-debug.log*

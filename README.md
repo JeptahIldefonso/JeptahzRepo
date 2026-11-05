@@ -98,11 +98,16 @@ JeptahzRepo/
 │   │   ├── seeds/          # Zero-downtime mock archive fallback
 │   │   └── data-provider.ts# Resilient data layer
 │   └── lib/                # Supabase clients, utils, validators, constants
-├── README.md               # Overview documentation
-├── ARCHITECTURE.md         # Full architectural blueprint
-├── SCHEMA.md               # Database schema & RLS policies
-├── DESIGN_SYSTEM.md        # Monochromatic raw luxury guidelines
-└── ROADMAP.md              # Milestone tracking
+├── docs/                   # Centralized engineering documentation
+│   ├── ARCHITECTURE.md     # Full architectural blueprint
+│   ├── SCHEMA.md           # Database schema & RLS policies
+│   ├── DESIGN_SYSTEM.md    # Monochromatic raw luxury guidelines
+│   ├── DEPLOYMENT.md       # Production hosting & deployment manual
+│   ├── FRONTEND_PHILOSOPHY.md # Anti-slop frontend philosophy
+│   ├── ARTISTIC_INTRO_PAGE.md # 60fps canvas botanical animation specs
+│   └── ROADMAP.md          # Milestone tracking & feature backlog
+├── scripts/                # Maintenance & automated testing scripts
+└── README.md               # Primary project portal & onboarding
 ```
 
 ---

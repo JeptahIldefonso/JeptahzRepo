@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run knip && npm run build",
     "knip": "knip --dependencies --files",
     "db:generate": "drizzle-kit generate",
     "db:push": "drizzle-kit push"
