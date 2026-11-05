@@ -339,9 +339,19 @@ export function AdminManager({
               }));
             }
           } else {
-            // PDF, Word, or other doc
+            // Document, Markdown, CSV, Code, or other data files
             const docType: EntryAttachedFile["type"] =
-              ext === "pdf" ? "pdf" : ext === "doc" || ext === "docx" ? "word" : "file";
+              ext === "pdf"
+                ? "pdf"
+                : ext === "doc" || ext === "docx"
+                ? "word"
+                : ext === "md" || ext === "markdown"
+                ? "markdown"
+                : ext === "csv"
+                ? "csv"
+                : ext === "zip" || ext === "tar" || ext === "gz" || ext === "7z" || ext === "rar"
+                ? "archive"
+                : "file";
             const newFileItem: EntryAttachedFile = {
               id: `f-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
               name: file.name,
@@ -361,6 +371,8 @@ export function AdminManager({
               }));
             }
           }
+        } else {
+          alert(`Failed to upload "${file.name}": ${data.error || "Upload rejected"}`);
         }
       }
 
@@ -827,21 +839,33 @@ export function AdminManager({
   // -------------------------
   const handleDeleteEntry = async (id: string, title: string) => {
     if (!confirm(`Delete "${title}"?`)) return;
-    const res = await fetch(`/api/entries/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      setEntries((prev) => prev.filter((item) => item.id !== id));
-      showNotification(`Deleted "${title}"`);
+    try {
+      const res = await fetch(`/api/entries/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setEntries((prev) => prev.filter((item) => item.id !== id));
+        showNotification(`Deleted "${title}"`);
+      } else {
+        alert(data.error || `Failed to delete "${title}".`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message || "Failed to delete entry"}`);
     }
   };
 
   const handleDeleteApp = async (id: string, title: string) => {
     if (!confirm(`Delete project "${title}"?`)) return;
-    const res = await fetch(`/api/apps/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      setApps((prev) => prev.filter((item) => item.id !== id));
-      showNotification(`Deleted project "${title}"`);
+    try {
+      const res = await fetch(`/api/apps/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setApps((prev) => prev.filter((item) => item.id !== id));
+        showNotification(`Deleted project "${title}"`);
+      } else {
+        alert(data.error || `Failed to delete project "${title}".`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message || "Failed to delete project"}`);
     }
   };
 
@@ -927,15 +951,21 @@ export function AdminManager({
 
   const handleDeleteChangelog = async (id: string, title: string) => {
     if (!confirm(`Delete changelog entry "${title}"?`)) return;
-    const res = await fetch(`/api/changelog/${id}`, { method: "DELETE" });
-    const data = await res.json();
-    if (data.success) {
-      setChangelog((prev) => prev.filter((item) => item.id !== id));
-      showNotification(`Deleted "${title}"`);
-      window.dispatchEvent(new CustomEvent("changelog_updated"));
-      try {
-        localStorage.setItem("changelog_last_updated", String(Date.now()));
-      } catch {}
+    try {
+      const res = await fetch(`/api/changelog/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.success) {
+        setChangelog((prev) => prev.filter((item) => item.id !== id));
+        showNotification(`Deleted "${title}"`);
+        window.dispatchEvent(new CustomEvent("changelog_updated"));
+        try {
+          localStorage.setItem("changelog_last_updated", String(Date.now()));
+        } catch {}
+      } else {
+        alert(data.error || `Failed to delete changelog entry "${title}".`);
+      }
+    } catch (err: any) {
+      alert(`Network error: ${err.message || "Failed to delete changelog entry"}`);
     }
   };
 
@@ -2296,14 +2326,18 @@ export function AdminManager({
                         <div className="flex items-center space-x-2.5 truncate">
                           <span
                             className={`uppercase font-bold px-1.5 py-0.5 rounded text-[10px] ${
-                              file.type === "pdf"
+                              file.type === "pdf" || file.name.endsWith(".pdf")
                                 ? "bg-red-100 text-red-700"
-                                : file.type === "word"
+                                : file.type === "word" || file.name.endsWith(".docx") || file.name.endsWith(".doc")
                                 ? "bg-blue-100 text-blue-700"
+                                : file.type === "markdown" || file.name.endsWith(".md") || file.name.endsWith(".markdown")
+                                ? "bg-purple-100 text-purple-700"
+                                : file.type === "csv" || file.name.endsWith(".csv")
+                                ? "bg-emerald-100 text-emerald-700"
                                 : "bg-neutral-200 text-neutral-700"
                             }`}
                           >
-                            {file.type}
+                            {file.name.split(".").pop() || file.type}
                           </span>
                           <span className="truncate font-sans font-medium text-black">
                             {file.name}
@@ -2411,7 +2445,7 @@ export function AdminManager({
                   <button
                     type="button"
                     onClick={() => docFileInputRef.current?.click()}
-                    title="Attach Document (PDF, Word, etc.)"
+                    title="Attach Files (Markdown, CSV, PDF, Documents, Code, etc.)"
                     className="p-2 rounded-full hover:bg-neutral-200/80 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                   >
                     <Paperclip className="w-5 h-5" />
@@ -2419,7 +2453,7 @@ export function AdminManager({
                   <input
                     ref={docFileInputRef}
                     type="file"
-                    accept=".pdf,.doc,.docx,.zip,.txt"
+                    accept="*/*"
                     multiple
                     className="hidden"
                     disabled={uploading}
@@ -3151,14 +3185,18 @@ export function AdminManager({
                         <div className="flex items-center space-x-2.5 truncate">
                           <span
                             className={`uppercase font-bold px-1.5 py-0.5 rounded text-[10px] ${
-                              file.type === "pdf"
+                              file.type === "pdf" || file.name.endsWith(".pdf")
                                 ? "bg-red-100 text-red-700"
-                                : file.type === "word"
+                                : file.type === "word" || file.name.endsWith(".docx") || file.name.endsWith(".doc")
                                 ? "bg-blue-100 text-blue-700"
+                                : file.type === "markdown" || file.name.endsWith(".md") || file.name.endsWith(".markdown")
+                                ? "bg-purple-100 text-purple-700"
+                                : file.type === "csv" || file.name.endsWith(".csv")
+                                ? "bg-emerald-100 text-emerald-700"
                                 : "bg-neutral-200 text-neutral-700"
                             }`}
                           >
-                            {file.type}
+                            {file.name.split(".").pop() || file.type}
                           </span>
                           <span className="truncate font-sans font-medium text-black">
                             {file.name}
@@ -3266,7 +3304,7 @@ export function AdminManager({
                   <button
                     type="button"
                     onClick={() => courseDocFileInputRef.current?.click()}
-                    title="Attach Syllabus / Documents (PDF, Word, etc.)"
+                    title="Attach Syllabus / Files (Markdown, CSV, PDF, etc.)"
                     className="p-2 rounded-full hover:bg-neutral-200/80 text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
                   >
                     <Paperclip className="w-5 h-5" />
@@ -3274,7 +3312,7 @@ export function AdminManager({
                   <input
                     ref={courseDocFileInputRef}
                     type="file"
-                    accept=".pdf,.doc,.docx,.zip,.txt"
+                    accept="*/*"
                     multiple
                     className="hidden"
                     disabled={uploading}

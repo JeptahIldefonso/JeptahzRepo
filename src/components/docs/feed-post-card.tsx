@@ -185,6 +185,11 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                   file.type === "doc" ||
                   file.name.endsWith(".docx") ||
                   file.name.endsWith(".doc");
+                const isMarkdown =
+                  file.type === "markdown" ||
+                  file.name.endsWith(".md") ||
+                  file.name.endsWith(".markdown");
+                const isCsv = file.type === "csv" || file.name.endsWith(".csv");
 
                 return (
                   <a
@@ -202,6 +207,10 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                             ? "bg-rose-100 text-rose-700 border border-rose-200"
                             : isWord
                             ? "bg-blue-100 text-blue-700 border border-blue-200"
+                            : isMarkdown
+                            ? "bg-purple-100 text-purple-700 border border-purple-200"
+                            : isCsv
+                            ? "bg-emerald-100 text-emerald-700 border border-emerald-200"
                             : "bg-neutral-100 text-neutral-700 border border-neutral-200"
                         }`}
                       >
@@ -209,6 +218,8 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                           <FileText className="w-4 h-4 text-rose-600" />
                         ) : isWord ? (
                           <FileCode className="w-4 h-4 text-blue-600" />
+                        ) : isMarkdown ? (
+                          <FileCode className="w-4 h-4 text-purple-600" />
                         ) : (
                           <Paperclip className="w-4 h-4 text-neutral-600" />
                         )}
@@ -218,7 +229,15 @@ export function FeedPostCard({ entry, onTagClick, activeTag }: FeedPostCardProps
                           {file.name}
                         </p>
                         <p className="text-[10px] font-mono text-black/50">
-                          {isPdf ? "PDF Document" : isWord ? "Word Document" : "Attachment"}
+                          {isPdf
+                            ? "PDF Document"
+                            : isWord
+                            ? "Word Document"
+                            : isMarkdown
+                            ? "Markdown Document"
+                            : isCsv
+                            ? "CSV Spreadsheet"
+                            : "Attachment"}
                           {file.size ? ` • ${file.size}` : ""}
                         </p>
                       </div>

@@ -58,7 +58,7 @@ export interface EntryAttachedFile {
   id: string;
   name: string;
   size?: string;
-  type: "pdf" | "word" | "doc" | "archive" | "file";
+  type: "pdf" | "word" | "doc" | "archive" | "file" | "markdown" | "csv" | "code" | string;
   url: string;
 }
 
@@ -470,10 +470,14 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
 }
 
 export async function deleteEntry(id: string): Promise<boolean> {
+  let deleted = false;
   const supabase = getSupabase();
   if (supabase) {
     try {
-      await supabase.from("entries").delete().eq("id", id);
+      const { error } = await supabase.from("entries").delete().eq("id", id);
+      if (!error) {
+        deleted = true;
+      }
     } catch {
       // Fallback
     }
@@ -481,8 +485,12 @@ export async function deleteEntry(id: string): Promise<boolean> {
 
   const initialLen = cachedArchive.entries.length;
   cachedArchive.entries = cachedArchive.entries.filter((e) => e.id !== id);
+  if (cachedArchive.entries.length < initialLen) {
+    deleted = true;
+  }
   persistCachedArchive();
-  return cachedArchive.entries.length < initialLen;
+
+  return deleted;
 }
 
 export async function createApp(app: Omit<AppType, "id" | "created_at">): Promise<AppType> {
@@ -535,10 +543,14 @@ export async function updateApp(id: string, updates: Partial<AppType>): Promise<
 }
 
 export async function deleteApp(id: string): Promise<boolean> {
+  let deleted = false;
   const supabase = getSupabase();
   if (supabase) {
     try {
-      await supabase.from("apps").delete().eq("id", id);
+      const { error } = await supabase.from("apps").delete().eq("id", id);
+      if (!error) {
+        deleted = true;
+      }
     } catch {
       // Fallback
     }
@@ -546,8 +558,12 @@ export async function deleteApp(id: string): Promise<boolean> {
 
   const initialLen = cachedArchive.apps.length;
   cachedArchive.apps = cachedArchive.apps.filter((a) => a.id !== id);
+  if (cachedArchive.apps.length < initialLen) {
+    deleted = true;
+  }
   persistCachedArchive();
-  return cachedArchive.apps.length < initialLen;
+
+  return deleted;
 }
 
 export async function getChangelogItems(): Promise<ChangelogItem[]> {
@@ -644,10 +660,14 @@ export async function updateChangelogItem(
 }
 
 export async function deleteChangelogItem(id: string): Promise<boolean> {
+  let deleted = false;
   const supabase = getSupabase();
   if (supabase) {
     try {
-      await supabase.from("changelog_items").delete().eq("id", id);
+      const { error } = await supabase.from("changelog_items").delete().eq("id", id);
+      if (!error) {
+        deleted = true;
+      }
     } catch {
       // Fallback
     }
@@ -655,7 +675,11 @@ export async function deleteChangelogItem(id: string): Promise<boolean> {
 
   const initialLen = cachedArchive.changelog_items.length;
   cachedArchive.changelog_items = cachedArchive.changelog_items.filter((c) => c.id !== id);
+  if (cachedArchive.changelog_items.length < initialLen) {
+    deleted = true;
+  }
   persistCachedArchive();
-  return cachedArchive.changelog_items.length < initialLen;
+
+  return deleted;
 }
 

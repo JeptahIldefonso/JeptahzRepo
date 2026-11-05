@@ -5,15 +5,21 @@ import path from "path";
 import crypto from "crypto";
 import { verifySessionToken, ADMIN_COOKIE_NAME } from "@/lib/auth";
 
-const ALLOWED_MIME_TYPES = new Map<string, string>([
-  ["image/jpeg", ".jpg"],
-  ["image/png", ".png"],
-  ["image/webp", ".webp"],
-  ["image/gif", ".gif"],
-  ["image/avif", ".avif"],
+// Dangerous executable formats blocked for security
+const BLOCKED_EXTENSIONS = new Set([
+  ".exe",
+  ".bat",
+  ".cmd",
+  ".msi",
+  ".vbs",
+  ".pif",
+  ".com",
+  ".scr",
+  ".gadget",
 ]);
 
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
+// Maximum file size supported by Vercel serverless request body
+const MAX_FILE_SIZE_BYTES = Math.floor(4.5 * 1024 * 1024); // 4.5 MB
 
 export async function POST(request: NextRequest) {
   try {
@@ -42,32 +48,33 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: "File size exceeds 5MB limit",
+          error: "File size exceeds 4.5MB limit",
         },
         { status: 400 }
       );
     }
 
-    // 2. MIME type allowlist (rejects SVGs, executables, HTML, etc.)
-    const extension = ALLOWED_MIME_TYPES.get(file.type.toLowerCase());
-    if (!extension) {
+    // 2. Extension validation (Allows MD, CSV, PDF, TXT, DOCX, Code, Images, Audio/Video, etc.)
+    const originalName = file.name || "upload";
+    const rawExt = path.extname(originalName).toLowerCase();
+    if (BLOCKED_EXTENSIONS.has(rawExt)) {
       return NextResponse.json(
         {
           success: false,
-          error: "Invalid file type. Allowed formats: JPEG, PNG, WebP, GIF, AVIF",
+          error: `Executable file type "${rawExt}" is restricted for security.`,
         },
         { status: 400 }
       );
     }
+
+    const safeExt = rawExt && /^\.[a-z0-9_-]{1,12}$/i.test(rawExt) ? rawExt : "";
+    const randomId = crypto.randomUUID();
+    const secureFileName = safeExt ? `${randomId}${safeExt}` : `${randomId}.bin`;
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // 3. Unpredictable random filename (prevents file overwrite and path traversal)
-    const randomId = crypto.randomUUID();
-    const secureFileName = `${randomId}${extension}`;
-
-    // 4. Try Supabase Storage if configured
+    // 3. Try Supabase Storage if configured
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
     const supabaseKey =
@@ -83,7 +90,7 @@ export async function POST(request: NextRequest) {
       const { data, error } = await supabase.storage
         .from("archive-assets")
         .upload(`uploads/${secureFileName}`, buffer, {
-          contentType: file.type,
+          contentType: file.type || "application/octet-stream",
           upsert: false,
         });
 
@@ -96,12 +103,15 @@ export async function POST(request: NextRequest) {
           success: true,
           url: publicUrl,
           filename: secureFileName,
+          originalName: file.name,
+          size: file.size,
+          mimeType: file.type || "application/octet-stream",
           storage: "supabase",
         });
       }
     }
 
-    // 5. Local fallback storage (public/uploads/)
+    // 4. Local fallback storage (public/uploads/)
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir, { recursive: true });
@@ -115,6 +125,9 @@ export async function POST(request: NextRequest) {
       success: true,
       url: localUrl,
       filename: secureFileName,
+      originalName: file.name,
+      size: file.size,
+      mimeType: file.type || "application/octet-stream",
       storage: "local",
     });
   } catch (error: any) {
