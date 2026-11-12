@@ -6,10 +6,11 @@ import {
   getChangelogBanner,
 } from "@/db/data-provider";
 import { AdminManager } from "./admin-manager";
+import { PublishPanel } from "@/components/admin/publish-panel";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Admin Studio",
+  title: "Admin Studio - JeptahzRepo",
   robots: {
     index: false,
     follow: false,
@@ -25,8 +26,12 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div className="border-b border-border pb-4">
+    <div className="space-y-8">
+      {/* Live Deployment & Content Publishing Control */}
+      <PublishPanel />
+
+      {/* Main Content Management Hub */}
+      <div className="border-b border-border pb-4 pt-2">
         <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-fg">
           Content Manager
         </h1>
