@@ -1,7 +1,17 @@
 import fs from "fs";
 import path from "path";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { getFirebaseAdmin } from "@/lib/firebase/admin";
 import mockArchiveData from "./seeds/mock-archive.json";
+
+function getFirestoreDb() {
+  try {
+    const { db } = getFirebaseAdmin();
+    return db;
+  } catch {
+    return null;
+  }
+}
 
 function getSupabase() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
@@ -21,7 +31,7 @@ function persistCachedArchive() {
     if (fs.existsSync(seedPath)) {
       fs.writeFileSync(seedPath, JSON.stringify(cachedArchive, null, 2), "utf-8");
     }
-  } catch (err) {
+  } catch {
     // Non-blocking in serverless/read-only environments
   }
 }
@@ -148,11 +158,39 @@ let cachedArchive = {
 
 /**
  * Resilient Data Provider
- * Automatically queries Supabase / Postgres when configured.
- * Seamlessly falls back to local seed data if database is paused, offline, or not yet provisioned.
+ * Primary: Google Cloud Firestore
+ * Secondary: Supabase / PostgreSQL
+ * Fallback: In-memory cached seed data
  */
 
 export async function getSiteSettings(): Promise<SiteSettingsType> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("site_settings").doc("global").get();
+      if (snap.exists) {
+        const data = snap.data() as any;
+        return {
+          site_title: data.site_title || cachedArchive.site_settings.site_title,
+          site_tagline: data.site_tagline || cachedArchive.site_settings.site_tagline,
+          intro_heading: data.intro_heading || cachedArchive.site_settings.intro_heading,
+          intro_subtext: data.intro_subtext || cachedArchive.site_settings.intro_subtext,
+          about_markdown: data.about_markdown || cachedArchive.site_settings.about_markdown,
+          contact_email: data.contact_email || cachedArchive.site_settings.contact_email,
+          social_links: data.social_links || cachedArchive.site_settings.social_links,
+          changelog_banner_image_url: data.changelog_banner_image_url ?? cachedArchive.site_settings.changelog_banner_image_url,
+          changelog_banner_title: data.changelog_banner_title ?? cachedArchive.site_settings.changelog_banner_title,
+          changelog_banner_subtitle: data.changelog_banner_subtitle ?? cachedArchive.site_settings.changelog_banner_subtitle,
+          changelog_banner_link_url: data.changelog_banner_link_url ?? cachedArchive.site_settings.changelog_banner_link_url,
+          changelog_banner_cta_text: data.changelog_banner_cta_text ?? cachedArchive.site_settings.changelog_banner_cta_text,
+          changelog_banner_is_active: data.changelog_banner_is_active ?? cachedArchive.site_settings.changelog_banner_is_active,
+        };
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_SETTINGS_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -171,49 +209,28 @@ export async function getSiteSettings(): Promise<SiteSettingsType> {
           about_markdown: data.about_markdown || cachedArchive.site_settings.about_markdown,
           contact_email: data.contact_email || cachedArchive.site_settings.contact_email,
           social_links: data.social_links || cachedArchive.site_settings.social_links,
-          changelog_banner_image_url:
-            data.changelog_banner_image_url !== undefined
-              ? data.changelog_banner_image_url
-              : cachedArchive.site_settings.changelog_banner_image_url,
-          changelog_banner_title:
-            data.changelog_banner_title !== undefined
-              ? data.changelog_banner_title
-              : cachedArchive.site_settings.changelog_banner_title,
-          changelog_banner_subtitle:
-            data.changelog_banner_subtitle !== undefined
-              ? data.changelog_banner_subtitle
-              : cachedArchive.site_settings.changelog_banner_subtitle,
-          changelog_banner_link_url:
-            data.changelog_banner_link_url !== undefined
-              ? data.changelog_banner_link_url
-              : cachedArchive.site_settings.changelog_banner_link_url,
-          changelog_banner_cta_text:
-            data.changelog_banner_cta_text !== undefined
-              ? data.changelog_banner_cta_text
-              : cachedArchive.site_settings.changelog_banner_cta_text,
-          changelog_banner_is_active:
-            data.changelog_banner_is_active !== undefined
-              ? data.changelog_banner_is_active
-              : cachedArchive.site_settings.changelog_banner_is_active,
+          changelog_banner_image_url: data.changelog_banner_image_url ?? cachedArchive.site_settings.changelog_banner_image_url,
+          changelog_banner_title: data.changelog_banner_title ?? cachedArchive.site_settings.changelog_banner_title,
+          changelog_banner_subtitle: data.changelog_banner_subtitle ?? cachedArchive.site_settings.changelog_banner_subtitle,
+          changelog_banner_link_url: data.changelog_banner_link_url ?? cachedArchive.site_settings.changelog_banner_link_url,
+          changelog_banner_cta_text: data.changelog_banner_cta_text ?? cachedArchive.site_settings.changelog_banner_cta_text,
+          changelog_banner_is_active: data.changelog_banner_is_active ?? cachedArchive.site_settings.changelog_banner_is_active,
         };
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
+
   return cachedArchive.site_settings;
 }
 
 export async function getChangelogBanner(): Promise<ChangelogBannerType> {
   const settings = await getSiteSettings();
   return {
-    image_url:
-      settings.changelog_banner_image_url ||
-      "/banner.webp",
+    image_url: settings.changelog_banner_image_url || "/banner.webp",
     title: settings.changelog_banner_title || "DEV LOGS 2026",
-    subtitle:
-      settings.changelog_banner_subtitle ||
-      "Explore student software builds & open-source tools.",
+    subtitle: settings.changelog_banner_subtitle || "Explore student software builds & open-source tools.",
     link_url: settings.changelog_banner_link_url || "/home/apps",
     cta_text: settings.changelog_banner_cta_text || "Explore Projects",
     is_active: settings.changelog_banner_is_active !== false,
@@ -242,13 +259,19 @@ export async function updateChangelogBanner(
     changelog_banner_is_active: next.is_active,
   };
 
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("site_settings").doc("global").set(dbUpdates, { merge: true });
+    } catch (err: any) {
+      console.warn("[FIRESTORE_UPDATE_BANNER_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      await supabase
-        .from("site_settings")
-        .update(dbUpdates)
-        .eq("id", "global");
+      await supabase.from("site_settings").update(dbUpdates).eq("id", "global");
     } catch {
       // Fallback
     }
@@ -264,6 +287,20 @@ export async function updateChangelogBanner(
 }
 
 export async function getTopics(): Promise<TopicType[]> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("topics").orderBy("sort_order", "asc").get();
+      if (!snap.empty) {
+        return snap.docs
+          .map((doc) => doc.data() as TopicType)
+          .filter((t) => t.is_visible !== false);
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_TOPICS_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -277,13 +314,30 @@ export async function getTopics(): Promise<TopicType[]> {
         return data as TopicType[];
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
   return cachedArchive.topics.filter((t) => t.is_visible);
 }
 
 export async function getApps(options?: { featuredOnly?: boolean }): Promise<AppType[]> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("apps").get();
+      if (!snap.empty) {
+        let apps = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as AppType));
+        if (options?.featuredOnly) {
+          apps = apps.filter((a) => a.is_featured);
+        }
+        apps.sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+        return apps;
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_APPS_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -296,7 +350,7 @@ export async function getApps(options?: { featuredOnly?: boolean }): Promise<App
         return data as AppType[];
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
 
@@ -308,6 +362,19 @@ export async function getApps(options?: { featuredOnly?: boolean }): Promise<App
 }
 
 export async function getAppBySlug(slug: string): Promise<AppType | null> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("apps").where("slug", "==", slug).limit(1).get();
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        return { id: doc.id, ...doc.data() } as AppType;
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_APP_BY_SLUG_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -321,7 +388,7 @@ export async function getAppBySlug(slug: string): Promise<AppType | null> {
         return data as AppType;
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
 
@@ -330,11 +397,59 @@ export async function getAppBySlug(slug: string): Promise<AppType | null> {
 }
 
 export async function getEntries(options?: {
-  type?: string;
   topicSlug?: string;
+  type?: string;
   query?: string;
   includeUnpublished?: boolean;
+  limit?: number;
 }): Promise<EntryType[]> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("entries").get();
+      if (!snap.empty) {
+        let list = snap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as EntryType[];
+
+        if (!options?.includeUnpublished) {
+          list = list.filter((e) => e.is_published !== false);
+        }
+        if (options?.type) {
+          list = list.filter((e) => e.type === options.type);
+        }
+        if (options?.topicSlug) {
+          list = list.filter((e) => e.topic_slug === options.topicSlug);
+        }
+        if (options?.query) {
+          const q = options.query.toLowerCase();
+          list = list.filter(
+            (e) =>
+              e.title.toLowerCase().includes(q) ||
+              (e.summary && e.summary.toLowerCase().includes(q)) ||
+              (e.tags && e.tags.some((t: string) => t.toLowerCase().includes(q)))
+          );
+        }
+
+        // Sort: pinned first, then created_at desc
+        list.sort((a, b) => {
+          if (a.is_pinned && !b.is_pinned) return -1;
+          if (!a.is_pinned && b.is_pinned) return 1;
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+        });
+
+        if (options?.limit) {
+          list = list.slice(0, options.limit);
+        }
+
+        return list;
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_ENTRIES_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -345,7 +460,7 @@ export async function getEntries(options?: {
         .order("created_at", { ascending: false });
 
       if (!options?.includeUnpublished) {
-        q = q.eq("is_published", true).eq("is_private", false);
+        q = q.eq("is_published", true);
       }
 
       if (options?.type) {
@@ -368,7 +483,7 @@ export async function getEntries(options?: {
         })) as EntryType[];
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
 
@@ -402,6 +517,19 @@ export async function getEntries(options?: {
 }
 
 export async function getEntryBySlug(slug: string): Promise<EntryType | null> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("entries").where("slug", "==", slug).limit(1).get();
+      if (!snap.empty) {
+        const doc = snap.docs[0];
+        return { id: doc.id, ...doc.data() } as EntryType;
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_ENTRY_BY_SLUG_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -421,7 +549,7 @@ export async function getEntryBySlug(slug: string): Promise<EntryType | null> {
         } as EntryType;
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
 
@@ -429,14 +557,25 @@ export async function getEntryBySlug(slug: string): Promise<EntryType | null> {
   return entry || null;
 }
 
-// Mutation handlers with live Supabase persistence + cache sync
+// Mutation handlers: Live Firestore + Supabase mirror + runtime cache
 export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): Promise<EntryType> {
+  const newId = `entry-${Date.now()}`;
   const newEntry: EntryType = {
     ...entry,
-    id: `entry-${Date.now()}`,
+    id: newId,
     created_at: new Date().toISOString(),
     view_count: 0,
+    likes_count: 0,
   };
+
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("entries").doc(newId).set(newEntry);
+    } catch (err: any) {
+      console.error("[FIRESTORE_CREATE_ENTRY_ERROR]", err.message);
+    }
+  }
 
   const supabase = getSupabase();
   if (supabase) {
@@ -467,42 +606,9 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
           video_url: entry.video_url || null,
         },
       };
-
-      const { data, error } = await supabase.from("entries").insert([payload]).select().single();
-      if (!error && data) {
-        const item = {
-          ...data,
-          attached_files: (data as any).attached_files || (data as any).metadata?.attached_files || [],
-          media_items: (data as any).media_items || (data as any).metadata?.media_items || [],
-          video_url: (data as any).video_url || (data as any).metadata?.video_url || null,
-        } as EntryType;
-        cachedArchive.entries.unshift(item);
-        persistCachedArchive();
-        return item;
-      }
-      if (error) {
-        console.error("[SUPABASE_CREATE_ENTRY_ERROR]", error);
-        // Resilient fallback: strip extra top-level columns if schema is strictly cached
-        if (error.code === "PGRST204") {
-          delete payload.attached_files;
-          delete payload.media_items;
-          delete payload.video_url;
-          const retry = await supabase.from("entries").insert([payload]).select().single();
-          if (!retry.error && retry.data) {
-            const item = {
-              ...retry.data,
-              attached_files: (retry.data as any).metadata?.attached_files || [],
-              media_items: (retry.data as any).metadata?.media_items || [],
-              video_url: (retry.data as any).metadata?.video_url || null,
-            } as EntryType;
-            cachedArchive.entries.unshift(item);
-            persistCachedArchive();
-            return item;
-          }
-        }
-      }
-    } catch (err) {
-      console.error("[SUPABASE_CREATE_ENTRY_EXCEPTION]", err);
+      await supabase.from("entries").insert([payload]);
+    } catch {
+      // Non-blocking mirror
     }
   }
 
@@ -512,55 +618,30 @@ export async function createEntry(entry: Omit<EntryType, "id" | "created_at">): 
 }
 
 export async function updateEntry(id: string, updates: Partial<EntryType>): Promise<EntryType | null> {
-  const supabase = getSupabase();
-  if (supabase) {
+  const db = getFirestoreDb();
+  if (db) {
     try {
-      const dbUpdates: Record<string, any> = { ...updates };
-      if (updates.metadata || updates.attached_files || updates.media_items || updates.video_url) {
-        dbUpdates.metadata = {
-          ...(updates.metadata || {}),
-          ...(updates.attached_files ? { attached_files: updates.attached_files } : {}),
-          ...(updates.media_items ? { media_items: updates.media_items } : {}),
-          ...(updates.video_url !== undefined ? { video_url: updates.video_url } : {}),
-        };
-      }
-
-      const { data, error } = await supabase.from("entries").update(dbUpdates).eq("id", id).select().maybeSingle();
-      if (!error && data) {
-        const item = {
-          ...data,
-          attached_files: (data as any).attached_files || (data as any).metadata?.attached_files || [],
-          media_items: (data as any).media_items || (data as any).metadata?.media_items || [],
-          video_url: (data as any).video_url || (data as any).metadata?.video_url || null,
-        } as EntryType;
+      const docRef = db.collection("entries").doc(id);
+      await docRef.set({ ...updates, updated_at: new Date().toISOString() }, { merge: true });
+      const snap = await docRef.get();
+      if (snap.exists) {
+        const item = { id: snap.id, ...snap.data() } as EntryType;
         const idx = cachedArchive.entries.findIndex((e) => e.id === id);
         if (idx !== -1) cachedArchive.entries[idx] = item;
         persistCachedArchive();
         return item;
       }
-      if (error) {
-        console.error("[SUPABASE_UPDATE_ENTRY_ERROR]", error);
-        if (error.code === "PGRST204") {
-          delete dbUpdates.attached_files;
-          delete dbUpdates.media_items;
-          delete dbUpdates.video_url;
-          const retry = await supabase.from("entries").update(dbUpdates).eq("id", id).select().maybeSingle();
-          if (!retry.error && retry.data) {
-            const item = {
-              ...retry.data,
-              attached_files: (retry.data as any).metadata?.attached_files || [],
-              media_items: (retry.data as any).metadata?.media_items || [],
-              video_url: (retry.data as any).metadata?.video_url || null,
-            } as EntryType;
-            const idx = cachedArchive.entries.findIndex((e) => e.id === id);
-            if (idx !== -1) cachedArchive.entries[idx] = item;
-            persistCachedArchive();
-            return item;
-          }
-        }
-      }
-    } catch (err) {
-      console.error("[SUPABASE_UPDATE_ENTRY_EXCEPTION]", err);
+    } catch (err: any) {
+      console.error("[FIRESTORE_UPDATE_ENTRY_ERROR]", err.message);
+    }
+  }
+
+  const supabase = getSupabase();
+  if (supabase) {
+    try {
+      await supabase.from("entries").update(updates).eq("id", id);
+    } catch {
+      // Non-blocking mirror
     }
   }
 
@@ -573,15 +654,23 @@ export async function updateEntry(id: string, updates: Partial<EntryType>): Prom
 
 export async function deleteEntry(id: string): Promise<boolean> {
   let deleted = false;
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("entries").doc(id).delete();
+      deleted = true;
+    } catch (err: any) {
+      console.error("[FIRESTORE_DELETE_ENTRY_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { error } = await supabase.from("entries").delete().eq("id", id);
-      if (!error) {
-        deleted = true;
-      }
+      await supabase.from("entries").delete().eq("id", id);
+      deleted = true;
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -596,23 +685,28 @@ export async function deleteEntry(id: string): Promise<boolean> {
 }
 
 export async function createApp(app: Omit<AppType, "id" | "created_at">): Promise<AppType> {
+  const newId = `app-${Date.now()}`;
   const newApp: AppType = {
     ...app,
-    id: `app-${Date.now()}`,
+    id: newId,
     created_at: new Date().toISOString(),
   };
+
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("apps").doc(newId).set(newApp);
+    } catch (err: any) {
+      console.error("[FIRESTORE_CREATE_APP_ERROR]", err.message);
+    }
+  }
 
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from("apps").insert([app]).select().single();
-      if (!error && data) {
-        cachedArchive.apps.push(data as AppType);
-        persistCachedArchive();
-        return data as AppType;
-      }
+      await supabase.from("apps").insert([newApp]);
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -622,18 +716,30 @@ export async function createApp(app: Omit<AppType, "id" | "created_at">): Promis
 }
 
 export async function updateApp(id: string, updates: Partial<AppType>): Promise<AppType | null> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const docRef = db.collection("apps").doc(id);
+      await docRef.set({ ...updates, updated_at: new Date().toISOString() }, { merge: true });
+      const snap = await docRef.get();
+      if (snap.exists) {
+        const item = { id: snap.id, ...snap.data() } as AppType;
+        const idx = cachedArchive.apps.findIndex((a) => a.id === id);
+        if (idx !== -1) cachedArchive.apps[idx] = item;
+        persistCachedArchive();
+        return item;
+      }
+    } catch (err: any) {
+      console.error("[FIRESTORE_UPDATE_APP_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase.from("apps").update(updates).eq("id", id).select().maybeSingle();
-      if (!error && data) {
-        const idx = cachedArchive.apps.findIndex((a) => a.id === id);
-        if (idx !== -1) cachedArchive.apps[idx] = data as AppType;
-        persistCachedArchive();
-        return data as AppType;
-      }
+      await supabase.from("apps").update(updates).eq("id", id);
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -646,15 +752,23 @@ export async function updateApp(id: string, updates: Partial<AppType>): Promise<
 
 export async function deleteApp(id: string): Promise<boolean> {
   let deleted = false;
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("apps").doc(id).delete();
+      deleted = true;
+    } catch (err: any) {
+      console.error("[FIRESTORE_DELETE_APP_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { error } = await supabase.from("apps").delete().eq("id", id);
-      if (!error) {
-        deleted = true;
-      }
+      await supabase.from("apps").delete().eq("id", id);
+      deleted = true;
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -669,6 +783,24 @@ export async function deleteApp(id: string): Promise<boolean> {
 }
 
 export async function getChangelogItems(): Promise<ChangelogItem[]> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const snap = await db.collection("changelog_items").get();
+      if (!snap.empty) {
+        const items = snap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as ChangelogItem));
+        items.sort(
+          (a, b) =>
+            (a.sort_order ?? 0) - (b.sort_order ?? 0) ||
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
+        return items;
+      }
+    } catch (err: any) {
+      console.warn("[FIRESTORE_GET_CHANGELOG_FALLBACK]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
@@ -682,7 +814,7 @@ export async function getChangelogItems(): Promise<ChangelogItem[]> {
         return data as ChangelogItem[];
       }
     } catch {
-      // Fall through to in-memory fallback
+      // Fallback
     }
   }
 
@@ -697,28 +829,29 @@ export async function getChangelogItems(): Promise<ChangelogItem[]> {
 export async function createChangelogItem(
   item: Omit<ChangelogItem, "id" | "created_at">
 ): Promise<ChangelogItem> {
+  const newId = `log-${Date.now()}`;
   const newItem: ChangelogItem = {
     ...item,
-    id: `log-${Date.now()}`,
+    id: newId,
     sort_order: item.sort_order ?? cachedArchive.changelog_items.length + 1,
     created_at: new Date().toISOString(),
   };
 
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("changelog_items").doc(newId).set(newItem);
+    } catch (err: any) {
+      console.error("[FIRESTORE_CREATE_CHANGELOG_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase
-        .from("changelog_items")
-        .insert([newItem])
-        .select()
-        .single();
-      if (!error && data) {
-        cachedArchive.changelog_items.unshift(data as ChangelogItem);
-        persistCachedArchive();
-        return data as ChangelogItem;
-      }
+      await supabase.from("changelog_items").insert([newItem]);
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -731,23 +864,30 @@ export async function updateChangelogItem(
   id: string,
   updates: Partial<ChangelogItem>
 ): Promise<ChangelogItem | null> {
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      const docRef = db.collection("changelog_items").doc(id);
+      await docRef.set({ ...updates, updated_at: new Date().toISOString() }, { merge: true });
+      const snap = await docRef.get();
+      if (snap.exists) {
+        const item = { id: snap.id, ...snap.data() } as ChangelogItem;
+        const idx = cachedArchive.changelog_items.findIndex((c) => c.id === id);
+        if (idx !== -1) cachedArchive.changelog_items[idx] = item;
+        persistCachedArchive();
+        return item;
+      }
+    } catch (err: any) {
+      console.error("[FIRESTORE_UPDATE_CHANGELOG_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { data, error } = await supabase
-        .from("changelog_items")
-        .update(updates)
-        .eq("id", id)
-        .select()
-        .maybeSingle();
-      if (!error && data) {
-        const idx = cachedArchive.changelog_items.findIndex((c) => c.id === id);
-        if (idx !== -1) cachedArchive.changelog_items[idx] = data as ChangelogItem;
-        persistCachedArchive();
-        return data as ChangelogItem;
-      }
+      await supabase.from("changelog_items").update(updates).eq("id", id);
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -763,15 +903,23 @@ export async function updateChangelogItem(
 
 export async function deleteChangelogItem(id: string): Promise<boolean> {
   let deleted = false;
+  const db = getFirestoreDb();
+  if (db) {
+    try {
+      await db.collection("changelog_items").doc(id).delete();
+      deleted = true;
+    } catch (err: any) {
+      console.error("[FIRESTORE_DELETE_CHANGELOG_ERROR]", err.message);
+    }
+  }
+
   const supabase = getSupabase();
   if (supabase) {
     try {
-      const { error } = await supabase.from("changelog_items").delete().eq("id", id);
-      if (!error) {
-        deleted = true;
-      }
+      await supabase.from("changelog_items").delete().eq("id", id);
+      deleted = true;
     } catch {
-      // Fallback
+      // Non-blocking mirror
     }
   }
 
@@ -784,4 +932,3 @@ export async function deleteChangelogItem(id: string): Promise<boolean> {
 
   return deleted;
 }
-

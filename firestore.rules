@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Public content collections: readable by anyone, writeable only via server Admin SDK
+    match /entries/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /apps/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /topics/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /changelog_items/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /site_settings/{document=**} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Default deny all other collections
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
