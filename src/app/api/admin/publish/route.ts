@@ -17,6 +17,19 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await executePublish();
+
+    // Record audit trail (Blueprint Section 7 & 10.1)
+    const { writeAudit } = await import("@/lib/audit");
+    await writeAudit({
+      action: "publish",
+      entity: "snapshot",
+      entityId: result.commitSha,
+      meta: {
+        hash: result.hash,
+        commitUrl: result.commitUrl,
+      },
+    });
+
     return NextResponse.json(result);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : "Failed to execute publish";

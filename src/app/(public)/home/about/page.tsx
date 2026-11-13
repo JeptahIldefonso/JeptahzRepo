@@ -45,7 +45,7 @@ export default async function AboutPage() {
       {/* Featured Pinned Portfolio Link Card (Noticeable Shining Gray) */}
       <section className="space-y-3">
         <div className="flex items-center justify-end">
-          <span className="inline-flex items-center space-x-1.5 font-mono text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+          <span className="inline-flex items-center space-x-1.5 font-mono text-[11px] text-emerald-700 font-medium">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
             <span>Verified Live</span>
           </span>

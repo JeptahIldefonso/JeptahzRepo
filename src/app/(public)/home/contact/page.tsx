@@ -2,6 +2,7 @@ import React from "react";
 import { Github, Twitter, Linkedin, HardDrive, Mail } from "lucide-react";
 import { getSiteSettings } from "@/db/data-provider";
 import { Button } from "@/components/ui/button";
+import { ContactForm } from "@/components/contact/contact-form";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -107,6 +108,9 @@ export default async function ContactPage() {
             )}
           </div>
         </div>
+
+        {/* Interactive Inquiries Form (Blueprint Section 14) */}
+        <ContactForm />
       </div>
     </div>
   );

@@ -5,8 +5,7 @@ import {
   getChangelogItems,
   getChangelogBanner,
 } from "@/db/data-provider";
-import { AdminManager } from "./admin-manager";
-import { PublishPanel } from "@/components/admin/publish-panel";
+import { AdminStudioShell } from "@/components/admin/admin-studio-shell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -26,26 +25,11 @@ export default async function AdminPage() {
   ]);
 
   return (
-    <div className="space-y-8">
-      {/* Live Deployment & Content Publishing Control */}
-      <PublishPanel />
-
-      {/* Main Content Management Hub */}
-      <div className="border-b border-border pb-4 pt-2">
-        <h1 className="font-sans text-2xl sm:text-3xl font-bold tracking-tight text-fg">
-          Content Manager
-        </h1>
-        <p className="text-xs sm:text-sm text-fg-muted mt-1">
-          Create, edit, and manage your notes, projects, ideas, links, courses, and system changelog.
-        </p>
-      </div>
-
-      <AdminManager
-        initialApps={apps}
-        initialEntries={entries}
-        initialChangelog={changelog}
-        initialBanner={banner}
-      />
-    </div>
+    <AdminStudioShell
+      initialApps={apps}
+      initialEntries={entries}
+      initialChangelog={changelog}
+      initialBanner={banner}
+    />
   );
 }

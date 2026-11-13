@@ -25,7 +25,7 @@ export function getGitHubConfig(): GitHubConfig {
     owner: process.env.GITHUB_OWNER?.trim() || "JeptahIldefonso",
     repo: process.env.GITHUB_REPO?.trim() || "JeptahzRepo",
     branch: process.env.GITHUB_BRANCH?.trim() || "main",
-    filePath: "src/db/seeds/mock-archive.json",
+    filePath: process.env.SNAPSHOT_PATH?.trim() || "src/db/seeds/mock-archive.json",
   };
 }
 

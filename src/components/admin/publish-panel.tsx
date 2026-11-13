@@ -200,10 +200,10 @@ export function PublishPanel() {
           <div
             className={`mb-4 px-4 py-2.5 rounded-[8px] text-xs font-mono flex items-center justify-between border ${
               toastMessage.type === "success"
-                ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20"
+                ? "bg-emerald-500/10 text-emerald-800 border-emerald-500/20"
                 : toastMessage.type === "error"
-                ? "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20"
-                : "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20"
+                ? "bg-red-500/10 text-red-800 border-red-500/20"
+                : "bg-blue-500/10 text-blue-800 border-blue-500/20"
             }`}
           >
             <div className="flex items-center space-x-2">
@@ -250,23 +250,23 @@ export function PublishPanel() {
           {/* Status Badge */}
           <div className="shrink-0">
             {status?.state === "publishing" ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 animate-pulse">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-blue-500/10 text-blue-800 border border-blue-500/20 animate-pulse">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Publishing…
               </span>
             ) : status?.state === "error" ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-red-500/10 text-red-800 border border-red-500/20">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
                 Publish failed
               </span>
             ) : isUpToDate ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-medium bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
                 Live and up to date
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-semibold bg-amber-500/10 text-amber-900 border border-amber-500/30">
+                <span className="h-1.5 w-1.5 rounded-full bg-amber-600" />
                 Unpublished changes
               </span>
             )}
@@ -278,7 +278,7 @@ export function PublishPanel() {
           <Button
             onClick={() => setShowPublishModal(true)}
             disabled={!canPublish}
-            className="h-10 px-6 font-mono text-xs font-bold uppercase tracking-[0.14em] shadow-sm bg-fg text-bg-raised hover:bg-fg/90 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="h-10 px-6 font-mono text-xs font-bold uppercase tracking-[0.14em] shadow-sm bg-fg text-bg-raised hover:bg-fg/90 disabled:bg-bg-subtle disabled:text-fg-subtle disabled:border disabled:border-border disabled:shadow-none disabled:cursor-not-allowed cursor-pointer"
           >
             {isPublishingAction ? (
               <>
@@ -294,7 +294,7 @@ export function PublishPanel() {
             variant="outline"
             onClick={() => setShowRevertModal(true)}
             disabled={!canRevert}
-            className="h-10 px-5 font-mono text-xs font-bold uppercase tracking-[0.14em] border-border text-fg hover:bg-bg-hover disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+            className="h-10 px-5 font-mono text-xs font-bold uppercase tracking-[0.14em] border border-border text-fg hover:bg-bg-hover disabled:border-border/40 disabled:text-fg-subtle/50 disabled:bg-transparent disabled:cursor-not-allowed cursor-pointer"
           >
             {isRevertingAction ? (
               <>
@@ -322,7 +322,7 @@ export function PublishPanel() {
 
         {/* Error notice if present */}
         {(errorMessage || status?.error) && (
-          <div className="mt-4 p-3 rounded-[6px] bg-red-500/10 border border-red-500/20 text-xs text-red-600 dark:text-red-400 font-mono flex items-start space-x-2">
+          <div className="mt-4 p-3 rounded-[6px] bg-red-500/10 border border-red-500/20 text-xs text-red-700 font-mono flex items-start space-x-2">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div className="leading-relaxed">{errorMessage || status?.error}</div>
           </div>

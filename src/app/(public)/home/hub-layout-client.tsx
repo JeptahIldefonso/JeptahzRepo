@@ -90,49 +90,52 @@ export function HubLayoutClient({
         />
       )}
 
-      {/* Main Content Area - Fully Untouched & Independent (Phase 57 Architecture) */}
+      {/* Main Content Area */}
       <main
         className={`flex flex-col min-h-screen w-full transition-all duration-300 relative ${
-          sidebarCollapsed
-            ? "pl-0 pr-0"
-            : "lg:pl-56 pr-0"
+          sidebarCollapsed ? "pl-0" : "lg:pl-56"
         }`}
       >
-        <div className={`w-full flex-1 flex flex-col ${sidebarCollapsed ? "" : "xl:pr-56"}`}>
-          <div className="flex-1 py-8 sm:py-10 md:py-12 w-full max-w-[940px] mx-auto px-4 sm:px-6 flex flex-col">
-            {children}
+        <div className="w-full flex-1 flex justify-center py-6 sm:py-8 md:py-10 px-4 sm:px-6 lg:px-8">
+          <div className="w-full max-w-6xl flex gap-8 xl:gap-10 items-start justify-center">
+            {/* Primary Content Stream */}
+            <div
+              className={`w-full min-w-0 ${
+                isExcluded ? "max-w-5xl mx-auto" : "flex-1 max-w-3xl"
+              }`}
+            >
+              {children}
+            </div>
+
+            {/* In-Page Right Side Changelog Rail */}
+            {!isExcluded && (
+              <aside className="hidden xl:block w-[280px] shrink-0 sticky top-8">
+                <RightFloatingPanel
+                  initialItems={initialChangelog}
+                  initialBanner={initialBanner}
+                />
+              </aside>
+            )}
           </div>
         </div>
 
         {/* Global Hub Footer (Styled in requested #041a24 color) */}
         <footer className="w-full mt-auto bg-[#041a24] text-white/80 border-t border-[#041a24]">
-          <div className={`w-full ${sidebarCollapsed ? "" : "xl:pr-56"}`}>
-            <div className="max-w-[940px] mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
-              <div className="flex items-center space-x-2.5">
-                <span className="font-editorial italic text-base text-white font-normal">
-                  JeptahzRepo
-                </span>
-                <span className="text-white/30">&bull;</span>
-                <span className="text-[10px] uppercase tracking-wider text-white/70 font-sans font-medium">
-                  Blog Archive
-                </span>
-              </div>
-              <div className="text-[10px] text-white/50 tracking-wider">
-                EST. 2026 &bull; ALL RIGHTS RESERVED
-              </div>
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-mono">
+            <div className="flex items-center space-x-2.5">
+              <span className="font-editorial italic text-base text-white font-normal">
+                JeptahzRepo
+              </span>
+              <span className="text-white/30">&bull;</span>
+              <span className="text-[10px] uppercase tracking-wider text-white/70 font-sans font-medium">
+                Blog Archive
+              </span>
+            </div>
+            <div className="text-[10px] text-white/50 tracking-wider">
+              EST. 2026 &bull; ALL RIGHTS RESERVED
             </div>
           </div>
         </footer>
-
-        {/* In-Page Right Side Changelog Rail (Not fully floating, stays on side, moves on scroll) */}
-        {!isExcluded && (
-          <div className="hidden xl:block absolute right-4 lg:right-6 2xl:right-8 top-8 sm:top-10 md:top-12 w-[270px] pointer-events-auto">
-            <RightFloatingPanel
-              initialItems={initialChangelog}
-              initialBanner={initialBanner}
-            />
-          </div>
-        )}
       </main>
     </div>
   );

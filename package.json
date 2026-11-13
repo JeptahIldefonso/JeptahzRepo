@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "npx --yes tsx --test src/lib/publish/publish.test.ts",
+    "test": "npx --yes tsx --test src/lib/publish/publish.test.ts src/lib/content/content.test.ts",
     "hash-password": "npx --yes tsx scripts/hash-password.ts",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm run knip && npm run build",

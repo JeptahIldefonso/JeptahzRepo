@@ -10,17 +10,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "default", size = "md", children, disabled, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-mono text-xs uppercase tracking-[0.14em] transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg disabled:pointer-events-none disabled:opacity-40 cursor-pointer select-none active:scale-[0.98]";
+      "inline-flex items-center justify-center font-mono text-xs uppercase tracking-[0.14em] transition-all duration-150 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-fg disabled:pointer-events-none disabled:cursor-not-allowed cursor-pointer select-none active:scale-[0.98]";
 
     const variantStyles = {
       default:
-        "bg-fg text-bg-raised hover:bg-fg/90 shadow-sm border border-transparent",
+        "bg-fg text-bg-raised hover:bg-fg/90 shadow-sm border border-transparent disabled:bg-bg-subtle disabled:text-fg-subtle disabled:border-border disabled:shadow-none",
       outline:
-        "bg-transparent text-fg border border-border hover:bg-bg-hover hover:border-[#041a24]",
+        "bg-transparent text-fg border border-border hover:bg-bg-hover hover:border-[#041a24] disabled:border-border/40 disabled:text-fg-subtle/50 disabled:bg-transparent",
       ghost:
-        "bg-transparent text-fg hover:bg-bg-hover hover:text-fg",
+        "bg-transparent text-fg hover:bg-bg-hover hover:text-fg disabled:text-fg-subtle/40",
       subtle:
-        "bg-bg-hover text-fg hover:bg-bg-subtle border border-border/50",
+        "bg-bg-hover text-fg hover:bg-bg-subtle border border-border/50 disabled:opacity-40",
     };
 
     const sizeStyles = {

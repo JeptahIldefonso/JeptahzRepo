@@ -23,10 +23,10 @@ export async function middleware(request: NextRequest) {
       request.method.toUpperCase()
     );
 
-    // Skip auth check only for public auth entry points:
-    const isPublicAuthRoute = pathname === "/api/auth/login";
+    // Skip auth check only for public entry points:
+    const isPublicRoute = pathname === "/api/auth/login" || pathname === "/api/contact";
 
-    if (isMutatingMethod && !isPublicAuthRoute) {
+    if (isMutatingMethod && !isPublicRoute) {
       // CSRF Protection: Check Origin header for browser requests
       const origin = request.headers.get("origin");
       if (origin) {

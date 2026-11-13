@@ -1142,139 +1142,25 @@ export function AdminManager({
         </div>
       )}
 
-      {/* ── Section Metric Cards (Clickable Quick Switchers) ── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-        <button
-          onClick={() => {
-            setActiveTab("docs");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "docs"
-              ? "bg-black text-white border-black shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Notes & Docs</span>
-            <BookOpen className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{docsEntries.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/docs feed</div>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("apps");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "apps"
-              ? "bg-black text-white border-black shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Projects</span>
-            <Box className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{apps.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/apps showcase</div>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("ideas");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "ideas"
-              ? "bg-black text-white border-black shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Ideas & Logs</span>
-            <Lightbulb className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{ideasEntries.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/ideas</div>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("resources");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "resources"
-              ? "bg-black text-white border-black shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Helpful Links</span>
-            <Link2 className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{resourcesEntries.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/resources</div>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("courses");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "courses"
-              ? "bg-black text-white border-black shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Courses</span>
-            <GraduationCap className="w-3.5 h-3.5" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{coursesEntries.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">/home/courses</div>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab("changelog");
-            setSearchQuery("");
-          }}
-          className={`text-left p-3.5 border rounded-[8px] transition-all cursor-pointer ${
-            activeTab === "changelog"
-              ? "bg-[#041a24] text-white border-[#041a24] shadow-sm"
-              : "bg-bg-raised border-border hover:border-black/30 text-fg"
-          }`}
-        >
-          <div className="flex items-center justify-between text-xs font-mono opacity-80">
-            <span>Changelog</span>
-            <GitCommit className="w-3.5 h-3.5 text-sky-400" />
-          </div>
-          <div className="text-2xl font-display font-medium mt-1">{changelog.length}</div>
-          <div className="text-[10px] opacity-70 mt-0.5 truncate">#041a24 Rail Stream</div>
-        </button>
-      </div>
-
-      {/* ── Dedicated Tab Selector Pill Bar ── */}
-      <div className="flex items-center justify-between border-b border-border pb-3 gap-3 overflow-x-auto">
-        <div className="flex items-center space-x-1 p-0.5 bg-neutral-200/70 rounded-[6px] shrink-0">
+      {/* ── Content Studio Category Switcher ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
+        <div className="flex items-center space-x-1 p-1 bg-bg-subtle border border-border rounded-[6px] shrink-0 overflow-x-auto max-w-full">
           <button
             onClick={() => {
               setActiveTab("docs");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "docs"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <BookOpen className="w-3 h-3" />
-            <span>Docs ({docsEntries.length})</span>
+            <BookOpen className="w-3.5 h-3.5" />
+            <span>Notes & Docs</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({docsEntries.length})
+            </span>
           </button>
 
           <button
@@ -1282,14 +1168,17 @@ export function AdminManager({
               setActiveTab("apps");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "apps"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <Box className="w-3 h-3" />
-            <span>Projects ({apps.length})</span>
+            <Box className="w-3.5 h-3.5" />
+            <span>Projects</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({apps.length})
+            </span>
           </button>
 
           <button
@@ -1297,14 +1186,17 @@ export function AdminManager({
               setActiveTab("ideas");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "ideas"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <Lightbulb className="w-3 h-3" />
-            <span>Ideas ({ideasEntries.length})</span>
+            <Lightbulb className="w-3.5 h-3.5" />
+            <span>Ideas & Logs</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({ideasEntries.length})
+            </span>
           </button>
 
           <button
@@ -1312,14 +1204,17 @@ export function AdminManager({
               setActiveTab("resources");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "resources"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <Link2 className="w-3 h-3" />
-            <span>Links ({resourcesEntries.length})</span>
+            <Link2 className="w-3.5 h-3.5" />
+            <span>Helpful Links</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({resourcesEntries.length})
+            </span>
           </button>
 
           <button
@@ -1327,14 +1222,17 @@ export function AdminManager({
               setActiveTab("courses");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "courses"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <GraduationCap className="w-3 h-3" />
-            <span>Courses ({coursesEntries.length})</span>
+            <GraduationCap className="w-3.5 h-3.5" />
+            <span>Courses</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({coursesEntries.length})
+            </span>
           </button>
 
           <button
@@ -1342,77 +1240,80 @@ export function AdminManager({
               setActiveTab("changelog");
               setSearchQuery("");
             }}
-            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-[5px] text-[11px] font-mono transition-all cursor-pointer ${
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-[4px] text-xs font-mono transition-all cursor-pointer ${
               activeTab === "changelog"
-                ? "bg-white text-black font-semibold shadow-2xs"
-                : "text-neutral-600 hover:text-black"
+                ? "bg-bg-raised text-fg font-semibold shadow-xs border border-border"
+                : "text-fg-subtle hover:text-fg"
             }`}
           >
-            <GitCommit className="w-3 h-3 text-sky-500" />
-            <span>Changelog ({changelog.length})</span>
+            <GitCommit className="w-3.5 h-3.5 text-sky-500" />
+            <span>Changelog</span>
+            <span className="text-[10px] opacity-75 font-mono ml-0.5">
+              ({changelog.length})
+            </span>
           </button>
         </div>
 
-        {/* Tab Specific Quick Create Button - Bigger & More Prominent */}
-        <div className="shrink-0">
+        {/* Tab Specific Quick Create Button */}
+        <div className="shrink-0 self-start sm:self-auto">
           {activeTab === "docs" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewDoc}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>Create Note / Post</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
+              <span>New Note</span>
             </Button>
           )}
           {activeTab === "apps" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewApp}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
               <span>Add Project</span>
             </Button>
           )}
           {activeTab === "ideas" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewIdea}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>New Idea / Log</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
+              <span>New Idea</span>
             </Button>
           )}
           {activeTab === "resources" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewResource}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>Add Helpful Link</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
+              <span>Add Link</span>
             </Button>
           )}
           {activeTab === "courses" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewCourse}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>Add Course Guide</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
+              <span>Add Course</span>
             </Button>
           )}
           {activeTab === "changelog" && (
             <Button
-              size="md"
+              size="sm"
               onClick={handleOpenNewChangelog}
-              className="h-10 px-4 text-xs font-semibold shadow-xs hover:shadow-md transition-all rounded-[6px] cursor-pointer bg-[#041a24] hover:bg-[#062432] text-white"
+              className="h-9 px-3.5 text-xs font-medium rounded-[4px] cursor-pointer"
             >
-              <Plus className="w-4 h-4 mr-2 stroke-[2.25]" />
-              <span>Add Changelog Entry</span>
+              <Plus className="w-3.5 h-3.5 mr-1.5 stroke-[2.25]" />
+              <span>Add Entry</span>
             </Button>
           )}
         </div>
@@ -1476,7 +1377,7 @@ export function AdminManager({
         <div className="space-y-3">
           {filteredDocs.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No notes or announcements found. Click &quot;+ Create Note / Post&quot; to publish one.
+              No notes or announcements found. Click &quot;+ New Note&quot; to publish one.
             </div>
           ) : (
             filteredDocs.map((item) => (
@@ -1647,7 +1548,7 @@ export function AdminManager({
         <div className="space-y-3">
           {filteredIdeas.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No ideas or dev logs found. Click &quot;+ New Idea / Log&quot; to log a thought.
+              No ideas or dev logs found. Click &quot;+ New Idea&quot; to log a thought.
             </div>
           ) : (
             filteredIdeas.map((idea) => (
@@ -1713,7 +1614,7 @@ export function AdminManager({
         <div className="space-y-3">
           {filteredResources.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No helpful links found. Click &quot;+ Add Helpful Link&quot; to save a bookmark.
+              No helpful links found. Click &quot;+ Add Link&quot; to save a bookmark.
             </div>
           ) : (
             filteredResources.map((resItem) => (
@@ -1801,7 +1702,7 @@ export function AdminManager({
         <div className="space-y-3">
           {filteredCourses.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No courses found. Click &quot;+ Add Course Guide&quot; to add a course syllabus.
+              No courses found. Click &quot;+ Add Course&quot; to add a course syllabus.
             </div>
           ) : (
             filteredCourses.map((course) => (
@@ -2106,7 +2007,7 @@ export function AdminManager({
 
           {filteredChangelog.length === 0 ? (
             <div className="p-8 text-center border border-dashed border-border rounded-[8px] text-xs font-mono text-fg-subtle">
-              No changelog entries found. Click &quot;+ Add Changelog Entry&quot; to publish your first milestone.
+              No changelog entries found. Click &quot;+ Add Entry&quot; to publish your first milestone.
             </div>
           ) : (
             filteredChangelog.map((log) => (
@@ -3576,32 +3477,32 @@ export function AdminManager({
         </ModalContent>
       </Modal>
 
-      {/* Accessible In-App Delete Confirmation Modal (Prevents browser popup blockers and anti-malware false-positives) */}
+      {/* Accessible In-App Delete Confirmation Modal (Theme-Cohesive Raw Luxury Design) */}
       <Modal open={Boolean(deleteTarget)} onOpenChange={(open) => !open && !isDeleting && setDeleteTarget(null)}>
-        <ModalContent className="max-w-md p-6 bg-white dark:bg-[#071318] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-2xl">
+        <ModalContent className="max-w-md p-6 bg-bg-raised border border-border rounded-[8px] shadow-2xl">
           <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/40 flex items-center justify-center shrink-0">
-                <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+              <div className="w-10 h-10 rounded-full bg-red-50 border border-red-200 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-sans">
+                <h3 className="text-base font-bold text-fg font-sans">
                   Delete {deleteTarget?.type === "app" ? "Project" : deleteTarget?.type === "changelog" ? "Changelog Entry" : "Item"}?
                 </h3>
-                <p className="text-xs text-neutral-500 font-mono">This action permanently deletes this record.</p>
+                <p className="text-xs text-fg-muted font-mono">This action permanently deletes this record.</p>
               </div>
             </div>
 
-            <p className="text-xs text-neutral-600 dark:text-neutral-300">
-              Are you sure you want to delete <span className="font-semibold text-neutral-900 dark:text-neutral-100">"{deleteTarget?.title}"</span>?
+            <p className="text-xs text-fg-muted">
+              Are you sure you want to delete <span className="font-semibold text-fg">"{deleteTarget?.title}"</span>?
             </p>
 
-            <div className="pt-2 flex items-center justify-end space-x-2 border-t border-neutral-100 dark:border-neutral-800">
+            <div className="pt-3 flex items-center justify-end space-x-2 border-t border-border">
               <button
                 type="button"
                 onClick={() => setDeleteTarget(null)}
                 disabled={isDeleting}
-                className="px-3.5 py-2 text-xs font-mono rounded-[6px] border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="px-4 py-2 text-xs font-mono font-medium rounded-[6px] border border-border bg-bg hover:bg-bg-hover text-fg transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -3609,7 +3510,7 @@ export function AdminManager({
                 type="button"
                 onClick={confirmExecuteDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-red-600 hover:bg-red-700 text-white transition-colors cursor-pointer flex items-center space-x-1.5 shadow-xs"
+                className="px-4 py-2 text-xs font-mono font-semibold rounded-[6px] bg-red-600 hover:bg-red-700 text-white transition-colors cursor-pointer flex items-center space-x-1.5 shadow-xs"
               >
                 {isDeleting ? (
                   <>

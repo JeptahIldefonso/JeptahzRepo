@@ -17,6 +17,19 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await executeRevert();
+
+    // Record audit trail (Blueprint Section 7 & 10.1)
+    const { writeAudit } = await import("@/lib/audit");
+    await writeAudit({
+      action: "revert",
+      entity: "snapshot",
+      entityId: result.commitSha,
+      meta: {
+        revertedToHash: result.revertedToHash,
+        commitUrl: result.commitUrl,
+      },
+    });
+
     return NextResponse.json(result);
   } catch (error: unknown) {
     const msg = error instanceof Error ? error.message : "Failed to execute revert";

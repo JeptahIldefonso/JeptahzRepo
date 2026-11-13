@@ -74,6 +74,32 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
+    // 2.5 Try Firebase Storage if configured
+    try {
+      const { getFirebaseAdmin } = await import("@/lib/firebase/admin");
+      const { bucket } = getFirebaseAdmin();
+      if (bucket) {
+        const fileRef = bucket.file(`uploads/${secureFileName}`);
+        await fileRef.save(buffer, {
+          metadata: { contentType: file.type || "application/octet-stream" },
+          public: true,
+        });
+
+        const publicUrl = `https://storage.googleapis.com/${bucket.name}/uploads/${secureFileName}`;
+        return NextResponse.json({
+          success: true,
+          url: publicUrl,
+          filename: secureFileName,
+          originalName: file.name,
+          size: file.size,
+          mimeType: file.type || "application/octet-stream",
+          storage: "firebase",
+        });
+      }
+    } catch (fbErr) {
+      console.warn("[upload_firebase_fallback]", fbErr);
+    }
+
     // 3. Try Supabase Storage if configured
     const supabaseUrl =
       process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;

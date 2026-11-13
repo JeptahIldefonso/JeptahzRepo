@@ -158,9 +158,14 @@ export async function getPublishStatus(): Promise<PublishStatusDetail> {
     history = [];
   }
 
+  const isPublishEnabled = process.env.PUBLISH_ENABLED !== "false";
   const isUpToDate = savedHash === liveHash;
-  const canPublish = !isUpToDate && currentState !== "publishing";
-  const canRevert = history.length > 1 && currentState !== "publishing";
+  const canPublish = isPublishEnabled && !isUpToDate && currentState !== "publishing";
+  const canRevert = isPublishEnabled && history.length > 1 && currentState !== "publishing";
+
+  if (!isPublishEnabled && currentState !== "publishing") {
+    statusMessage = "Publishing is disabled in this environment (set PUBLISH_ENABLED=true).";
+  }
 
   return {
     state: currentState,
@@ -202,6 +207,10 @@ export async function executePublish(): Promise<{
 
   if (lockState.isLocked) {
     throw new Error("A publish operation is already in progress. Please wait for it to complete.");
+  }
+
+  if (process.env.PUBLISH_ENABLED === "false") {
+    throw new Error("Publishing is disabled in this environment (PUBLISH_ENABLED is false).");
   }
 
   const ghConfig = getGitHubConfig();
@@ -282,6 +291,10 @@ export async function executeRevert(): Promise<{
 
   if (lockState.isLocked) {
     throw new Error("A publish or revert operation is already in progress. Please wait.");
+  }
+
+  if (process.env.PUBLISH_ENABLED === "false") {
+    throw new Error("Publishing is disabled in this environment (PUBLISH_ENABLED is false).");
   }
 
   const ghConfig = getGitHubConfig();
