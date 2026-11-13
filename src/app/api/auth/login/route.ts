@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifyPassphrase } from "@/lib/auth-verify";
 import {
-  verifyPassphrase,
   createSessionToken,
   ADMIN_COOKIE_NAME,
   checkLoginRateLimit,

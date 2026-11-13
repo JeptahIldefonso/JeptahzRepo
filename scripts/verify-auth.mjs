@@ -1,5 +1,5 @@
+import { verifyPassphrase } from "../src/lib/auth-verify.ts";
 import {
-  verifyPassphrase,
   createSessionToken,
   verifySessionToken,
   ADMIN_COOKIE_NAME,
