@@ -270,6 +270,14 @@ export function AdminManager({
     setTimeout(() => setMessage(null), 3000);
   };
 
+  // In-app Delete Confirmation Dialog State (replaces window.confirm to avoid browser extension malware false-positives)
+  const [deleteTarget, setDeleteTarget] = useState<{
+    type: "entry" | "app" | "changelog";
+    id: string;
+    title: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
   // -------------------------
   // Categorized Entry Buckets
   // -------------------------
@@ -384,7 +392,7 @@ export function AdminManager({
             }
           }
         } else {
-          alert(`Failed to upload "${file.name}": ${data.error || "Upload rejected"}`);
+          showNotification(`Failed to upload "${file.name}": ${data.error || "Upload rejected"}`);
         }
       }
 
@@ -392,7 +400,7 @@ export function AdminManager({
         showNotification(`Attached ${uploadedCount} file${uploadedCount > 1 ? "s" : ""}`);
       }
     } catch (err: any) {
-      alert(err.message || "Upload failed");
+      showNotification(err.message || "Upload failed");
     } finally {
       setUploading(false);
     }
@@ -847,37 +855,63 @@ export function AdminManager({
   };
 
   // -------------------------
-  // Universal Deletes
+  // Universal Deletes (In-app Confirmation Dialog)
   // -------------------------
-  const handleDeleteEntry = async (id: string, title: string) => {
-    if (!confirm(`Delete "${title}"?`)) return;
-    try {
-      const res = await fetch(`/api/entries/${id}`, { method: "DELETE" });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success) {
-        setEntries((prev) => prev.filter((item) => item.id !== id));
-        showNotification(`Deleted "${title}"`);
-      } else {
-        alert(data.error || `Failed to delete "${title}".`);
-      }
-    } catch (err: any) {
-      alert(`Network error: ${err.message || "Failed to delete entry"}`);
-    }
+  const handleDeleteEntry = (id: string, title: string) => {
+    setDeleteTarget({ type: "entry", id, title });
   };
 
-  const handleDeleteApp = async (id: string, title: string) => {
-    if (!confirm(`Delete project "${title}"?`)) return;
+  const handleDeleteApp = (id: string, title: string) => {
+    setDeleteTarget({ type: "app", id, title });
+  };
+
+  const handleDeleteChangelog = (id: string, title: string) => {
+    setDeleteTarget({ type: "changelog", id, title });
+  };
+
+  const confirmExecuteDelete = async () => {
+    if (!deleteTarget) return;
+    const { type, id, title } = deleteTarget;
+    setIsDeleting(true);
+
     try {
-      const res = await fetch(`/api/apps/${id}`, { method: "DELETE" });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success) {
-        setApps((prev) => prev.filter((item) => item.id !== id));
-        showNotification(`Deleted project "${title}"`);
-      } else {
-        alert(data.error || `Failed to delete project "${title}".`);
+      if (type === "entry") {
+        const res = await fetch(`/api/entries/${id}`, { method: "DELETE" });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          setEntries((prev) => prev.filter((item) => item.id !== id));
+          showNotification(`Deleted "${title}"`);
+        } else {
+          showNotification(data.error || `Failed to delete "${title}".`);
+        }
+      } else if (type === "app") {
+        const res = await fetch(`/api/apps/${id}`, { method: "DELETE" });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          setApps((prev) => prev.filter((item) => item.id !== id));
+          showNotification(`Deleted project "${title}"`);
+        } else {
+          showNotification(data.error || `Failed to delete project "${title}".`);
+        }
+      } else if (type === "changelog") {
+        const res = await fetch(`/api/changelog/${id}`, { method: "DELETE" });
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          setChangelog((prev) => prev.filter((item) => item.id !== id));
+          showNotification(`Deleted "${title}"`);
+          window.dispatchEvent(new CustomEvent("changelog_updated"));
+          try {
+            localStorage.setItem("changelog_last_updated", String(Date.now()));
+          } catch {}
+        } else {
+          showNotification(data.error || `Failed to delete changelog entry "${title}".`);
+        }
       }
     } catch (err: any) {
-      alert(`Network error: ${err.message || "Failed to delete project"}`);
+      showNotification(`Network error: ${err.message || "Failed to delete"}`);
+    } finally {
+      setIsDeleting(false);
+      setDeleteTarget(null);
     }
   };
 
@@ -959,26 +993,6 @@ export function AdminManager({
 
     setChangelogModalOpen(false);
     setEditingChangelog(null);
-  };
-
-  const handleDeleteChangelog = async (id: string, title: string) => {
-    if (!confirm(`Delete changelog entry "${title}"?`)) return;
-    try {
-      const res = await fetch(`/api/changelog/${id}`, { method: "DELETE" });
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.success) {
-        setChangelog((prev) => prev.filter((item) => item.id !== id));
-        showNotification(`Deleted "${title}"`);
-        window.dispatchEvent(new CustomEvent("changelog_updated"));
-        try {
-          localStorage.setItem("changelog_last_updated", String(Date.now()));
-        } catch {}
-      } else {
-        alert(data.error || `Failed to delete changelog entry "${title}".`);
-      }
-    } catch (err: any) {
-      alert(`Network error: ${err.message || "Failed to delete changelog entry"}`);
-    }
   };
 
   // -------------------------
@@ -3559,6 +3573,58 @@ export function AdminManager({
               </button>
             </div>
           </form>
+        </ModalContent>
+      </Modal>
+
+      {/* Accessible In-App Delete Confirmation Modal (Prevents browser popup blockers and anti-malware false-positives) */}
+      <Modal open={Boolean(deleteTarget)} onOpenChange={(open) => !open && !isDeleting && setDeleteTarget(null)}>
+        <ModalContent className="max-w-md p-6 bg-white dark:bg-[#071318] border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-2xl">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-950/40 flex items-center justify-center shrink-0">
+                <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 font-sans">
+                  Delete {deleteTarget?.type === "app" ? "Project" : deleteTarget?.type === "changelog" ? "Changelog Entry" : "Item"}?
+                </h3>
+                <p className="text-xs text-neutral-500 font-mono">This action permanently deletes this record.</p>
+              </div>
+            </div>
+
+            <p className="text-xs text-neutral-600 dark:text-neutral-300">
+              Are you sure you want to delete <span className="font-semibold text-neutral-900 dark:text-neutral-100">"{deleteTarget?.title}"</span>?
+            </p>
+
+            <div className="pt-2 flex items-center justify-end space-x-2 border-t border-neutral-100 dark:border-neutral-800">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                disabled={isDeleting}
+                className="px-3.5 py-2 text-xs font-mono rounded-[6px] border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={confirmExecuteDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 text-xs font-semibold rounded-[6px] bg-red-600 hover:bg-red-700 text-white transition-colors cursor-pointer flex items-center space-x-1.5 shadow-xs"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Yes, Delete</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </ModalContent>
       </Modal>
     </div>
