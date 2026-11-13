@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import { sanitizeError } from "./sanitize";
 
 export interface GitHubConfig {
   token: string | null;
@@ -265,7 +266,7 @@ export async function commitArchiveToGitHub({
 
   if (!res.ok) {
     const errorBody = await res.text();
-    throw new Error(`GitHub commit failed with status ${res.status}: ${errorBody}`);
+    throw new Error(sanitizeError(`GitHub commit failed with status ${res.status}: ${errorBody}`));
   }
 
   const data = (await res.json()) as {

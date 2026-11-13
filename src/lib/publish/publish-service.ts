@@ -17,6 +17,7 @@ import {
   PublishCommitInfo,
 } from "./github";
 import { getDeploymentForCommit, getVercelConfig } from "./vercel";
+import { sanitizeError } from "./sanitize";
 
 export interface PublishStatusDetail {
   state: "ready" | "idle" | "publishing" | "error";
@@ -111,24 +112,34 @@ export async function getPublishStatus(): Promise<PublishStatusDetail> {
   let statusMessage = "Unpublished changes waiting to be deployed.";
 
   if (lockState.isLocked && lockState.commitSha) {
-    currentState = "publishing";
-    statusMessage = "Publishing to Vercel... Polling build status.";
+    if (!vConfig.token) {
+      // Local dev or environment without VERCEL_TOKEN: commit succeeded, skip deployment polling
+      lockState.isLocked = false;
+      lockState.lastError = null;
+      lockState.lastDeploymentUrl = "https://jeptahzrepo.vercel.app";
+      lockState.lastPublishedAt = new Date().toISOString();
+      currentState = "ready";
+      statusMessage = "Committed to GitHub. Live deployment tracking skipped (VERCEL_TOKEN not configured).";
+    } else {
+      currentState = "publishing";
+      statusMessage = "Publishing to Vercel... Polling build status.";
 
-    const deployment = await getDeploymentForCommit(lockState.commitSha);
+      const deployment = await getDeploymentForCommit(lockState.commitSha);
 
-    if (deployment.found) {
-      if (deployment.state === "READY") {
-        lockState.isLocked = false;
-        lockState.lastError = null;
-        lockState.lastDeploymentUrl = deployment.url || "https://jeptahzrepo.vercel.app";
-        lockState.lastPublishedAt = new Date().toISOString();
-        currentState = "ready";
-        statusMessage = "Live and up to date.";
-      } else if (deployment.state === "ERROR" || deployment.state === "CANCELED") {
-        lockState.isLocked = false;
-        lockState.lastError = `Vercel build ${deployment.state.toLowerCase()}. Check Vercel logs for build details.`;
-        currentState = "error";
-        statusMessage = "Publish failed.";
+      if (deployment.found) {
+        if (deployment.state === "READY") {
+          lockState.isLocked = false;
+          lockState.lastError = null;
+          lockState.lastDeploymentUrl = deployment.url || "https://jeptahzrepo.vercel.app";
+          lockState.lastPublishedAt = new Date().toISOString();
+          currentState = "ready";
+          statusMessage = "Live and up to date.";
+        } else if (deployment.state === "ERROR" || deployment.state === "CANCELED") {
+          lockState.isLocked = false;
+          lockState.lastError = `Vercel build ${deployment.state.toLowerCase()}. Check Vercel logs for build details.`;
+          currentState = "error";
+          statusMessage = "Publish failed.";
+        }
       }
     }
   } else if (lockState.lastError) {
@@ -184,6 +195,11 @@ export async function executePublish(): Promise<{
   commitUrl: string;
   hash: string;
 }> {
+  // Clear stale lock if older than timeout
+  if (lockState.isLocked && lockState.lockedAt && Date.now() - lockState.lockedAt > PUBLISH_TIMEOUT_MS) {
+    lockState.isLocked = false;
+  }
+
   if (lockState.isLocked) {
     throw new Error("A publish operation is already in progress. Please wait for it to complete.");
   }
@@ -243,9 +259,9 @@ export async function executePublish(): Promise<{
     };
   } catch (err: unknown) {
     lockState.isLocked = false;
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = sanitizeError(err);
     lockState.lastError = msg;
-    throw err;
+    throw new Error(msg);
   }
 }
 
@@ -259,6 +275,11 @@ export async function executeRevert(): Promise<{
   commitUrl: string;
   revertedToHash: string;
 }> {
+  // Clear stale lock if older than timeout
+  if (lockState.isLocked && lockState.lockedAt && Date.now() - lockState.lockedAt > PUBLISH_TIMEOUT_MS) {
+    lockState.isLocked = false;
+  }
+
   if (lockState.isLocked) {
     throw new Error("A publish or revert operation is already in progress. Please wait.");
   }
@@ -318,8 +339,8 @@ export async function executeRevert(): Promise<{
     };
   } catch (err: unknown) {
     lockState.isLocked = false;
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = sanitizeError(err);
     lockState.lastError = msg;
-    throw err;
+    throw new Error(msg);
   }
 }
