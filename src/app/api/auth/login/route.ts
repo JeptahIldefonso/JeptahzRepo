@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const isValid = verifyPassphrase(passphrase.trim());
+    const isValid = await verifyPassphrase(passphrase.trim());
 
     if (!isValid) {
       // Record failed attempt for rate limiting

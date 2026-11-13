@@ -107,12 +107,32 @@ function getSessionSecret(): string {
 }
 
 /**
- * Validates whether the supplied passphrase matches the configured admin passphrase.
- * Uses constant-time comparison to prevent timing attacks.
+ * Validates whether the supplied passphrase matches the configured admin passphrase or hash.
+ * Supports:
+ * 1. ADMIN_PASSWORD_HASH (Argon2id hash)
+ * 2. ADMIN_PASSPHRASE / ADMIN_PASSWORD (constant-time plaintext comparison)
  */
-export function verifyPassphrase(input: string): boolean {
+export async function verifyPassphrase(input: string): Promise<boolean> {
+  if (!input) return false;
+
+  // 1. Verify against ADMIN_PASSWORD_HASH if configured
+  const hashStr = process.env.ADMIN_PASSWORD_HASH?.trim();
+  if (hashStr) {
+    const unescapedHash = hashStr.replace(/\\(\$)/g, "$1");
+    if (unescapedHash.startsWith("$argon2")) {
+      try {
+        const { verify } = await import("@node-rs/argon2");
+        const isValid = await verify(unescapedHash, input);
+        if (isValid) return true;
+      } catch (err) {
+        console.warn("[auth] Argon2 verification failed:", err);
+      }
+    }
+  }
+
+  // 2. Fallback to ADMIN_PASSPHRASE or ADMIN_PASSWORD
   const secret = getAdminPassphrase();
-  if (!secret || !input) return false;
+  if (!secret) return false;
 
   if (input.length !== secret.length) return false;
   let match = 0;

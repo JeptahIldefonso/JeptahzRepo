@@ -20,13 +20,13 @@ async function runTests() {
 
   // 2. Passphrase verification
   process.env.ADMIN_PASSPHRASE = "test-secret-123";
-  if (!verifyPassphrase("test-secret-123")) {
+  if (!(await verifyPassphrase("test-secret-123"))) {
     throw new Error("verifyPassphrase failed for matching password");
   }
-  if (verifyPassphrase("wrong-password")) {
+  if (await verifyPassphrase("wrong-password")) {
     throw new Error("verifyPassphrase unexpectedly passed for wrong password");
   }
-  console.log("✓ verifyPassphrase correctly validates and rejects input");
+  console.log("✓ verifyPassphrase correctly validates and rejects plaintext input");
 
   // 3. Token format with { iat, exp }
   const token = await createSessionToken();
